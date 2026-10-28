@@ -41,10 +41,19 @@
 #'   `intercept`, `r2`, `residSD` and `offset`. Spikes near the detection
 #'   limit are seen only when their count happens to be high, which pulls
 #'   the slope down and ties it to depth. Choosing spikes by their known
-#'   amount, not by what was measured, avoids that. Set it to an amount
-#'   every good run detects; `lod` always uses all spikes.
+#'   amount, not by what was measured, avoids that. `"auto"` (the default)
+#'   takes the smallest expected amount at and above which every spike is
+#'   detected in every run named by `baseline`; a number fixes it. When no
+#'   amount qualifies, the fit figures are `NA` with a warning rather than
+#'   fitted on a biased range. `lod` always uses all spikes.
+#' @param baseline Runs used to choose `minAmount = "auto"`: a single
+#'   number is the count of leading runs; otherwise run indices, run names
+#'   or a logical vector. `NULL` uses every run, so one failed run raises
+#'   the range for all; name runs known to be good instead.
 #'
-#' @return A `data.frame` with one row per sample.
+#' @return A `data.frame` with one row per sample. Its `"minAmount"`
+#'   attribute holds the amount used, to pass on to
+#'   [plotDoseResponse()].
 #'
 #' @examples
 #' set.seed(1)
@@ -52,16 +61,66 @@
 #' runMetrics(runs)
 #' @export
 runMetrics <- function(se, assay = 1L, expected = "expected", detect = 0,
-                       lodProb = 0.95, minAmount = 0) {
+                       lodProb = 0.95, minAmount = "auto",
+                       baseline = NULL) {
     obs <- as.matrix(SummarizedExperiment::assay(se, assay))
     expd <- as.matrix(SummarizedExperiment::assay(se, expected))
     if (!identical(dim(obs), dim(expd)))
         stop("the measured and expected assays differ in shape")
+    if (identical(minAmount, "auto")) {
+        use <- .runIndex(baseline, colnames(se), ncol(obs))
+        minAmount <- .autoMinAmount(obs[, use, drop = FALSE],
+                                    expd[, use, drop = FALSE], detect)
+        if (is.na(minAmount))
+            warning("no expected amount is detected in every baseline run; ",
+                    "the fit figures are NA. Set minAmount or name good ",
+                    "runs in 'baseline'")
+    } else if (!is.numeric(minAmount) || length(minAmount) != 1L ||
+               is.na(minAmount) || minAmount < 0) {
+        stop("'minAmount' must be \"auto\" or one amount of at least 0")
+    }
+    fitFrom <- if (is.na(minAmount)) Inf else minAmount
     rows <- lapply(seq_len(ncol(se)), function(j)
-        .oneRun(obs[, j], expd[, j], detect, lodProb, minAmount))
+        .oneRun(obs[, j], expd[, j], detect, lodProb, fitFrom))
     out <- do.call(rbind, rows)
-    data.frame(run = colnames(se) %||% as.character(seq_len(ncol(se))),
-               out, row.names = NULL, stringsAsFactors = FALSE)
+    res <- data.frame(run = colnames(se) %||% as.character(seq_len(ncol(se))),
+                      out, row.names = NULL, stringsAsFactors = FALSE)
+    attr(res, "minAmount") <- minAmount
+    res
+}
+
+# Runs named by a baseline argument, as indices.
+.runIndex <- function(baseline, names, n) {
+    if (is.null(baseline))
+        return(seq_len(n))
+    if (is.logical(baseline)) {
+        if (length(baseline) != n || anyNA(baseline))
+            stop("a logical baseline needs one TRUE or FALSE per run")
+        return(which(baseline))
+    }
+    if (is.character(baseline)) {
+        idx <- match(baseline, names)
+        if (anyNA(idx))
+            stop("baseline names a run that is not in the data")
+        return(idx)
+    }
+    idx <- if (length(baseline) == 1L) seq_len(baseline) else baseline
+    if (any(idx < 1L | idx > n))
+        stop("baseline indices fall outside the runs")
+    idx
+}
+
+# Smallest expected amount at and above which every spike is detected in
+# every run given; NA when even the largest amount is missed somewhere.
+.autoMinAmount <- function(o, e, detect) {
+    ok <- !is.na(e) & e > 0
+    det <- !is.na(o) & o > detect
+    for (a in sort(unique(e[ok]))) {
+        sel <- ok & e >= a
+        if (all(det[sel]))
+            return(a)
+    }
+    NA_real_
 }
 
 .oneRun <- function(o, e, detect, lodProb, minAmount) {

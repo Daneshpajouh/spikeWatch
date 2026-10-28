@@ -5,6 +5,10 @@
 #' @param assay Name or index of the measured assay.
 #' @param expected Name of the expected-amount assay.
 #' @param detect Detection threshold, as in [runMetrics()].
+#' @param minAmount The fit range, as used by [runMetrics()]: the line is
+#'   fitted to detected spikes at or above it, and a dashed line marks it.
+#'   Pass `attr(metrics, "minAmount")` to draw the same fit; `NA` draws
+#'   no line.
 #'
 #' @return A `ggplot` object. Undetected spikes are drawn at the bottom
 #'   edge as open points.
@@ -12,10 +16,12 @@
 #' @examples
 #' set.seed(1)
 #' runs <- simulateSpikeRuns(erccDesign(), nRuns = 2)
-#' plotDoseResponse(runs, 1)
+#' m <- runMetrics(runs)
+#' plotDoseResponse(runs, 1, minAmount = attr(m, "minAmount"))
 #' @export
 plotDoseResponse <- function(se, run = 1L, assay = 1L,
-                             expected = "expected", detect = 0) {
+                             expected = "expected", detect = 0,
+                             minAmount = 0) {
     o <- SummarizedExperiment::assay(se, assay)[, run]
     e <- SummarizedExperiment::assay(se, expected)[, run]
     keep <- !is.na(e) & e > 0
@@ -25,10 +31,12 @@ plotDoseResponse <- function(se, run = 1L, assay = 1L,
     floor <- min(df$measured[df$detected], 1, na.rm = TRUE)
     df$measured[!df$detected] <- floor
     df$group[is.na(df$group)] <- "spike"
-    ggplot2::ggplot(df, ggplot2::aes(.data$expected, .data$measured)) +
+    fitted <- if (is.na(minAmount)) df[0, ] else
+        df[df$detected & df$expected >= minAmount, ]
+    p <- ggplot2::ggplot(df, ggplot2::aes(.data$expected, .data$measured)) +
         ggplot2::geom_point(ggplot2::aes(shape = .data$detected,
                                          colour = .data$group)) +
-        ggplot2::geom_smooth(data = df[df$detected, ], method = "lm",
+        ggplot2::geom_smooth(data = fitted, method = "lm",
                              formula = y ~ x, se = FALSE, colour = "grey30",
                              linewidth = 0.4) +
         ggplot2::scale_x_log10() + ggplot2::scale_y_log10() +
@@ -37,6 +45,10 @@ plotDoseResponse <- function(se, run = 1L, assay = 1L,
                       title = colnames(se)[run] %||% as.character(run),
                       shape = "Detected", colour = "Group") +
         ggplot2::theme_bw()
+    if (!is.na(minAmount) && minAmount > 0)
+        p <- p + ggplot2::geom_vline(xintercept = minAmount, linetype = 2,
+                                     colour = "grey50")
+    p
 }
 
 #' Plot a control chart

@@ -34,7 +34,7 @@ test_that("minAmount keeps low spikes out of the fit but not the limit", {
     e <- c(1, 2, 4, 8, 16)
     o <- c(9, 2 * e[2:5])
     se <- powerLawSE(o, e)
-    expect_false(isTRUE(all.equal(runMetrics(se)$slope, 1)))
+    expect_false(isTRUE(all.equal(runMetrics(se, minAmount = 0)$slope, 1)))
     m <- runMetrics(se, minAmount = 2)
     expect_equal(m$slope, 1)
     expect_equal(m$offset, 1)
@@ -61,7 +61,7 @@ test_that("the detection limit sits between missed and found spikes", {
     expect_true(is.na(m2$lod))
     expect_equal(m2$lodStatus, "separated")
     expect_equal(m2$allDetectedFrom, 8)
-    m3 <- runMetrics(powerLawSE(rep(0, 10), e))
+    m3 <- runMetrics(powerLawSE(rep(0, 10), e), minAmount = 0)
     expect_true(is.na(m3$lod))
     expect_equal(m3$lodStatus, "none_detected")
     expect_true(is.na(m3$allDetectedFrom))
@@ -76,7 +76,8 @@ test_that("a limit outside the tested amounts is refused, not clamped", {
 })
 
 test_that("detection that falls with amount is a failed fit", {
-    m <- runMetrics(powerLawSE(c(5, 0, 5, 0, 0), c(1, 2, 4, 8, 16)))
+    m <- runMetrics(powerLawSE(c(5, 0, 5, 0, 0), c(1, 2, 4, 8, 16)),
+                    minAmount = 0)
     expect_true(is.na(m$lod))
     expect_equal(m$lodStatus, "fit_failed")
     expect_true(is.na(m$allDetectedFrom))
@@ -105,4 +106,48 @@ test_that("ratioAccuracy matches hand-computed errors", {
     expect_equal(r2$features$measuredLog2Ratio, c(2, 0, -1))
     expect_equal(r2$summary$expectedLog2Ratio, c(2, 0, -1))
     expect_error(ratioAccuracy(se, 1, 2, center = "median"), "center")
+})
+
+twoRunSE <- function(o1, o2, e) {
+    ids <- paste0("s", seq_along(e))
+    se <- SummarizedExperiment::SummarizedExperiment(
+        list(counts = matrix(c(o1, o2), ncol = 2,
+                             dimnames = list(ids, c("r1", "r2")))))
+    addTruth(se, spikeDesign(ids, e))
+}
+
+test_that("minAmount auto takes the lowest amount every run detects", {
+    e <- c(1, 2, 4, 8, 16)
+    # run 1 misses amount 1, run 2 misses amount 2
+    se <- twoRunSE(c(0, 4, 8, 16, 32), c(2, 0, 8, 16, 32), e)
+    m <- runMetrics(se)
+    expect_equal(attr(m, "minAmount"), 4)
+    expect_equal(m$slope, c(1, 1))
+    # only the named baseline run chooses the range
+    m1 <- runMetrics(se, baseline = 1)
+    expect_equal(attr(m1, "minAmount"), 2)
+    # run 2 alone misses amount 2, so its range starts at 4
+    expect_equal(attr(runMetrics(se, baseline = "r2"), "minAmount"), 4)
+    expect_equal(attr(runMetrics(se, baseline = c(TRUE, FALSE)),
+                      "minAmount"), 2)
+    expect_equal(attr(runMetrics(se, baseline = "r1"), "minAmount"), 2)
+    # a single number counts leading runs: both runs here
+    expect_equal(attr(runMetrics(se, baseline = 2), "minAmount"), 4)
+    # a number is kept as given
+    expect_equal(attr(runMetrics(se, minAmount = 0), "minAmount"), 0)
+})
+
+test_that("minAmount auto gives NA fit figures when no amount qualifies", {
+    e <- c(1, 2, 4)
+    se <- twoRunSE(c(2, 4, 0), c(2, 4, 8), e)
+    expect_warning(m <- runMetrics(se), "no expected amount")
+    expect_true(is.na(attr(m, "minAmount")))
+    expect_true(all(is.na(m$slope)) && all(is.na(m$offset)))
+    expect_equal(m$nDetected, c(2, 3))
+    expect_equal(attr(runMetrics(se, baseline = "r2"), "minAmount"), 1)
+    expect_error(runMetrics(se, baseline = "r9"), "not in the data")
+    expect_error(runMetrics(se, baseline = TRUE), "one TRUE or FALSE")
+    expect_error(runMetrics(se, minAmount = -1), "minAmount")
+    expect_error(runMetrics(se, minAmount = "low"), "minAmount")
+    expect_error(runMetrics(se, baseline = 3), "outside")
 })
