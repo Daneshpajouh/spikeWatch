@@ -2,3 +2,4 @@
 .Rhistory
 *.tar.gz
 spikeWatch.Rcheck/
+__pycache__/

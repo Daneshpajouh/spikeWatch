@@ -1,0 +1,13 @@
+# head c0487dd
+m01	R/metrics.R	KILLED	failing tests: 2
+m02	R/metrics.R	KILLED	failing tests: 1
+m03	R/metrics.R	KILLED	failing tests: 1
+m04	R/metrics.R	KILLED	failing tests: 1
+m05	R/drift.R	KILLED	failing tests: 3
+m06	R/drift.R	KILLED	failing tests: 1
+m07	R/drift.R	KILLED	failing tests: 2
+m08	R/truth.R	KILLED	failing tests: 1
+m09	R/metrics.R	KILLED	failing tests: 1
+m10	R/simulate.R	KILLED	failing tests: 1
+m11	R/drift.R	KILLED	failing tests: 1
+m12	R/design.R	KILLED	failing tests: 1
