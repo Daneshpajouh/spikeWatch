@@ -5,6 +5,7 @@ test_that("Shewhart limits use the moving range", {
     expect_equal(attr(ch, "sigma"), s)
     expect_equal(ch$upper[1], 1.4 + 3 * s)
     expect_equal(firstSignal(ch), 6)
+    expect_true(is.na(firstSignal(ch, after = 6)))
     expect_false(any(ch$signal[1:5]))
 })
 
@@ -12,6 +13,7 @@ test_that("EWMA statistic and first limit match the formulas", {
     x <- c(1, 2, 1, 2, 1, 3)
     ch <- driftChart(x, baseline = 5, method = "ewma", lambda = 0.2)
     expect_equal(ch$stat[1], 0.2 * 1 + 0.8 * 1.4)
+    expect_equal(ch$stat[2], 0.2 * 2 + 0.8 * ch$stat[1])
     s <- 1 / 1.128
     expect_equal(ch$upper[1] - 1.4, 3 * s * sqrt(0.2 / 1.8 * (1 - 0.8^2)))
 })

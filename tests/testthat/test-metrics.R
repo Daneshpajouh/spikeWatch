@@ -37,6 +37,11 @@ test_that("minAmount keeps low spikes out of the fit but not the limit", {
     expect_equal(m$slope, 1)
     expect_equal(m$offset, 1)
     expect_equal(m$lod, 1)
+    # a spike exactly at minAmount is in the fit
+    se2 <- powerLawSE(c(9, 4, 8, 16), c(1, 2, 4, 8))
+    m2 <- runMetrics(se2, minAmount = 2)
+    expect_equal(m2$slope, 1)
+    expect_equal(m2$offset, 1)
 })
 
 test_that("the detection limit sits between missed and found spikes", {
@@ -54,7 +59,9 @@ test_that("the detection limit sits between missed and found spikes", {
 })
 
 test_that("ratioAccuracy matches hand-computed errors", {
-    m <- matrix(c(40, 10, 10, 10, 10, 10,
+    # background rows read twice as high in x, so centring on them must
+    # remove a shift of 1 on the log2 scale
+    m <- matrix(c(80, 20, 20, 20, 20, 20,
                   10, 10, 20, 10, 10, 10), nrow = 6,
                 dimnames = list(c("u", "s", "d", "b1", "b2", "b3"),
                                 c("x", "y")))
@@ -67,7 +74,8 @@ test_that("ratioAccuracy matches hand-computed errors", {
                      mix = rep(c("A", "B"), each = 3))
     se <- addTruth(se, d, mix = "mix")
     r <- ratioAccuracy(se, "x", "y", center = "none")
-    expect_equal(r$features$error, c(0, 0, 0))
+    expect_equal(r$features$error, c(1, 1, 1))
+    expect_equal(ratioAccuracy(se, 1, 2)$features$error, c(0, 0, 0))
     bg <- rownames(se) %in% c("b1", "b2", "b3")
     r2 <- ratioAccuracy(se, 1, 2, center = bg)
     expect_equal(r2$features$measuredLog2Ratio, c(2, 0, -1))
