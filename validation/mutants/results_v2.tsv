@@ -1,0 +1,16 @@
+# head 17b8a71
+m01	R/drift.R	KILLED	failing tests: 8
+m02	R/drift.R	KILLED	failing tests: 1
+m03	R/drift.R	KILLED	failing tests: 1
+m04	R/drift.R	KILLED	failing tests: 2
+m05	R/metrics.R	KILLED	failing tests: 4
+m06	R/metrics.R	KILLED	failing tests: 7
+m07	R/metrics.R	KILLED	failing tests: 1
+m08	R/calibrate.R	KILLED	failing tests: 4
+m09	R/calibrate.R	KILLED	failing tests: 4
+m10	R/calibrate.R	KILLED	failing tests: 3
+m11	R/calibrate.R	KILLED	failing tests: 4
+m12	R/profile.R	KILLED	failing tests: 2
+m13	R/profile.R	KILLED	failing tests: 2
+m14	R/simulate.R	KILLED	failing tests: 1
+m15	R/simulate.R	KILLED	failing tests: 1
