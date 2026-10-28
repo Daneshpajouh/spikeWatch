@@ -74,7 +74,7 @@ detection limit `lod` always uses every spike, and is `NA` with a reason
 in `lodStatus` when the data cannot support it.
 
 ```{r doseplot, fig.width = 6, fig.height = 4}
-plotDoseResponse(runs, 1)
+plotDoseResponse(runs, 1, minAmount = attr(m, "minAmount"))
 ```
 
 # Drift across runs

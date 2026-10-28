@@ -49,8 +49,11 @@
 #'   fitted on a biased range. `lod` always uses all spikes.
 #' @param baseline Runs used to choose `minAmount = "auto"`: a single
 #'   number is the count of leading runs; otherwise run indices, run names
-#'   or a logical vector. `NULL` uses every run, so one failed run raises
-#'   the range for all; name runs known to be good instead.
+#'   or a logical vector. `NULL` (the default) uses every run, which suits
+#'   one experiment scored once, such as a dilution series. For runs that
+#'   will be charted, name the good baseline runs: with `NULL`, a later
+#'   run that misses a low spike raises the range, and so changes the fit
+#'   figures, of every run.
 #'
 #' @return A `data.frame` with one row per sample and columns `run`,
 #'   `nSpikes` (spikes with an expected amount above 0), `nDetected` (of

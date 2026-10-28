@@ -36,7 +36,7 @@ For a dilution series, give the design one amount per spike and each sample a do
 | 10 | 1.001 | 0.0123 | -0.038 |
 <!-- /V0 -->
 
-A floor of 1 attomol/uL fixes the mean and narrows the spread but leaves a weaker link to depth, of the opposite sign; a floor of 10 removes that too, at some cost in spread. The default, `minAmount = "auto"`, takes the smallest amount at and above which every spike was seen in every baseline run, so the range is chosen from good runs and is the same for every run. Version 1 of the validation used a fixed 1, as frozen in its plan; version 2 uses the default.
+A floor of 1 attomol/uL fixes the mean and narrows the spread but leaves a weaker link to depth, of the opposite sign; a floor of 10 removes that too, at some cost in spread. The default, `minAmount = "auto"`, takes the smallest amount at and above which every spike was seen in every run named by `baseline`, so the range is chosen from good runs and is the same for every run. Without `baseline` it uses every run, which suits one experiment scored once; for runs you will chart, name the good ones, or one failed run will raise the range for all. Version 1 of the validation used a fixed 1, as frozen in its plan; version 2 uses the default.
 
 ## Neighbours
 

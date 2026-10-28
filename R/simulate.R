@@ -35,9 +35,11 @@
 #'   then barely move.
 #' * `counts = "nbinom"`: negative binomial counts with size `size` in
 #'   place of Poisson.
-#' * `saturation`: above the log2 mean of the `saturationAt` quantile of
-#'   design amounts at depth 0, the log2 mean is compressed by this
-#'   fraction (0.5 halves the rise).
+#' * `saturation`: above a fixed ceiling, the log2 mean is compressed by
+#'   this fraction (0.5 halves the rise). The ceiling is `log2(scale)`
+#'   plus the `saturationAt` quantile of the log2 design amounts: the
+#'   log2 mean of that amount at depth 0 when the slope is 1. It does not
+#'   move with the slope, as a detector's ceiling would not.
 #' * `spikeBiasSD`: each spike gets a fixed log2 bias, normal with this
 #'   standard deviation, drawn once and kept in every run.
 #' * `slopeSD`: the slope varies from run to run as normal with this

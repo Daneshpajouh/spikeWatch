@@ -12,3 +12,15 @@ test_that("plots build and draw without warnings", {
         expect_silent(ggplot2::ggplotGrob(p))
     }
 })
+
+test_that("the dose-response line is the runMetrics fit on the log axes", {
+    set.seed(3)
+    s <- simulateSpikeRuns(erccDesign(), nRuns = 2)
+    m <- runMetrics(s, baseline = 2)
+    p <- plotDoseResponse(s, 1, minAmount = attr(m, "minAmount"))
+    line <- ggplot2::layer_data(p, 2)
+    # Scales transform before the smoother runs, so the line is fitted on
+    # log10 axes: its slope there is the log2 slope of runMetrics.
+    slope <- diff(range(line$y)) / diff(range(line$x))
+    expect_equal(slope, m$slope[1], tolerance = 1e-8)
+})
