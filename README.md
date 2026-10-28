@@ -90,6 +90,23 @@ Plan: `validation/PLAN_v2.md`, committed before any v2 number, with one dated ad
 | offset vs B1 | precision loss | none (gain in 0, loss in 2) | none (gain in 0, loss in 2) |
 <!-- /PV2-HEADLINE -->
 
+**F1 counted twice.** A review pointed out that F1 differs from F0 only in the pivot, which cancels when the slope is 1, so for sensitivity and precision loss F1 repeats F0 and the five-of-six rule counts that series twice. The rule stays as planned; here is each claim for those two drifts with F1 left out:
+
+<!-- PV2-DEDUP -->
+F1 had the same detection rates as F0 in 16 of 16 sensitivity-loss cells and 16 of 16 precision-loss cells.
+
+| Pair | Drift | Chart | Claim | Families with F1 left out |
+|---|---|---|---|---|
+| U-T vs U-F | sensitivity loss | CUSUM | loss | 4 of 5 |
+| U-T vs U-F | sensitivity loss | EWMA | loss | 4 of 5 |
+| U-T vs U-F | precision loss | CUSUM | gain | 5 of 5 |
+| U-T vs U-F | precision loss | EWMA | gain | 5 of 5 |
+| residSD vs B2 | sensitivity loss | CUSUM | loss | 4 of 5 |
+| residSD vs B2 | sensitivity loss | EWMA | loss | 4 of 5 |
+| residSD vs B2 | precision loss | CUSUM | gain | 5 of 5 |
+| residSD vs B2 | precision loss | EWMA | gain | 5 of 5 |
+<!-- /PV2-DEDUP -->
+
 **What this says.** The known amounts clearly help in one place: precision loss, where the residual spread of the dose-response fit finds the drift more often than every truth-free chart, in every family, chart and horizon. Under compression, the truth-based slope and the profile slope, which needs no amounts, both catch every planted drift within 20 runs, so at the drift sizes fixed in the plan this comparison cannot tell them apart; smaller drifts were not in the plan. Under sensitivity loss the truth-free union wins, because its members react to depth while slope and residSD by design do not; the truth-based `offset` catches that drift as well as the total count does. Where a pair loses, it pairs a figure with a truth-free chart that reacts to a different drift, which says which figure to chart, not that truth hurts. The per-run figures are in units a lab understands (a slope of 1, a detection limit in attomoles), and the real-data checks below test them. A lab that only wants an alarm for compression can chart the profile slope without knowing the amounts.
 
 Detection in the base family (F0) at calibrated limits, share of series with any signal within 20 monitored runs (the null column is the false-alarm rate on fresh seeds; other families and the 10-run horizon are in `validation/out-v2/scores.csv`):

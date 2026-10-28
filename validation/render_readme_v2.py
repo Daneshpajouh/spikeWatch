@@ -56,6 +56,37 @@ def headline():
     return table(["Pair (with truth vs without)", "Drift", "CUSUM", "EWMA"], body)
 
 
+def dedup():
+    """Families with a gain or loss at both horizons, F1 left out where it
+    repeats F0 (every drift but compression, which F1's pivot changes)."""
+    c = rows("comparisons.csv")
+    same = {}
+    for sc in ("sensitivity_loss", "precision_loss"):
+        f0 = {(r["pair"], r["chart"], r["H"]): r for r in c if r["family"] == "F0" and r["scenario"] == sc}
+        f1 = {(r["pair"], r["chart"], r["H"]): r for r in c if r["family"] == "F1" and r["scenario"] == sc}
+        same[sc] = sum(f0[k]["detect_truth"] == f1[k]["detect_truth"] and
+                       f0[k]["detect_without"] == f1[k]["detect_without"] for k in f0)
+    hl = {(r["pair"], r["scenario"], r["chart"]): r["headline"] for r in rows("headline.csv")}
+    body = []
+    for p in PAIRS:
+        for sc in ("sensitivity_loss", "precision_loss"):
+            for ch in ("cusum", "ewma"):
+                if hl[(p, sc, ch)] == "none":
+                    continue
+                verdict = hl[(p, sc, ch)]
+                fams = sorted({r["family"] for r in c if r["family"] != "F1"})
+                n = 0
+                for f in fams:
+                    v = [r["verdict"] for r in c if r["family"] == f and r["pair"] == p
+                         and r["scenario"] == sc and r["chart"] == ch]
+                    n += len(v) == 2 and all(x == verdict for x in v)
+                body.append([PAIRS[p], DRIFT_NAMES[sc], ch.upper(), verdict,
+                             "%d of %d" % (n, len(fams))])
+    note = ("F1 had the same detection rates as F0 in %d of 16 sensitivity-loss cells and %d of 16 "
+            "precision-loss cells." % (same["sensitivity_loss"], same["precision_loss"]))
+    return note + "\n\n" + table(["Pair", "Drift", "Chart", "Claim", "Families with F1 left out"], body)
+
+
 def detection(chart, H):
     s = rows("scores.csv")
     get = {(r["detector"], r["scenario"]): r for r in s
@@ -80,29 +111,6 @@ def defaults():
                      for ch in ("cusum", "ewma") for H in ("10", "20")])
     return table(["Detector", "CUSUM h = 5, 10 runs", "CUSUM h = 5, 20 runs",
                   "EWMA L = 3, 10 runs", "EWMA L = 3, 20 runs"], body)
-
-
-def calibrate():
-    c = [r for r in rows("calibrate.csv") if r["scenario"] == "null"]
-    s = rows("scores.csv")
-    body = []
-    for f in FAMILIES:
-        rs = [r for r in c if r["family"] == f]
-        lo = min(float(r["rate"]) for r in rs)
-        hi = max(rs, key=lambda r: float(r["rate"]))
-        holds = all(float(r["ci_high"]) <= 0.08 for r in rs)
-        d = [r for r in s if r["family"] == f and r["limits"] == "default"
-             and r["scenario"] == "null" and r["H"] == "20"
-             and r["detector"] in ("slope", "residSD", "offset", "B3")]
-        dlo = min(float(r["rate"]) for r in d)
-        dhi = max(float(r["rate"]) for r in d)
-        fails = int(sum(int(r["failed"]) for r in rs))
-        body.append([f, "%s to %s" % (pct1(lo), pct1(hi["rate"])),
-                     "%s %s, %s runs" % (hi["figure"], hi["chart"].upper(), hi["H"]),
-                     "holds" if holds else "fails",
-                     "%s to %s" % (pct1(dlo), pct1(dhi)), str(fails)])
-    return table(["Family", "calibrateChart false alarms (16 cells)", "Highest cell",
-                  "Pass rule", "Default limits, 20 runs", "Failed calls"], body)
 
 
 def confirm():
@@ -131,10 +139,10 @@ def fill(text, tag, body):
 
 readme = open("README.md").read()
 readme = fill(readme, "PV2-HEADLINE", headline())
+readme = fill(readme, "PV2-DEDUP", dedup())
 readme = fill(readme, "PV2-DETECT", "CUSUM, 20 monitored runs:\n\n" + detection("cusum", 20)
               + "\n\nEWMA, 20 monitored runs:\n\n" + detection("ewma", 20))
 readme = fill(readme, "PV2-DEFAULTS", defaults())
-readme = fill(readme, "PV2-CALIBRATE", calibrate())
 readme = fill(readme, "PV2-CONFIRM", confirm())
 open("README.md", "w").write(readme)
 print("README v2 tables filled")
