@@ -4,13 +4,13 @@
 \alias{firstSignal}
 \title{First run that signals on a control chart}
 \usage{
-firstSignal(chart, after = max(which(chart$baseline)))
+firstSignal(chart, after = NULL)
 }
 \arguments{
 \item{chart}{A chart from \code{\link[=driftChart]{driftChart()}}.}
 
-\item{after}{Ignore signals at or before this run index. Defaults to
-the last baseline run.}
+\item{after}{Ignore signals at or before this run index. \code{NULL} (the
+default) uses the last baseline run.}
 }
 \value{
 The index of the first signalling run, or \code{NA} if none.
@@ -19,7 +19,7 @@ The index of the first signalling run, or \code{NA} if none.
 First run that signals on a control chart
 }
 \examples{
-ch <- driftChart(c(1, 1.01, 0.99, 1, 1.02, 0.5), baseline = 5,
-                 method = "shewhart")
+ch <- driftChart(c(rep(c(1, 1.01, 0.99, 1.02), 5), 0.5),
+                 baseline = 20, method = "shewhart")
 firstSignal(ch)
 }

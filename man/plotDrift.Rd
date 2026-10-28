@@ -13,13 +13,14 @@ plotDrift(chart, title = NULL)
 }
 \value{
 A \code{ggplot} object: the chart statistic by run, its limits, the
-baseline runs shaded and signalling runs in red.
+baseline runs shaded and signalling runs in red. EWMA and CUSUM charts
+start after the baseline, so their baseline runs show no statistic.
 }
 \description{
 Plot a control chart
 }
 \examples{
-ch <- driftChart(c(1, 1.01, 0.99, 1, 1.02, 0.9, 0.85), baseline = 5,
-                 method = "ewma")
+ch <- driftChart(c(rep(c(1, 1.01, 0.99, 1.02), 5), 0.9, 0.85),
+                 baseline = 20, method = "ewma")
 plotDrift(ch)
 }

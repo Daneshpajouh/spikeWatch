@@ -10,7 +10,8 @@ runMetrics(
   expected = "expected",
   detect = 0,
   lodProb = 0.95,
-  minAmount = 0
+  minAmount = "auto",
+  baseline = NULL
 )
 }
 \arguments{
@@ -30,11 +31,21 @@ above this threshold and not \code{NA}.}
 \code{intercept}, \code{r2}, \code{residSD} and \code{offset}. Spikes near the detection
 limit are seen only when their count happens to be high, which pulls
 the slope down and ties it to depth. Choosing spikes by their known
-amount, not by what was measured, avoids that. Set it to an amount
-every good run detects; \code{lod} always uses all spikes.}
+amount, not by what was measured, avoids that. \code{"auto"} (the default)
+takes the smallest expected amount at and above which every spike is
+detected in every run named by \code{baseline}; a number fixes it. When no
+amount qualifies, the fit figures are \code{NA} with a warning rather than
+fitted on a biased range. \code{lod} always uses all spikes.}
+
+\item{baseline}{Runs used to choose \code{minAmount = "auto"}: a single
+number is the count of leading runs; otherwise run indices, run names
+or a logical vector. \code{NULL} uses every run, so one failed run raises
+the range for all; name runs known to be good instead.}
 }
 \value{
-A \code{data.frame} with one row per sample.
+A \code{data.frame} with one row per sample. Its \code{"minAmount"}
+attribute holds the amount used, to pass on to
+\code{\link[=plotDoseResponse]{plotDoseResponse()}}.
 }
 \description{
 For each sample, compares the measured spike-in values with their
@@ -48,19 +59,27 @@ values follow the known amounts in proportion; below 1 means
 compression. Needs at least three detected spikes and more than one
 distinct expected amount, otherwise \code{NA}. Only spikes with an expected
 amount of at least \code{minAmount} enter the fit (see below).
-\item \code{residSD}: standard deviation of the fit residuals, a precision figure.
+\item \code{residSD}: residual standard error of the fit (divisor n - 2), a
+precision figure.
 \item \code{offset}: median of log2 measured minus log2 expected, over the same
 spikes as the fit. It moves with sequencing depth or instrument
 response, and is defined even when all spikes in a run share one
 amount.
 \item \code{lod}: the expected amount at which a spike is detected with
 probability \code{lodProb}, from a logistic fit of detection on log2
-expected amount. When every spike is detected, \code{lod} is the smallest
-expected amount and \code{lodCensored} is \code{TRUE}: the true limit is at or
-below it. When the fit fails or its slope is not positive, \code{lod} is
-the smallest amount above which every spike was detected. The same
-rule applies when detected and missed spikes do not overlap, where the
-logistic fit has no finite estimate.
+expected amount. It is given only when the data can support it, and
+\code{lodStatus} says why when it is \code{NA}:
+\code{"fit"} (the fit converged with a positive slope and the point lies
+inside the tested amounts), \code{"all_detected"} (every spike was seen, so
+the limit is at or below the smallest amount but not estimated),
+\code{"none_detected"}, \code{"separated"} (detected and missed spikes do not
+overlap, so the fit has no finite estimate), \code{"fit_failed"} (no
+convergence, or a slope that is not positive) and \code{"outside_range"}
+(the fitted point lies outside the tested amounts; it is never
+clamped).
+\item \code{allDetectedFrom}: the smallest expected amount at and above which
+every spike was detected, an empirical figure reported for every run
+and never a substitute for \code{lod}.
 }
 }
 \examples{

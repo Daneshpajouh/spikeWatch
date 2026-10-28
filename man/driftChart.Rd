@@ -7,7 +7,7 @@
 driftChart(
   x,
   metric = NULL,
-  baseline = 10L,
+  baseline = 20L,
   method = c("ewma", "cusum", "shewhart"),
   lambda = 0.2,
   L = 3,
@@ -23,7 +23,8 @@ from \code{\link[=runMetrics]{runMetrics()}} together with \code{metric}.}
 \item{metric}{Column of \code{x} to chart when \code{x} is a \code{data.frame}.}
 
 \item{baseline}{Either the number of leading runs that form the
-baseline, or their indices.}
+baseline, or their indices. Fewer than 20 non-missing baseline runs
+give a warning: limits from a short baseline are themselves uncertain.}
 
 \item{method}{One of \code{"ewma"}, \code{"cusum"} or \code{"shewhart"}.}
 
@@ -45,7 +46,10 @@ Tracks a per-run figure from \code{\link[=runMetrics]{runMetrics()}}, in run ord
 behaviour over a baseline of runs known to be good. The centre is the
 baseline mean. The spread \code{sigma} is estimated from the baseline by the
 average moving range divided by 1.128 (\code{"mr"}, the usual estimate for
-individual values) or by the standard deviation (\code{"sd"}).
+individual values) or by the standard deviation (\code{"sd"}). Moving ranges
+are taken only between baseline runs that are next to each other in run
+order and both observed, so a gap or a missing run never makes two
+distant runs neighbours.
 }
 \details{
 \itemize{
@@ -58,12 +62,19 @@ decision interval \code{h} sigma. \code{stat} is the larger of the upper and
 lower sums.
 }
 
+The EWMA and CUSUM statistics start fresh at the first run after the
+last baseline run (the EWMA at the centre, the CUSUM sums at zero), so
+monitoring never inherits what the baseline runs built up. Their rows up
+to the last baseline run have \code{stat}, \code{lower} and \code{upper} set to \code{NA}
+and never signal. The Shewhart chart has no memory and is shown for
+every run.
+
 Runs with a missing value are carried: the chart statistic does not
 move and the run cannot signal.
 }
 \examples{
 set.seed(1)
 x <- c(rnorm(20, 1, 0.02), rnorm(10, 0.95, 0.02))
-ch <- driftChart(x, baseline = 15, method = "ewma")
+ch <- driftChart(x, baseline = 20, method = "ewma")
 firstSignal(ch)
 }

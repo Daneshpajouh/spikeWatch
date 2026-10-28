@@ -4,7 +4,14 @@
 \alias{plotDoseResponse}
 \title{Plot measured against expected spike-in amounts for one run}
 \usage{
-plotDoseResponse(se, run = 1L, assay = 1L, expected = "expected", detect = 0)
+plotDoseResponse(
+  se,
+  run = 1L,
+  assay = 1L,
+  expected = "expected",
+  detect = 0,
+  minAmount = 0
+)
 }
 \arguments{
 \item{se}{A \code{SummarizedExperiment} with an expected-amount assay.}
@@ -16,6 +23,11 @@ plotDoseResponse(se, run = 1L, assay = 1L, expected = "expected", detect = 0)
 \item{expected}{Name of the expected-amount assay.}
 
 \item{detect}{Detection threshold, as in \code{\link[=runMetrics]{runMetrics()}}.}
+
+\item{minAmount}{The fit range, as used by \code{\link[=runMetrics]{runMetrics()}}: the line is
+fitted to detected spikes at or above it, and a dashed line marks it.
+Pass \code{attr(metrics, "minAmount")} to draw the same fit; \code{NA} draws
+no line.}
 }
 \value{
 A \code{ggplot} object. Undetected spikes are drawn at the bottom
@@ -27,5 +39,6 @@ Plot measured against expected spike-in amounts for one run
 \examples{
 set.seed(1)
 runs <- simulateSpikeRuns(erccDesign(), nRuns = 2)
-plotDoseResponse(runs, 1)
+m <- runMetrics(runs)
+plotDoseResponse(runs, 1, minAmount = attr(m, "minAmount"))
 }
