@@ -1,0 +1,134 @@
+---
+title: "Run accuracy and drift from spike-in truth"
+author: "Amirhossein Daneshpajouh"
+output:
+  BiocStyle::html_document:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Run accuracy and drift from spike-in truth}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+# Why
+
+Spike-in controls are added at amounts we know. Most pipelines use them
+once, to normalise or to check one experiment. spikeWatch uses the same
+known amounts to score every run, the same way every time, and to watch
+those scores across runs so that a run that drifts is flagged.
+
+The known amounts live in an assay beside the measurements. That one idea
+covers both kinds of design:
+
+* feature-level designs, where each spike has its own amount, such as the
+  ERCC RNA mixes;
+* sample-level designs, where the amount changes from sample to sample,
+  such as a UPS1 or peptide dilution series.
+
+# Installation
+
+```{r install, eval = FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("spikeWatch")
+```
+
+# A series of runs
+
+`simulateSpikeRuns()` makes count data for runs of one ERCC mix, with
+sequencing depth that changes from run to run. Here the dose response
+compresses from run 31 on: high spikes read a little lower and low spikes
+a little higher.
+
+```{r simulate}
+library(spikeWatch)
+ercc <- erccDesign()
+runs <- simulateSpikeRuns(ercc, nRuns = 40, mix = "Mix1", driftAt = 31,
+                          driftType = "slope", driftSize = -0.1,
+                          seed = 7)
+runs
+```
+
+The experiment already has its truth attached. For your own data, build or
+load a design and call `addTruth()`; see the next section.
+
+# Per-run accuracy
+
+```{r metrics}
+m <- runMetrics(runs, minAmount = 1)
+head(m, 3)
+```
+
+`slope` near 1 means the measured values follow the known amounts.
+`minAmount` keeps spikes near the detection limit out of the fit: they are
+seen only when their count happens to be high, which would pull the slope
+down and tie it to depth. The detection limit `lod` always uses every
+spike.
+
+```{r doseplot, fig.width = 6, fig.height = 4}
+plotDoseResponse(runs, 1)
+```
+
+# Drift across runs
+
+The first 20 runs are the baseline. A CUSUM chart on the slope flags the
+drift:
+
+```{r chart, fig.width = 6, fig.height = 3.5}
+ch <- driftChart(m, "slope", baseline = 20, method = "cusum")
+firstSignal(ch)
+plotDrift(ch, "Dose-response slope, CUSUM")
+```
+
+`driftChart()` also offers EWMA and Shewhart charts, and can chart any
+column of `runMetrics()`: `residSD` for precision, `offset` for overall
+response, `lod` for sensitivity at the low end.
+
+# Your own data
+
+Rows of the experiment must be named by spike identifier, and `colData`
+must say which mix each sample received:
+
+```{r own}
+library(SummarizedExperiment)
+counts <- assay(runs, "counts")
+se <- SummarizedExperiment(list(counts = counts),
+                           colData = DataFrame(mix = rep("Mix1", 40)))
+se <- addTruth(se, ercc, mix = "mix")
+identical(assay(se, "expected"), assay(runs, "expected"))
+```
+
+For a dilution series, give each sample a dose and the design one amount
+per spike:
+
+```{r dose}
+d <- spikeDesign(c("p1", "p2", "p3"), amount = c(1, 1, 1), unit = "fmol")
+x <- matrix(c(10, 12, 9, 100, 118, 95), nrow = 3,
+            dimnames = list(c("p1", "p2", "p3"), c("low", "high")))
+s <- SummarizedExperiment(list(area = x),
+                          colData = DataFrame(fmol = c(0.5, 5)))
+s <- addTruth(s, d, dose = "fmol")
+runMetrics(s)[, c("run", "nDetected", "offset")]
+```
+
+# Fold-change accuracy
+
+With samples from two mixes, `ratioAccuracy()` compares measured and
+expected log2 ratios, spike by spike and per expected ratio:
+
+```{r ratio}
+a <- simulateSpikeRuns(ercc, nRuns = 3, mix = "Mix1", seed = 1)
+b <- simulateSpikeRuns(ercc, nRuns = 3, mix = "Mix2", seed = 2)
+colnames(b) <- paste0("b", 1:3)
+ratioAccuracy(cbind(a, b), 1:3, 4:6)$summary
+```
+
+# Session information
+
+```{r session}
+sessionInfo()
+```

@@ -1,0 +1,63 @@
+          scenario            detector   n falseAlarm21to30 falseAlarm21to40
+       compression            B1_total 200            0.095            1.000
+       compression           B2_spread 200            0.070            1.000
+       compression              offset 200            0.105            0.435
+       compression             residSD 200            0.120            0.195
+       compression               slope 200            0.085            1.000
+       compression union_slope_residSD 200            0.190            1.000
+ compression_small            B1_total 200            0.095            0.685
+ compression_small           B2_spread 200            0.070            0.960
+ compression_small              offset 200            0.105            0.300
+ compression_small             residSD 200            0.120            0.205
+ compression_small               slope 200            0.085            1.000
+ compression_small union_slope_residSD 200            0.190            1.000
+              null            B1_total 200            0.095            0.205
+              null           B2_spread 200            0.070            0.190
+              null              offset 200            0.105            0.205
+              null             residSD 200            0.120            0.195
+              null               slope 200            0.085            0.170
+              null union_slope_residSD 200            0.190            0.320
+    precision_loss            B1_total 200            0.095            0.200
+    precision_loss           B2_spread 200            0.070            0.215
+    precision_loss              offset 200            0.105            0.210
+    precision_loss             residSD 200            0.120            1.000
+    precision_loss               slope 200            0.085            0.420
+    precision_loss union_slope_residSD 200            0.190            1.000
+  sensitivity_loss            B1_total 200            0.095            1.000
+  sensitivity_loss           B2_spread 200            0.070            0.950
+  sensitivity_loss              offset 200            0.105            1.000
+  sensitivity_loss             residSD 200            0.120            0.800
+  sensitivity_loss               slope 200            0.085            0.250
+  sensitivity_loss union_slope_residSD 200            0.190            0.825
+ detectedBy40 medianDelay
+   1.00000000         2.0
+   1.00000000         1.0
+   0.36871508         5.0
+   0.08522727         5.0
+   1.00000000         0.0
+   1.00000000         0.0
+   0.65193370         5.0
+   0.95698925         3.0
+   0.21787709         5.0
+   0.09659091         4.0
+   1.00000000         1.0
+   1.00000000         1.0
+   0.12154696         2.0
+   0.12903226         3.5
+   0.11173184         2.5
+   0.08522727         2.0
+   0.09289617         5.0
+   0.16049383         3.0
+   0.11602210         5.0
+   0.15591398         6.0
+   0.11731844         2.0
+   1.00000000         0.0
+   0.36612022         4.0
+   1.00000000         0.0
+   1.00000000         2.0
+   0.94623656         3.0
+   1.00000000         2.0
+   0.77272727         3.5
+   0.18032787         4.0
+   0.78395062         3.0
+R R version 4.6.0 (2026-04-24) spikeWatch 0.99.0 

@@ -15,8 +15,9 @@
 #'
 #' Drift types, applied from run `driftAt` on:
 #' * `"slope"`: `slope_j` changes by `driftSize` (compression when
-#'   negative). Because the slope turns about the median amount, total
-#'   spike counts barely move.
+#'   negative). The slope turns about the median amount, so middle spikes
+#'   keep their level while high spikes fall and low spikes rise. Total
+#'   spike counts still fall, because the highest spikes dominate them.
 #' * `"offset"`: `depth_j` changes by `driftSize`, a loss or gain of
 #'   sensitivity across all spikes.
 #' * `"noise"`: the noise standard deviation grows by `driftSize`.

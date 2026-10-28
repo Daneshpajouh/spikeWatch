@@ -1,0 +1,1 @@
+nice -n 10 Rscript validation/v1_planted_drift.R > validation/v1.log 2>&1  64.68s user 1.21s system 87% cpu 1:15.38 total
