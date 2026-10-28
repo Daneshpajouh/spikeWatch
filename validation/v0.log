@@ -1,0 +1,4 @@
+ minAmount meanSlope sdSlope corWithDepth
+         0     0.985  0.0150        0.226
+         1     1.003  0.0102       -0.182
+        10     1.001  0.0123       -0.038
