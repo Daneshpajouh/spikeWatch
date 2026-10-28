@@ -59,15 +59,19 @@ load a design and call `addTruth()`; see the next section.
 # Per-run accuracy
 
 ```{r metrics}
-m <- runMetrics(runs, minAmount = 1)
+m <- runMetrics(runs, baseline = 20)
 head(m, 3)
+attr(m, "minAmount")
 ```
 
 `slope` near 1 means the measured values follow the known amounts.
 `minAmount` keeps spikes near the detection limit out of the fit: they are
 seen only when their count happens to be high, which would pull the slope
-down and tie it to depth. The detection limit `lod` always uses every
-spike.
+down and tie it to depth. By default it is the smallest amount at and
+above which every spike was seen in every baseline run, so the fit range
+is chosen from good runs only and stays the same for every run. The
+detection limit `lod` always uses every spike, and is `NA` with a reason
+in `lodStatus` when the data cannot support it.
 
 ```{r doseplot, fig.width = 6, fig.height = 4}
 plotDoseResponse(runs, 1)
@@ -87,6 +91,32 @@ plotDrift(ch, "Dose-response slope, CUSUM")
 `driftChart()` also offers EWMA and Shewhart charts, and can chart any
 column of `runMetrics()`: `residSD` for precision, `offset` for overall
 response, `lod` for sensitivity at the low end.
+
+The default limits (`h = 5` for CUSUM, `L = 3` for EWMA) treat the
+baseline's centre and spread as exact. With 20 baseline runs they are
+not, and the chart gives more false alarms than those limits suggest.
+`calibrateChart()` sets the limit for a stated false-alarm probability
+over a stated number of monitored runs, by a bootstrap that re-estimates
+the centre and spread each time:
+
+```{r calibrate, fig.width = 6, fig.height = 3.5}
+set.seed(2)
+h <- calibrateChart(m, "slope", baseline = 20, method = "cusum",
+                    alpha = 0.05, horizon = 20, B = 1000)
+c(h)
+ch2 <- driftChart(m, "slope", baseline = 20, method = "cusum", h = h)
+firstSignal(ch2)
+```
+
+`profileMetrics()` gives the figures a lab could chart without the known
+amounts, from the profile of the same spikes over the baseline runs. They
+are the fair comparison for the truth-based figures, and the package's
+validation reports both.
+
+```{r profile}
+p <- profileMetrics(runs, baseline = 20)
+round(tail(p$profileSlope), 3)
+```
 
 # Your own data
 
@@ -128,6 +158,17 @@ b <- simulateSpikeRuns(ercc, nRuns = 3, mix = "Mix2")
 colnames(b) <- paste0("b", 1:3)
 ratioAccuracy(cbind(a, b), 1:3, 4:6)$summary
 ```
+
+# Related packages
+
+Other Bioconductor packages work with spike-ins or run-to-run quality
+control. erccdashboard scores one experiment against the ERCC ratio
+mixtures (AUC, LODR and ratio bias between two samples). MSstatsQC charts
+per-peptide run metrics such as retention time and peak area over time,
+with X, moving range and CUSUM charts and change point estimation, from a
+guide set of good runs. Anaquin analyses sequins. spikeWatch scores each
+run against the known spike amounts and charts those scores, with limits
+calibrated for a short baseline; it does not replace a full QC platform.
 
 # Session information
 
