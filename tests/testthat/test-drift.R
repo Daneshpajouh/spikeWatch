@@ -31,6 +31,9 @@ test_that("EWMA starts after the last baseline run when runs are skipped", {
     expect_true(all(is.na(ch$stat[1:5])))
     expect_false(any(ch$signal[1:5]))
     expect_equal(ch$stat[6], 0.2 * 50 + 0.8 * 0.5)
+    # Moving ranges stop at the gap: |1 - 0| twice, so sigma is 1 / 1.128,
+    # and run 6 takes the first-step half-width, 3 sigma sqrt(0.2 / 1.8 * 0.36).
+    expect_equal(ch$upper[6], 0.5 + 0.6 / 1.128)
 })
 
 test_that("CUSUM accumulates in sigma units from the first monitoring run", {

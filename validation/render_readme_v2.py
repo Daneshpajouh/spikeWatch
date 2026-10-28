@@ -43,6 +43,34 @@ def verdict(r):
     return r["verdict"]
 
 
+def off_side(out, family, det, chart, H):
+    """"high" or "low" when this side's false-alarm interval on fresh null seeds excludes 5 percent, else "".
+
+    The same test as fap_flag in pv2_2_score.R, kept for one side: calibrated limits, no drift.
+    """
+    key = (out, family, det, chart, H)
+    if key not in _SIDE:
+        r = [r for r in rows("scores.csv", out) if r["family"] == family and r["detector"] == det
+             and r["chart"] == chart and r["H"] == H and r["limits"] == "calibrated" and r["scenario"] == "null"]
+        if len(r) != 1:
+            raise SystemExit("no single null row for %s" % (key,))
+        lo, hi = float(r[0]["ci_low"]), float(r[0]["ci_high"])
+        _SIDE[key] = "high" if lo > 0.05 else "low" if hi < 0.05 else ""
+    return _SIDE[key]
+
+
+_SIDE = {}
+
+
+def off_count(sides):
+    """"0 of 12", or "3 of 12 (2 high, 1 low)"."""
+    hi, lo = sides.count("high"), sides.count("low")
+    if not hi + lo:
+        return "0 of %d" % len(sides)
+    parts = (["%d high" % hi] if hi else []) + (["%d low" % lo] if lo else [])
+    return "%d of %d (%s)" % (hi + lo, len(sides), ", ".join(parts))
+
+
 def gains(out=OUT):
     """Each pair, drift and chart the gain rule claims, with the range of each side's false-alarm rate on fresh null
     seeds over the families and horizons, and the count of those cells where either side's false-alarm interval
@@ -58,11 +86,17 @@ def gains(out=OUT):
         fw = sorted(float(r["fap_without"]) for r in cs)
         body.append([PAIRS[key[0]], DRIFT_NAMES[key[1]], key[2].upper(),
                      "%s to %s" % (pct1(ft[0]), pct1(ft[-1])), "%s to %s" % (pct1(fw[0]), pct1(fw[-1])),
-                     "%d of %d" % (sum(r["fap_flag"] == "TRUE" for r in cs), len(cs))])
+                     off_count([off_side(out, r["family"], r["truth"], r["chart"], r["H"]) for r in cs]),
+                     off_count([off_side(out, r["family"], r["without"], r["chart"], r["H"]) for r in cs])])
+        flagged = sum(r["fap_flag"] == "TRUE" for r in cs)
+        either = sum(bool(off_side(out, r["family"], r["truth"], r["chart"], r["H"])
+                          or off_side(out, r["family"], r["without"], r["chart"], r["H"])) for r in cs)
+        if flagged != either:
+            raise SystemExit("per-side flags disagree with fap_flag for %s" % (key,))
     if not body:
         return "No pair, drift and chart meets the gain rule here."
     return table(["Pair", "Drift", "Chart", "False alarm, with truth", "False alarm, without",
-                  "Cells off the 5% target"], body)
+                  "Off the 5% target, with truth", "Off the 5% target, without"], body)
 
 
 def gain_cells(out, pairs):
@@ -70,13 +104,15 @@ def gain_cells(out, pairs):
     claimed = {(r["pair"], r["scenario"], r["chart"]) for r in rows("headline.csv", out)
                if r["headline"] == "gain" and r["pair"] in pairs}
     body = [[PAIRS[r["pair"]], DRIFT_NAMES[r["scenario"]], r["chart"].upper(), r["family"], r["H"],
-             pct(r["detect_truth"]), pct(r["detect_without"]), pct1(r["fap_truth"]), pct1(r["fap_without"]),
-             "yes" if r["fap_flag"] == "TRUE" else "no"]
+             pct1(r["detect_truth"]), pct1(r["detect_without"]), pct1(r["fap_truth"]), pct1(r["fap_without"]),
+             off_side(out, r["family"], r["truth"], r["chart"], r["H"]) or "no",
+             off_side(out, r["family"], r["without"], r["chart"], r["H"]) or "no"]
             for r in rows("comparisons.csv", out) if (r["pair"], r["scenario"], r["chart"]) in claimed]
     if not body:
         return "None."
     return table(["Pair", "Drift", "Chart", "Family", "Runs", "Detected, with truth", "Detected, without",
-                  "False alarm, with truth", "False alarm, without", "Off the 5% target"], body)
+                  "False alarm, with truth", "False alarm, without", "Off target, with truth",
+                  "Off target, without"], body)
 
 
 def table(head, body):
@@ -166,21 +202,39 @@ def defaults():
                   "EWMA L = 3, 10 runs", "EWMA L = 3, 20 runs"], body)
 
 
+def null_rates(out):
+    """The evaluation's false-alarm rate on fresh null seeds for each family, pair, chart and horizon."""
+    return {(r["family"], r["pair"], r["chart"], r["H"]): (pct1(r["fap_truth"]), pct1(r["fap_without"]))
+            for r in rows("comparisons.csv", out)}
+
+
+def correlated_null():
+    """Family F5 (correlated runs), no drift, default limits: the share of series with any false alarm."""
+    get = {(r["detector"], r["chart"], r["H"]): r for r in rows("scores.csv")
+           if r["family"] == "F5" and r["limits"] == "default" and r["scenario"] == "null"}
+    body = [[DET_NAMES.get(d, d)] + [pct1(get[(d, ch, H)]["rate"]) for ch in ("cusum", "ewma") for H in ("10", "20")]
+            for d in DETS]
+    return table(["Detector (F5, no drift)", "CUSUM h = 5, 10 runs", "CUSUM h = 5, 20 runs",
+                  "EWMA L = 3, 10 runs", "EWMA L = 3, 20 runs"], body)
+
+
 def confirm():
     try:
         cf = rows("confirm.csv")
     except FileNotFoundError:
         return "Not yet run."
+    fa = null_rates(OUT)
     body = []
     for r in cf:
         body.append([r["family"], PAIRS[r["pair"]], DRIFT_NAMES[r["scenario"]],
-                     r["chart"].upper(), r["H"], pct(r["detect_truth"]),
-                     pct(r["detect_without"]),
+                     r["chart"].upper(), r["H"], pct1(r["detect_truth"]),
+                     pct1(r["detect_without"]),
                      "%+.1f (%+.1f to %+.1f)" % tuple(100 * float(r[k]) for k in
                                                        ("diff", "ci_low", "ci_high")),
-                     verdict(r)])
+                     verdict(r)] + list(fa[(r["family"], r["pair"], r["chart"], r["H"])]))
     return table(["Family", "Pair", "Drift", "Chart", "Runs", "With truth", "Without",
-                  "Difference, points (95% interval)", "Verdict"], body)
+                  "Difference, points (95% interval)", "Cell verdict",
+                  "False alarm, with truth (evaluation)", "False alarm, without (evaluation)"], body)
 
 
 def addendum2():
@@ -207,21 +261,28 @@ def addendum2():
                                 ("UT", "U-T"), ("UF", "U-F"), ("UF2", "U-F2 (B3 or B4)"))])
     try:
         cf = rows("confirm2.csv", OUT_A2)
+        fa = null_rates(OUT_A2)
         conf = table(["Family", "Pair", "Chart", "Runs", "With truth", "Without",
-                      "Difference, points (95% interval)", "Verdict"],
+                      "Difference, points (95% interval)", "Cell verdict",
+                      "False alarm, with truth (evaluation)", "False alarm, without (evaluation)"],
                      [[r["family"], PAIRS[r["pair"]], r["chart"].upper(), r["H"],
-                       pct(r["detect_truth"]), pct(r["detect_without"]),
+                       pct1(r["detect_truth"]), pct1(r["detect_without"]),
                        "%+.1f (%+.1f to %+.1f)" % tuple(100 * float(r[k]) for k in ("diff", "ci_low", "ci_high")),
-                       verdict(r)] for r in cf])
+                       verdict(r)] + list(fa[(r["family"], r["pair"], r["chart"], r["H"])]) for r in cf])
     except FileNotFoundError:
         conf = "Not yet run."
     return (out + "\n\nEach gain the rule claims here, with the range of each side's false-alarm rate on fresh "
-            "null seeds over the six families and two horizons, and the number of those cells where either side's "
-            "false-alarm interval excludes the 5% target:\n\n" + gains(OUT_A2)
+            "null seeds over the six families and two horizons, and, for each side, the number of those cells where its "
+            "false-alarm interval lies above (high) or below (low) the 5% target:\n\n" + gains(OUT_A2)
             + "\n\nCells of the claimed gain on the addendum's own pairs (C5, C6), each family and horizon:\n\n"
             + gain_cells(OUT_A2, ("C5", "C6"))
             + "\n\nDetection in the base family (F0), CUSUM, 20 monitored runs, calibrated limits:\n\n"
-            + rates + "\n\nConfirmation on untouched seeds 910001 to 910400, precision loss:\n\n" + conf)
+            + rates + "\n\nConfirmation on untouched seeds 910001 to 910400, precision loss. " + CONFIRM_NOTE + "\n\n" + conf)
+
+
+CONFIRM_NOTE = ("Each row is one cell's verdict; the five-of-six family rule is not applied here. The two "
+                "false-alarm columns repeat the evaluation's rates on its own null seeds for the same family, pair, "
+                "chart and horizon; the confirmation did not estimate them again.")
 
 
 def fill(text, tag, body):
@@ -233,14 +294,16 @@ def fill(text, tag, body):
 
 readme = open("README.md").read()
 readme = fill(readme, "PV2-HEADLINE", headline() + "\n\nEach gain the rule claims in this table, with the range "
-              "of each side's false-alarm rate on fresh null seeds over the six families and two horizons, and the "
-              "number of those cells where either side's false-alarm interval excludes the 5% target:\n\n" + gains())
+              "of each side's false-alarm rate on fresh null seeds over the six families and two horizons, and, for each "
+              "side, the number of those cells where its false-alarm interval lies above (high) or below (low) the 5% "
+              "target:\n\n" + gains())
 readme = fill(readme, "PV2-DEDUP", dedup())
 readme = fill(readme, "PV2-REAL", real_v2())
 readme = fill(readme, "PV2-A2", addendum2())
 readme = fill(readme, "PV2-DETECT", "CUSUM, 20 monitored runs:\n\n" + detection("cusum", 20)
               + "\n\nEWMA, 20 monitored runs:\n\n" + detection("ewma", 20))
 readme = fill(readme, "PV2-DEFAULTS", defaults())
-readme = fill(readme, "PV2-CONFIRM", confirm())
+readme = fill(readme, "PV2-F5NULL", correlated_null())
+readme = fill(readme, "PV2-CONFIRM", CONFIRM_NOTE + "\n\n" + confirm())
 open("README.md", "w").write(readme)
 print("README v2 tables filled")

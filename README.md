@@ -1,6 +1,6 @@
 # spikeWatch
 
-spikeWatch scores every run against the known amounts of its spike-in controls, and charts those scores across runs to show drift. The charts are exploratory, not validated run-release alarms: at the default limits with a 20-run baseline, 15.7% to 35.2% of simulated series with no drift raised a false alarm within 20 monitored runs (Default limits, below), so set and check the limits on your own runs before acting on an alarm. It is an R package built on SummarizedExperiment.
+spikeWatch scores every run against the known amounts of its spike-in controls, and charts those scores across runs to show drift. The charts are exploratory, not validated run-release alarms: at the default limits with a 20-run baseline, 15.7% to 35.2% of simulated series with no drift raised a false alarm within 20 monitored runs in the base simulation family (Default limits, below), and 36.7% to 87.3% when runs were correlated from day to day (Correlated runs, below), so set and check the limits on your own runs before acting on an alarm. It is an R package built on SummarizedExperiment.
 
 The known amounts sit in an assay beside the measurements, cell by cell. That one idea covers feature-level designs, where each spike has its own amount (the ERCC RNA mixes), and sample-level designs, where the amount changes from sample to sample (a peptide or UPS1 dilution series). Per run, spikeWatch reports the dose-response slope and fit, the residual spread, the overall response and the detection limit. Between two groups it reports fold-change accuracy against the designed ratios. Across runs it puts any of those figures on a Shewhart, EWMA or CUSUM chart with limits from a baseline of good runs.
 
@@ -47,7 +47,7 @@ Read at source on 2026-10-27:
 - Panorama AutoQC (Bereman and others, Journal of Proteome Research 15(12), 4763-4769, 2016, doi:10.1021/acs.jproteome.6b00744): an automated pipeline that extracts "identification-free metrics" from targeted peptides and shows them with "Levey-Jennings and Pareto plots" across instruments.
 - Anaquin (Bioconductor): analysis of sequins, "synthetic sequencing spike-in controls".
 
-Truth-based QC and control charts are not new. What spikeWatch adds is narrower: one R object model in which every run is scored against the known spike amounts, for RNA and proteomics designs alike. Its validation compares it with the best charts we could build without the known amounts. In simulation, under the frozen rule, the amounts gave one gain that was not confirmed on fresh seeds (EWMA, compression -0.05) and no better alarm elsewhere; what they add is per-run figures in units a lab can read. Its ERCC design table comes from erccdashboard.
+Truth-based QC and control charts are not new. What spikeWatch adds is narrower: one R object model in which every run is scored against the known spike amounts, for RNA and proteomics designs alike. Its validation compares it with the best charts we could build without the known amounts. In simulation, under the frozen rule, the amounts gave one gain, not yet tested on fresh confirmation seeds (EWMA, compression -0.05), and no better alarm elsewhere; what they add is per-run figures in units a lab can read. Its ERCC design table comes from erccdashboard.
 
 ## Validation
 
@@ -55,13 +55,13 @@ Two rounds, each with its plan, detectors and rule for claiming a gain committed
 
 ## Validation, version 2 (current code)
 
-These results were computed at commit d7dfeb0. That commit also held `calibrateChart()`, which is not in this release (see "Setting limits from a short baseline" below); to rerun `validation/pv2_2_score.R` as it ran, use the `calibrate-chart` branch.
+These results were computed at commit d7dfeb0. That commit also held `calibrateChart()`, which is not in this release (see "Setting limits from a short baseline" below); to rerun `validation/pv2_2_score.R` as it ran, use the `calibrate-chart` branch. Since d7dfeb0 the package's R code has changed only in help text and comments, apart from removing `calibrateChart()`; the validation scripts gained B4, C5 and C6 for addendum 2, whose outputs were committed at 5fb0966.
 
 Plan: `validation/PLAN_v2.md`, committed before any v2 number, with one dated addendum that corrected a sentence and changed no rule. Scripts `validation/pv2_*.R`; outputs `validation/out-v2/`; tables by `validation/render_readme_v2.py`.
 
-**Setup.** Simulated series of 40 runs of ERCC Mix 1, with run depth changing from run to run. Runs 1 to 20 are the baseline; runs 21 to 40 are monitored, and any planted drift starts at run 21. Six simulation families: the base model (F0), and five departures from the model the fit assumes: compression about the top amount (F1), overdispersed counts (F2), saturation of the highest spikes (F3), fixed per-spike biases (F4) and correlated runs (F5). Five drifts: compression (two sizes, and a ramp), sensitivity loss and precision loss.
+**Setup.** Simulated series of 40 runs of ERCC Mix 1, with run depth changing from run to run. Runs 1 to 20 are the baseline; runs 21 to 40 are monitored, and any planted drift starts at run 21; drift that starts later in the monitored stretch was not tested. Six simulation families: the base model (F0), and five departures from the model the fit assumes: compression about the top amount (F1), overdispersed counts (F2), saturation of the highest spikes (F3; above the 0.9 quantile of the log2 design amounts, the log2 mean is compressed by half. The plan says "90th percentile design amount"; for ERCC Mix 1 both readings give 937.5 attomol/uL, so the F3 series are the same under either), fixed per-spike biases (F4) and correlated runs (F5). Five drifts: compression (two sizes, and a ramp), sensitivity loss and precision loss.
 
-**What is compared.** The truth-based figures (`slope`, `residSD`, `offset`, with the fit range chosen from the baseline) against the best charts we could build without the known amounts: B1, the log2 total spike count; B2, the spread of log2 spike counts; and B3, the profile slope from `profileMetrics()`, which compares each run with the average profile of the same spikes over the baseline. U-T and U-F are the unions (slope or residSD; B2 or B3). Every detector is calibrated on separate null series to the same 5% chance of any false alarm within 10 or 20 monitored runs, so a detector cannot look sensitive by alarming more. This is an oracle calibration, from 1,000 null series per family, which no lab can do: it makes the comparison fair between detectors, not the limits usable in practice. Each comparison is a paired bootstrap interval on the difference in detection, over 400 series per drift and family.
+**What is compared.** The truth-based figures (`slope`, `residSD`, `offset`, with the fit range chosen from the baseline) against the best charts we could build without the known amounts: B1, the log2 total spike count; B2, the spread of log2 spike counts; and B3, the profile slope from `profileMetrics()`, which compares each run with the average profile of the same spikes over the baseline. U-T and U-F are the unions (slope or residSD; B2 or B3). Every detector is calibrated on separate null series to the same 5% chance of any false alarm within 10 or 20 monitored runs, so that no detector looks sensitive only by alarming more. The rates reached on fresh null seeds still differ between detectors, so each gain below is shown with both sides' false-alarm rates. This is an oracle calibration, from 1,000 null series per family, which no lab can do: it makes the comparison fair between detectors, not the limits usable in practice. Each comparison is a paired bootstrap interval on the difference in detection, over 400 series per drift and family.
 
 **The gain rule.** A gain or loss is claimed for a pair, drift and chart only when the interval excludes zero at both horizons in at least five of the six families.
 
@@ -89,14 +89,14 @@ Plan: `validation/PLAN_v2.md`, committed before any v2 number, with one dated ad
 | offset vs B1 | sensitivity loss | none (gain in 1, loss in 0) | none (gain in 2, loss in 0) |
 | offset vs B1 | precision loss | none (gain in 0, loss in 2) | none (gain in 0, loss in 2) |
 
-Each gain the rule claims in this table, with the range of each side's false-alarm rate on fresh null seeds over the six families and two horizons, and the number of those cells where either side's false-alarm interval excludes the 5% target:
+Each gain the rule claims in this table, with the range of each side's false-alarm rate on fresh null seeds over the six families and two horizons, and, for each side, the number of those cells where its false-alarm interval lies above (high) or below (low) the 5% target:
 
-| Pair | Drift | Chart | False alarm, with truth | False alarm, without | Cells off the 5% target |
-|---|---|---|---|---|---|
-| U-T vs U-F | precision loss | CUSUM | 3.6% to 6.9% | 3.2% to 6.1% | 3 of 12 |
-| residSD vs B2 | precision loss | CUSUM | 4.6% to 6.9% | 4.2% to 6.5% | 4 of 12 |
-| U-T vs U-F | precision loss | EWMA | 3.7% to 8.2% | 3.9% to 6.4% | 3 of 12 |
-| residSD vs B2 | precision loss | EWMA | 3.8% to 7.2% | 4.2% to 6.9% | 5 of 12 |
+| Pair | Drift | Chart | False alarm, with truth | False alarm, without | Off the 5% target, with truth | Off the 5% target, without |
+|---|---|---|---|---|---|---|
+| U-T vs U-F | precision loss | CUSUM | 3.6% to 6.9% | 3.2% to 6.1% | 2 of 12 (1 high, 1 low) | 1 of 12 (1 low) |
+| residSD vs B2 | precision loss | CUSUM | 4.6% to 6.9% | 4.2% to 6.5% | 2 of 12 (2 high) | 2 of 12 (2 high) |
+| U-T vs U-F | precision loss | EWMA | 3.7% to 8.2% | 3.9% to 6.4% | 3 of 12 (3 high) | 0 of 12 |
+| residSD vs B2 | precision loss | EWMA | 3.8% to 7.2% | 4.2% to 6.9% | 3 of 12 (3 high) | 2 of 12 (2 high) |
 <!-- /PV2-HEADLINE -->
 
 **Superseded in part.** The precision-loss gains in this table (U-T vs U-F, residSD vs B2) do not hold against the truth-free residual spread `profileResidSD`; see addendum 2 below.
@@ -144,32 +144,32 @@ F1 had the same detection rates as F0 in 16 of 16 sensitivity-loss cells and 16 
 | U-T vs U-F2 | sensitivity loss | none (gain in 0, loss in 3) | none (gain in 1, loss in 3) |
 | U-T vs U-F2 | precision loss | none (gain in 0, loss in 0) | none (gain in 0, loss in 0) |
 
-Each gain the rule claims here, with the range of each side's false-alarm rate on fresh null seeds over the six families and two horizons, and the number of those cells where either side's false-alarm interval excludes the 5% target:
+Each gain the rule claims here, with the range of each side's false-alarm rate on fresh null seeds over the six families and two horizons, and, for each side, the number of those cells where its false-alarm interval lies above (high) or below (low) the 5% target:
 
-| Pair | Drift | Chart | False alarm, with truth | False alarm, without | Cells off the 5% target |
-|---|---|---|---|---|---|
-| U-T vs U-F | precision loss | CUSUM | 3.6% to 6.9% | 3.2% to 6.1% | 3 of 12 |
-| residSD vs B2 | precision loss | CUSUM | 4.6% to 6.9% | 4.2% to 6.5% | 4 of 12 |
-| U-T vs U-F2 | compression -0.05 | EWMA | 3.7% to 8.2% | 2.7% to 6.2% | 6 of 12 |
-| U-T vs U-F | precision loss | EWMA | 3.7% to 8.2% | 3.9% to 6.4% | 3 of 12 |
-| residSD vs B2 | precision loss | EWMA | 3.8% to 7.2% | 4.2% to 6.9% | 5 of 12 |
+| Pair | Drift | Chart | False alarm, with truth | False alarm, without | Off the 5% target, with truth | Off the 5% target, without |
+|---|---|---|---|---|---|---|
+| U-T vs U-F | precision loss | CUSUM | 3.6% to 6.9% | 3.2% to 6.1% | 2 of 12 (1 high, 1 low) | 1 of 12 (1 low) |
+| residSD vs B2 | precision loss | CUSUM | 4.6% to 6.9% | 4.2% to 6.5% | 2 of 12 (2 high) | 2 of 12 (2 high) |
+| U-T vs U-F2 | compression -0.05 | EWMA | 3.7% to 8.2% | 2.7% to 6.2% | 3 of 12 (3 high) | 3 of 12 (3 low) |
+| U-T vs U-F | precision loss | EWMA | 3.7% to 8.2% | 3.9% to 6.4% | 3 of 12 (3 high) | 0 of 12 |
+| residSD vs B2 | precision loss | EWMA | 3.8% to 7.2% | 4.2% to 6.9% | 3 of 12 (3 high) | 2 of 12 (2 high) |
 
 Cells of the claimed gain on the addendum's own pairs (C5, C6), each family and horizon:
 
-| Pair | Drift | Chart | Family | Runs | Detected, with truth | Detected, without | False alarm, with truth | False alarm, without | Off the 5% target |
-|---|---|---|---|---|---|---|---|---|---|
-| U-T vs U-F2 | compression -0.05 | EWMA | F0 | 10 | 100% | 99% | 5.2% | 4.3% | no |
-| U-T vs U-F2 | compression -0.05 | EWMA | F0 | 20 | 100% | 98% | 5.3% | 3.1% | yes |
-| U-T vs U-F2 | compression -0.05 | EWMA | F1 | 10 | 100% | 99% | 5.2% | 4.3% | no |
-| U-T vs U-F2 | compression -0.05 | EWMA | F1 | 20 | 100% | 98% | 5.3% | 3.1% | yes |
-| U-T vs U-F2 | compression -0.05 | EWMA | F2 | 10 | 100% | 88% | 5.8% | 5.3% | no |
-| U-T vs U-F2 | compression -0.05 | EWMA | F2 | 20 | 100% | 85% | 5.5% | 4.1% | no |
-| U-T vs U-F2 | compression -0.05 | EWMA | F3 | 10 | 84% | 24% | 5.5% | 4.4% | no |
-| U-T vs U-F2 | compression -0.05 | EWMA | F3 | 20 | 90% | 27% | 3.7% | 2.7% | yes |
-| U-T vs U-F2 | compression -0.05 | EWMA | F4 | 10 | 100% | 99% | 6.9% | 4.6% | yes |
-| U-T vs U-F2 | compression -0.05 | EWMA | F4 | 20 | 100% | 99% | 8.2% | 4.9% | yes |
-| U-T vs U-F2 | compression -0.05 | EWMA | F5 | 10 | 84% | 57% | 7.2% | 6.2% | yes |
-| U-T vs U-F2 | compression -0.05 | EWMA | F5 | 20 | 88% | 61% | 4.8% | 3.9% | no |
+| Pair | Drift | Chart | Family | Runs | Detected, with truth | Detected, without | False alarm, with truth | False alarm, without | Off target, with truth | Off target, without |
+|---|---|---|---|---|---|---|---|---|---|---|
+| U-T vs U-F2 | compression -0.05 | EWMA | F0 | 10 | 100.0% | 99.0% | 5.2% | 4.3% | no | no |
+| U-T vs U-F2 | compression -0.05 | EWMA | F0 | 20 | 100.0% | 98.5% | 5.3% | 3.1% | no | low |
+| U-T vs U-F2 | compression -0.05 | EWMA | F1 | 10 | 100.0% | 99.0% | 5.2% | 4.3% | no | no |
+| U-T vs U-F2 | compression -0.05 | EWMA | F1 | 20 | 100.0% | 98.0% | 5.3% | 3.1% | no | low |
+| U-T vs U-F2 | compression -0.05 | EWMA | F2 | 10 | 99.8% | 88.2% | 5.8% | 5.3% | no | no |
+| U-T vs U-F2 | compression -0.05 | EWMA | F2 | 20 | 100.0% | 85.2% | 5.5% | 4.1% | no | no |
+| U-T vs U-F2 | compression -0.05 | EWMA | F3 | 10 | 83.5% | 24.0% | 5.5% | 4.4% | no | no |
+| U-T vs U-F2 | compression -0.05 | EWMA | F3 | 20 | 89.5% | 27.3% | 3.7% | 2.7% | no | low |
+| U-T vs U-F2 | compression -0.05 | EWMA | F4 | 10 | 100.0% | 99.0% | 6.9% | 4.6% | high | no |
+| U-T vs U-F2 | compression -0.05 | EWMA | F4 | 20 | 100.0% | 99.0% | 8.2% | 4.9% | high | no |
+| U-T vs U-F2 | compression -0.05 | EWMA | F5 | 10 | 84.5% | 57.0% | 7.2% | 6.2% | high | no |
+| U-T vs U-F2 | compression -0.05 | EWMA | F5 | 20 | 88.2% | 61.3% | 4.8% | 3.9% | no | no |
 
 Detection in the base family (F0), CUSUM, 20 monitored runs, calibrated limits:
 
@@ -182,45 +182,45 @@ Detection in the base family (F0), CUSUM, 20 monitored runs, calibrated limits:
 | U-F | 5% | 13% |
 | U-F2 (B3 or B4) | 3% | 100% |
 
-Confirmation on untouched seeds 910001 to 910400, precision loss:
+Confirmation on untouched seeds 910001 to 910400, precision loss. Each row is one cell's verdict; the five-of-six family rule is not applied here. The two false-alarm columns repeat the evaluation's rates on its own null seeds for the same family, pair, chart and horizon; the confirmation did not estimate them again.
 
-| Family | Pair | Chart | Runs | With truth | Without | Difference, points (95% interval) | Verdict |
-|---|---|---|---|---|---|---|---|
-| F0 | U-T vs U-F | CUSUM | 10 | 100% | 13% | +87.0 (+83.5 to +90.2) | gain |
-| F0 | U-T vs U-F | CUSUM | 20 | 100% | 16% | +84.2 (+80.8 to +87.5) | gain |
-| F0 | U-T vs U-F | EWMA | 10 | 100% | 14% | +86.5 (+83.0 to +89.5) | gain |
-| F0 | U-T vs U-F | EWMA | 20 | 100% | 18% | +81.5 (+77.5 to +85.3) | gain |
-| F0 | residSD vs B2 | CUSUM | 10 | 100% | 6% | +94.0 (+91.5 to +96.2) | gain |
-| F0 | residSD vs B2 | CUSUM | 20 | 100% | 6% | +93.8 (+91.2 to +96.0) | gain |
-| F0 | residSD vs B2 | EWMA | 10 | 100% | 7% | +92.8 (+90.2 to +95.2) | gain |
-| F0 | residSD vs B2 | EWMA | 20 | 100% | 8% | +91.5 (+88.8 to +94.2) | gain |
-| F0 | residSD vs B4 | CUSUM | 10 | 100% | 100% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) |
-| F0 | residSD vs B4 | CUSUM | 20 | 100% | 100% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) |
-| F0 | residSD vs B4 | EWMA | 10 | 100% | 100% | +0.5 (+0.0 to +1.2) | no clear difference |
-| F0 | residSD vs B4 | EWMA | 20 | 100% | 100% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) |
-| F0 | U-T vs U-F2 | CUSUM | 10 | 100% | 100% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) |
-| F0 | U-T vs U-F2 | CUSUM | 20 | 100% | 100% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) |
-| F0 | U-T vs U-F2 | EWMA | 10 | 100% | 100% | +0.5 (+0.0 to +1.2) | no clear difference |
-| F0 | U-T vs U-F2 | EWMA | 20 | 100% | 100% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) |
-| F5 | U-T vs U-F | CUSUM | 10 | 100% | 5% | +94.8 (+92.5 to +96.8) | gain |
-| F5 | U-T vs U-F | CUSUM | 20 | 100% | 4% | +95.8 (+93.8 to +97.5) | gain |
-| F5 | U-T vs U-F | EWMA | 10 | 98% | 6% | +92.8 (+90.2 to +95.2) | gain |
-| F5 | U-T vs U-F | EWMA | 20 | 99% | 6% | +93.5 (+91.0 to +95.8) | gain |
-| F5 | residSD vs B2 | CUSUM | 10 | 100% | 8% | +92.0 (+89.5 to +94.5) | gain |
-| F5 | residSD vs B2 | CUSUM | 20 | 100% | 6% | +93.8 (+91.2 to +96.0) | gain |
-| F5 | residSD vs B2 | EWMA | 10 | 100% | 6% | +94.2 (+91.8 to +96.5) | gain |
-| F5 | residSD vs B2 | EWMA | 20 | 100% | 7% | +93.0 (+90.5 to +95.2) | gain |
-| F5 | residSD vs B4 | CUSUM | 10 | 100% | 100% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) |
-| F5 | residSD vs B4 | CUSUM | 20 | 100% | 100% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) |
-| F5 | residSD vs B4 | EWMA | 10 | 100% | 100% | +0.3 (+0.0 to +0.8) | no clear difference |
-| F5 | residSD vs B4 | EWMA | 20 | 100% | 100% | +0.3 (+0.0 to +0.8) | no clear difference |
-| F5 | U-T vs U-F2 | CUSUM | 10 | 100% | 100% | -0.3 (-0.8 to +0.0) | no clear difference |
-| F5 | U-T vs U-F2 | CUSUM | 20 | 100% | 100% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) |
-| F5 | U-T vs U-F2 | EWMA | 10 | 98% | 99% | -0.7 (-2.0 to +0.5) | no clear difference |
-| F5 | U-T vs U-F2 | EWMA | 20 | 99% | 100% | -0.5 (-1.2 to +0.0) | no clear difference |
+| Family | Pair | Chart | Runs | With truth | Without | Difference, points (95% interval) | Cell verdict | False alarm, with truth (evaluation) | False alarm, without (evaluation) |
+|---|---|---|---|---|---|---|---|---|---|
+| F0 | U-T vs U-F | CUSUM | 10 | 100.0% | 13.0% | +87.0 (+83.5 to +90.2) | gain | 4.1% | 4.4% |
+| F0 | U-T vs U-F | CUSUM | 20 | 100.0% | 15.8% | +84.2 (+80.8 to +87.5) | gain | 4.4% | 4.7% |
+| F0 | U-T vs U-F | EWMA | 10 | 100.0% | 13.5% | +86.5 (+83.0 to +89.5) | gain | 5.2% | 5.0% |
+| F0 | U-T vs U-F | EWMA | 20 | 100.0% | 18.5% | +81.5 (+77.5 to +85.3) | gain | 5.3% | 4.9% |
+| F0 | residSD vs B2 | CUSUM | 10 | 100.0% | 6.0% | +94.0 (+91.5 to +96.2) | gain | 4.7% | 6.5% |
+| F0 | residSD vs B2 | CUSUM | 20 | 100.0% | 6.2% | +93.8 (+91.2 to +96.0) | gain | 6.0% | 4.4% |
+| F0 | residSD vs B2 | EWMA | 10 | 100.0% | 7.2% | +92.8 (+90.2 to +95.2) | gain | 5.4% | 6.9% |
+| F0 | residSD vs B2 | EWMA | 20 | 100.0% | 8.5% | +91.5 (+88.8 to +94.2) | gain | 5.8% | 6.3% |
+| F0 | residSD vs B4 | CUSUM | 10 | 100.0% | 100.0% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) | 4.7% | 4.6% |
+| F0 | residSD vs B4 | CUSUM | 20 | 100.0% | 100.0% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) | 6.0% | 2.8% |
+| F0 | residSD vs B4 | EWMA | 10 | 100.0% | 99.5% | +0.5 (+0.0 to +1.2) | no clear difference | 5.4% | 4.3% |
+| F0 | residSD vs B4 | EWMA | 20 | 100.0% | 100.0% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) | 5.8% | 3.2% |
+| F0 | U-T vs U-F2 | CUSUM | 10 | 100.0% | 100.0% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) | 4.1% | 4.4% |
+| F0 | U-T vs U-F2 | CUSUM | 20 | 100.0% | 100.0% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) | 4.4% | 2.8% |
+| F0 | U-T vs U-F2 | EWMA | 10 | 100.0% | 99.5% | +0.5 (+0.0 to +1.2) | no clear difference | 5.2% | 4.3% |
+| F0 | U-T vs U-F2 | EWMA | 20 | 100.0% | 100.0% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) | 5.3% | 3.1% |
+| F5 | U-T vs U-F | CUSUM | 10 | 99.8% | 5.0% | +94.8 (+92.5 to +96.8) | gain | 5.5% | 4.5% |
+| F5 | U-T vs U-F | CUSUM | 20 | 100.0% | 4.2% | +95.8 (+93.8 to +97.5) | gain | 4.2% | 4.3% |
+| F5 | U-T vs U-F | EWMA | 10 | 98.5% | 5.8% | +92.8 (+90.2 to +95.2) | gain | 7.2% | 4.7% |
+| F5 | U-T vs U-F | EWMA | 20 | 99.2% | 5.8% | +93.5 (+91.0 to +95.8) | gain | 4.8% | 4.1% |
+| F5 | residSD vs B2 | CUSUM | 10 | 100.0% | 8.0% | +92.0 (+89.5 to +94.5) | gain | 6.9% | 5.3% |
+| F5 | residSD vs B2 | CUSUM | 20 | 100.0% | 6.2% | +93.8 (+91.2 to +96.0) | gain | 5.0% | 5.3% |
+| F5 | residSD vs B2 | EWMA | 10 | 100.0% | 5.8% | +94.2 (+91.8 to +96.5) | gain | 6.5% | 5.1% |
+| F5 | residSD vs B2 | EWMA | 20 | 100.0% | 7.0% | +93.0 (+90.5 to +95.2) | gain | 3.8% | 5.2% |
+| F5 | residSD vs B4 | CUSUM | 10 | 100.0% | 100.0% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) | 6.9% | 5.4% |
+| F5 | residSD vs B4 | CUSUM | 20 | 100.0% | 100.0% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) | 5.0% | 5.4% |
+| F5 | residSD vs B4 | EWMA | 10 | 100.0% | 99.8% | +0.3 (+0.0 to +0.8) | no clear difference | 6.5% | 6.0% |
+| F5 | residSD vs B4 | EWMA | 20 | 100.0% | 99.8% | +0.3 (+0.0 to +0.8) | no clear difference | 3.8% | 5.3% |
+| F5 | U-T vs U-F2 | CUSUM | 10 | 99.8% | 100.0% | -0.3 (-0.8 to +0.0) | no clear difference | 5.5% | 5.7% |
+| F5 | U-T vs U-F2 | CUSUM | 20 | 100.0% | 100.0% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) | 4.2% | 5.8% |
+| F5 | U-T vs U-F2 | EWMA | 10 | 98.5% | 99.2% | -0.7 (-2.0 to +0.5) | no clear difference | 7.2% | 6.2% |
+| F5 | U-T vs U-F2 | EWMA | 20 | 99.2% | 99.8% | -0.5 (-1.2 to +0.0) | no clear difference | 4.8% | 3.9% |
 <!-- /PV2-A2 -->
 
-**What this says.** Under the frozen rule, against the strongest truth-free charts we know how to build, the known amounts gave one gain: U-T against U-F2 under compression -0.05, on the EWMA chart, in all six families. The CUSUM chart does not agree, and that cell was not part of the confirmation on fresh seeds, so it is a gain under the rule that is not yet confirmed. Its truth side also had the higher false-alarm rate in every family and horizon. Where both sides caught nearly every series, the detection difference is about the size of that gap, so there the gain may be extra alarms; where the profile chart missed many series, the difference is far larger than the gap (addendum 2, cells of the claimed gain). No other pair meets the rule for any planted drift. The precision-loss gain in the first table came from comparing with B2; against `profileResidSD` (B4), which needs no amounts, there is no difference under the rule, and the confirmation on untouched seeds agrees (addendum 2, above). Rows marked "at ceiling" there are ones where both charts caught every series: they show no advantage at the tested drift size, not that the two charts are equal in power. Under compression, the truth-based slope and the profile slope both catch every planted drift within 20 runs in the base family, and no pair meets the rule at -0.10 or for the ramp. Under sensitivity loss the truth-free union wins: the spread of counts reacts to depth directly, while slope and residSD react less, though residSD still catches much of it; the truth-based `offset` catches that drift as well as the total count does.
+**What this says.** Under the frozen rule, against the strongest truth-free charts we know how to build, the known amounts gave one gain: U-T against U-F2 under compression -0.05, on the EWMA chart, in all six families. The CUSUM chart does not agree, and that cell was not part of the confirmation on fresh seeds, so it is a gain under the rule that is not yet confirmed. Its truth side also had the higher false-alarm rate in every family and horizon. Where both sides caught nearly every series, the detection difference is about the size of that gap, so there the gain may be extra alarms; where the profile chart missed many series, the difference is far larger than the gap (addendum 2, cells of the claimed gain). No other gain against the strongest truth-free charts meets the rule for any planted drift. The precision-loss gains in the first table came from comparing with B2 and U-F; against `profileResidSD` (B4), and against the union of B3 and B4 (U-F2), neither of which needs the amounts, there is no difference under the rule, and the confirmation on untouched seeds agrees (addendum 2, above). Rows marked "at ceiling" there are ones where both charts caught every series: they show no advantage at the tested drift size, not that the two charts are equal in power. Under compression, the truth-based slope and the profile slope both catch every planted drift within 20 runs in the base family, and no pair meets the rule at -0.10 or for the ramp. Under sensitivity loss the truth-free union wins: the spread of counts reacts to depth directly, while slope and residSD react less, though residSD still catches much of it; the truth-based `offset` catches that drift as well as the total count does.
 
 **What the package is for, given that.** The known amounts give per-run figures in units a lab understands (a slope of 1, a detection limit in attomoles), and the real-data checks below test those figures. Apart from the one unconfirmed EWMA gain, they did not give a better alarm at the drift sizes tested. These per-run figures are model-dependent QC summaries: the residual spread also carries each molecule's own response, not only the run's precision. A lab that only wants alarms can chart the profile figures, which need no amounts, after checking their limits on its own runs. Where a truth-based figure loses a pair, it is paired with a truth-free chart that reacts to a different drift.
 
@@ -271,45 +271,60 @@ EWMA, 20 monitored runs:
 
 **Setting limits from a short baseline.** The plan also tested `calibrateChart()`, a bootstrap that sets a chart's limit for a stated false-alarm rate from the baseline runs. It failed its own pass rule in 5 of the 6 families, so it is not in this release. The function, its tests and its full results are on the `calibrate-chart` branch. Until a version passes, expect the default limits to give more false alarms than they promise, as the table above shows.
 
-**Correlated runs.** When runs drift slowly from day to day (family F5), every chart in this package alarms far too often. With no drift at all, 36.7% to 83.4% of series raised a false alarm within 20 monitored runs at the default limits (slope, residSD, offset and B3, both charts). The charts assume independent runs. If yours are not, model the correlation first.
+**Correlated runs.** When runs drift slowly from day to day (family F5), every chart in this package alarms far too often. With no drift at all, 36.7% to 83.4% of series raised a false alarm within 20 monitored runs at the default limits (slope, residSD, offset and B3, both charts; table below). The charts assume independent runs. If yours are not, model the correlation first.
+
+<!-- PV2-F5NULL -->
+| Detector (F5, no drift) | CUSUM h = 5, 10 runs | CUSUM h = 5, 20 runs | EWMA L = 3, 10 runs | EWMA L = 3, 20 runs |
+|---|---|---|---|---|
+| slope | 47.9% | 73.5% | 51.1% | 72.2% |
+| residSD | 18.1% | 38.0% | 21.0% | 36.7% |
+| offset | 56.5% | 83.4% | 60.2% | 81.9% |
+| U-T (slope or residSD) | 56.1% | 83.7% | 60.6% | 82.6% |
+| B1 | 55.6% | 83.1% | 57.7% | 82.7% |
+| B2 | 37.8% | 66.8% | 41.8% | 64.2% |
+| B3 | 48.4% | 73.5% | 52.0% | 72.7% |
+| U-F (B2 or B3) | 62.5% | 87.3% | 66.8% | 86.0% |
+<!-- /PV2-F5NULL -->
 
 **Confirmation on untouched seeds**, run once after everything above was written down (seeds 900001 to 900400, thresholds from the calibration seeds):
 
 <!-- PV2-CONFIRM -->
-| Family | Pair | Drift | Chart | Runs | With truth | Without | Difference, points (95% interval) | Verdict |
-|---|---|---|---|---|---|---|---|---|
-| F0 | U-T vs U-F | compression -0.10 | CUSUM | 10 | 100% | 100% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) |
-| F0 | U-T vs U-F | compression -0.10 | CUSUM | 20 | 100% | 100% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) |
-| F0 | U-T vs U-F | compression -0.10 | EWMA | 10 | 100% | 100% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) |
-| F0 | U-T vs U-F | compression -0.10 | EWMA | 20 | 100% | 100% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) |
-| F0 | slope vs B3 | compression -0.10 | CUSUM | 10 | 100% | 100% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) |
-| F0 | slope vs B3 | compression -0.10 | CUSUM | 20 | 100% | 100% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) |
-| F0 | slope vs B3 | compression -0.10 | EWMA | 10 | 100% | 100% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) |
-| F0 | slope vs B3 | compression -0.10 | EWMA | 20 | 100% | 100% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) |
-| F0 | U-T vs U-F | sensitivity loss | CUSUM | 10 | 53% | 78% | -25.5 (-31.5 to -19.2) | loss |
-| F0 | U-T vs U-F | sensitivity loss | CUSUM | 20 | 70% | 94% | -24.5 (-29.5 to -19.5) | loss |
-| F0 | U-T vs U-F | sensitivity loss | EWMA | 10 | 50% | 71% | -21.0 (-27.5 to -14.8) | loss |
-| F0 | U-T vs U-F | sensitivity loss | EWMA | 20 | 54% | 83% | -28.7 (-34.8 to -23.0) | loss |
-| F0 | slope vs B3 | sensitivity loss | CUSUM | 10 | 12% | 8% | +3.8 (+0.2 to +7.2) | gain |
-| F0 | slope vs B3 | sensitivity loss | CUSUM | 20 | 14% | 11% | +2.8 (-1.2 to +6.8) | no clear difference |
-| F0 | slope vs B3 | sensitivity loss | EWMA | 10 | 12% | 8% | +4.0 (+0.5 to +7.8) | gain |
-| F0 | slope vs B3 | sensitivity loss | EWMA | 20 | 13% | 8% | +4.5 (+0.8 to +8.5) | gain |
-| F5 | U-T vs U-F | compression -0.10 | CUSUM | 10 | 100% | 100% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) |
-| F5 | U-T vs U-F | compression -0.10 | CUSUM | 20 | 100% | 100% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) |
-| F5 | U-T vs U-F | compression -0.10 | EWMA | 10 | 100% | 100% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) |
-| F5 | U-T vs U-F | compression -0.10 | EWMA | 20 | 100% | 100% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) |
-| F5 | slope vs B3 | compression -0.10 | CUSUM | 10 | 100% | 100% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) |
-| F5 | slope vs B3 | compression -0.10 | CUSUM | 20 | 100% | 100% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) |
-| F5 | slope vs B3 | compression -0.10 | EWMA | 10 | 100% | 100% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) |
-| F5 | slope vs B3 | compression -0.10 | EWMA | 20 | 100% | 100% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) |
-| F5 | U-T vs U-F | sensitivity loss | CUSUM | 10 | 27% | 43% | -16.5 (-22.5 to -11.0) | loss |
-| F5 | U-T vs U-F | sensitivity loss | CUSUM | 20 | 36% | 50% | -14.8 (-20.8 to -8.8) | loss |
-| F5 | U-T vs U-F | sensitivity loss | EWMA | 10 | 27% | 40% | -13.2 (-19.0 to -7.5) | loss |
-| F5 | U-T vs U-F | sensitivity loss | EWMA | 20 | 30% | 39% | -8.5 (-14.0 to -2.8) | loss |
-| F5 | slope vs B3 | sensitivity loss | CUSUM | 10 | 7% | 6% | +0.8 (-1.2 to +3.0) | no clear difference |
-| F5 | slope vs B3 | sensitivity loss | CUSUM | 20 | 6% | 5% | +0.5 (-1.2 to +2.2) | no clear difference |
-| F5 | slope vs B3 | sensitivity loss | EWMA | 10 | 6% | 8% | -1.5 (-3.8 to +0.8) | no clear difference |
-| F5 | slope vs B3 | sensitivity loss | EWMA | 20 | 6% | 5% | +1.2 (-0.5 to +3.0) | no clear difference |
+Each row is one cell's verdict; the five-of-six family rule is not applied here. The two false-alarm columns repeat the evaluation's rates on its own null seeds for the same family, pair, chart and horizon; the confirmation did not estimate them again.
+
+| Family | Pair | Drift | Chart | Runs | With truth | Without | Difference, points (95% interval) | Cell verdict | False alarm, with truth (evaluation) | False alarm, without (evaluation) |
+|---|---|---|---|---|---|---|---|---|---|---|
+| F0 | U-T vs U-F | compression -0.10 | CUSUM | 10 | 100.0% | 100.0% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) | 4.1% | 4.4% |
+| F0 | U-T vs U-F | compression -0.10 | CUSUM | 20 | 100.0% | 100.0% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) | 4.4% | 4.7% |
+| F0 | U-T vs U-F | compression -0.10 | EWMA | 10 | 100.0% | 100.0% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) | 5.2% | 5.0% |
+| F0 | U-T vs U-F | compression -0.10 | EWMA | 20 | 100.0% | 100.0% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) | 5.3% | 4.9% |
+| F0 | slope vs B3 | compression -0.10 | CUSUM | 10 | 100.0% | 100.0% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) | 4.4% | 3.8% |
+| F0 | slope vs B3 | compression -0.10 | CUSUM | 20 | 100.0% | 100.0% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) | 5.7% | 5.5% |
+| F0 | slope vs B3 | compression -0.10 | EWMA | 10 | 100.0% | 100.0% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) | 5.3% | 4.1% |
+| F0 | slope vs B3 | compression -0.10 | EWMA | 20 | 100.0% | 100.0% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) | 5.0% | 4.9% |
+| F0 | U-T vs U-F | sensitivity loss | CUSUM | 10 | 53.0% | 78.5% | -25.5 (-31.5 to -19.2) | loss | 4.1% | 4.4% |
+| F0 | U-T vs U-F | sensitivity loss | CUSUM | 20 | 70.0% | 94.5% | -24.5 (-29.5 to -19.5) | loss | 4.4% | 4.7% |
+| F0 | U-T vs U-F | sensitivity loss | EWMA | 10 | 50.0% | 71.0% | -21.0 (-27.5 to -14.8) | loss | 5.2% | 5.0% |
+| F0 | U-T vs U-F | sensitivity loss | EWMA | 20 | 54.2% | 83.0% | -28.7 (-34.8 to -23.0) | loss | 5.3% | 4.9% |
+| F0 | slope vs B3 | sensitivity loss | CUSUM | 10 | 12.0% | 8.2% | +3.8 (+0.2 to +7.2) | gain | 4.4% | 3.8% |
+| F0 | slope vs B3 | sensitivity loss | CUSUM | 20 | 13.5% | 10.8% | +2.8 (-1.2 to +6.8) | no clear difference | 5.7% | 5.5% |
+| F0 | slope vs B3 | sensitivity loss | EWMA | 10 | 12.0% | 8.0% | +4.0 (+0.5 to +7.8) | gain | 5.3% | 4.1% |
+| F0 | slope vs B3 | sensitivity loss | EWMA | 20 | 13.0% | 8.5% | +4.5 (+0.8 to +8.5) | gain | 5.0% | 4.9% |
+| F5 | U-T vs U-F | compression -0.10 | CUSUM | 10 | 100.0% | 100.0% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) | 5.5% | 4.5% |
+| F5 | U-T vs U-F | compression -0.10 | CUSUM | 20 | 100.0% | 100.0% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) | 4.2% | 4.3% |
+| F5 | U-T vs U-F | compression -0.10 | EWMA | 10 | 100.0% | 100.0% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) | 7.2% | 4.7% |
+| F5 | U-T vs U-F | compression -0.10 | EWMA | 20 | 100.0% | 100.0% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) | 4.8% | 4.1% |
+| F5 | slope vs B3 | compression -0.10 | CUSUM | 10 | 100.0% | 100.0% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) | 5.6% | 4.0% |
+| F5 | slope vs B3 | compression -0.10 | CUSUM | 20 | 100.0% | 100.0% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) | 4.1% | 4.3% |
+| F5 | slope vs B3 | compression -0.10 | EWMA | 10 | 100.0% | 100.0% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) | 6.7% | 6.9% |
+| F5 | slope vs B3 | compression -0.10 | EWMA | 20 | 100.0% | 100.0% | +0.0 (+0.0 to +0.0) | no clear difference (at ceiling) | 4.6% | 3.5% |
+| F5 | U-T vs U-F | sensitivity loss | CUSUM | 10 | 26.8% | 43.2% | -16.5 (-22.5 to -11.0) | loss | 5.5% | 4.5% |
+| F5 | U-T vs U-F | sensitivity loss | CUSUM | 20 | 35.5% | 50.2% | -14.8 (-20.8 to -8.8) | loss | 4.2% | 4.3% |
+| F5 | U-T vs U-F | sensitivity loss | EWMA | 10 | 27.0% | 40.2% | -13.2 (-19.0 to -7.5) | loss | 7.2% | 4.7% |
+| F5 | U-T vs U-F | sensitivity loss | EWMA | 20 | 30.2% | 38.8% | -8.5 (-14.0 to -2.8) | loss | 4.8% | 4.1% |
+| F5 | slope vs B3 | sensitivity loss | CUSUM | 10 | 7.2% | 6.5% | +0.8 (-1.2 to +3.0) | no clear difference | 5.6% | 4.0% |
+| F5 | slope vs B3 | sensitivity loss | CUSUM | 20 | 5.5% | 5.0% | +0.5 (-1.2 to +2.2) | no clear difference | 4.1% | 4.3% |
+| F5 | slope vs B3 | sensitivity loss | EWMA | 10 | 6.0% | 7.5% | -1.5 (-3.8 to +0.8) | no clear difference | 6.7% | 6.9% |
+| F5 | slope vs B3 | sensitivity loss | EWMA | 20 | 6.2% | 5.0% | +1.2 (-0.5 to +3.0) | no clear difference | 4.6% | 3.5% |
 <!-- /PV2-CONFIRM -->
 
 **Real data at the v2 code.** The SEQC and msqc1 checks of version 1 rerun with `minAmount = "auto"` over every run (`validation/out-v2/real_*.csv`). The msqc1 cross-peptide slope is reported as relative linearity only: each peptide has its own amount and its own response, so it is not a test of absolute linearity. No public, licensed series of many runs of one spike-in mix with run order was found for this version, so **the control charts are tested on simulation only**; the real data test the per-run figures, not the charts.

@@ -150,6 +150,13 @@ test_that("minAmount auto is the joint cutoff across unequal ladders", {
     m <- runMetrics(se)
     expect_equal(attr(m, "minAmount"), 3)
     expect_equal(m$slope, c(1, 1))
+    # With a baseline, only its runs set the cutoff. Run 2 alone is clean
+    # from 4 up, so the cutoff is 4 and run 1 keeps two points (no slope);
+    # run 1 alone detects every amount, so the cutoff is 1.
+    m2 <- runMetrics(se, baseline = "r2")
+    expect_equal(attr(m2, "minAmount"), 4)
+    expect_equal(m2$slope, c(NA_real_, 1))
+    expect_equal(attr(runMetrics(se, baseline = 1), "minAmount"), 1)
 })
 
 test_that("minAmount auto gives NA fit figures when no amount qualifies", {
