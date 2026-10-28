@@ -16,12 +16,19 @@
 #'   amount.
 #' * `lod`: the expected amount at which a spike is detected with
 #'   probability `lodProb`, from a logistic fit of detection on log2
-#'   expected amount. When every spike is detected, `lod` is the smallest
-#'   expected amount and `lodCensored` is `TRUE`: the true limit is at or
-#'   below it. When the fit fails or its slope is not positive, `lod` is
-#'   the smallest amount above which every spike was detected. The same
-#'   rule applies when detected and missed spikes do not overlap, where the
-#'   logistic fit has no finite estimate.
+#'   expected amount. It is given only when the data can support it, and
+#'   `lodStatus` says why when it is `NA`:
+#'   `"fit"` (the fit converged with a positive slope and the point lies
+#'   inside the tested amounts), `"all_detected"` (every spike was seen, so
+#'   the limit is at or below the smallest amount but not estimated),
+#'   `"none_detected"`, `"separated"` (detected and missed spikes do not
+#'   overlap, so the fit has no finite estimate), `"fit_failed"` (no
+#'   convergence, or a slope that is not positive) and `"outside_range"`
+#'   (the fitted point lies outside the tested amounts; it is never
+#'   clamped).
+#' * `allDetectedFrom`: the smallest expected amount at and above which
+#'   every spike was detected, an empirical figure reported for every run
+#'   and never a substitute for `lod`.
 #'
 #' @param se A `SummarizedExperiment` with an expected-amount assay from
 #'   [addTruth()].
@@ -65,7 +72,7 @@ runMetrics <- function(se, assay = 1L, expected = "expected", detect = 0,
     res <- data.frame(nSpikes = length(e), nDetected = sum(det),
                       slope = NA_real_, intercept = NA_real_, r2 = NA_real_,
                       residSD = NA_real_, offset = NA_real_, lod = NA_real_,
-                      lodCensored = NA)
+                      lodStatus = NA_character_, allDetectedFrom = NA_real_)
     if (!length(e))
         return(res)
     use <- det & e >= minAmount
@@ -85,34 +92,42 @@ runMetrics <- function(se, assay = 1L, expected = "expected", detect = 0,
     }
     lodFit <- .lod(e, det, lodProb)
     res$lod <- lodFit$lod
-    res$lodCensored <- lodFit$censored
+    res$lodStatus <- lodFit$status
+    res$allDetectedFrom <- .allDetectedFrom(e, det)
     res
 }
 
 .lod <- function(e, det, p) {
+    none <- function(status) list(lod = NA_real_, status = status)
     if (!any(det))
-        return(list(lod = NA_real_, censored = NA))
+        return(none("none_detected"))
     if (all(det))
-        return(list(lod = min(e), censored = TRUE))
-    # Complete separation: the logistic fit has no finite estimate, so use
-    # the smallest amount above which every spike was detected.
-    missed <- max(e[!det])
-    if (missed < min(e[det]))
-        return(list(lod = min(e[det]), censored = FALSE))
+        return(none("all_detected"))
+    if (max(e[!det]) < min(e[det]))
+        return(none("separated"))
     x <- log2(e)
     fit <- tryCatch(suppressWarnings(
         stats::glm(det ~ x, family = stats::binomial())),
         error = function(err) NULL)
-    if (!is.null(fit) && fit$converged) {
-        cf <- stats::coef(fit)
-        if (!anyNA(cf) && cf[2] > 0) {
-            lx <- (stats::qlogis(p) - cf[1]) / cf[2]
-            lx <- min(max(lx, min(x)), max(x))
-            return(list(lod = unname(2^lx), censored = FALSE))
-        }
-    }
-    above <- e[e > missed]
-    list(lod = if (length(above)) min(above) else NA_real_, censored = FALSE)
+    if (is.null(fit) || !fit$converged)
+        return(none("fit_failed"))
+    cf <- stats::coef(fit)
+    if (anyNA(cf) || cf[2] <= 0)
+        return(none("fit_failed"))
+    lx <- (stats::qlogis(p) - cf[1]) / cf[2]
+    if (lx < min(x) || lx > max(x))
+        return(none("outside_range"))
+    list(lod = unname(2^lx), status = "fit")
+}
+
+# Smallest amount at and above which every spike was detected.
+.allDetectedFrom <- function(e, det) {
+    if (!any(det))
+        return(NA_real_)
+    if (all(det))
+        return(min(e))
+    above <- e[e > max(e[!det])]
+    if (length(above)) min(above) else NA_real_
 }
 
 #' Fold-change accuracy between two groups of runs

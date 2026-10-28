@@ -16,8 +16,10 @@ test_that("runMetrics recovers an exact power law", {
     expect_equal(m$residSD, 0, tolerance = 1e-12)
     # median of 2 - 0.2 * c(0, 1, 2, 3)
     expect_equal(m$offset, 1.7)
-    expect_equal(m$lod, 1)
-    expect_true(m$lodCensored)
+    # every spike seen: the limit is not estimated
+    expect_true(is.na(m$lod))
+    expect_equal(m$lodStatus, "all_detected")
+    expect_equal(m$allDetectedFrom, 1)
     expect_equal(m$nDetected, 4)
 })
 
@@ -36,7 +38,7 @@ test_that("minAmount keeps low spikes out of the fit but not the limit", {
     m <- runMetrics(se, minAmount = 2)
     expect_equal(m$slope, 1)
     expect_equal(m$offset, 1)
-    expect_equal(m$lod, 1)
+    expect_equal(m$allDetectedFrom, 1)
     # a spike exactly at minAmount is in the fit
     se2 <- powerLawSE(c(9, 4, 8, 16), c(1, 2, 4, 8))
     m2 <- runMetrics(se2, minAmount = 2)
@@ -48,14 +50,36 @@ test_that("the detection limit sits between missed and found spikes", {
     e <- 2^(0:9)
     o <- c(0, 0, 0, 1, 0, 6, 12, 30, 50, 100)
     m <- runMetrics(powerLawSE(o, e), lodProb = 0.95)
-    expect_false(m$lodCensored)
+    expect_equal(m$lodStatus, "fit")
     expect_gte(m$lod, 8)
     expect_lte(m$lod, 512)
-    # perfectly separated detections fall back to the empirical limit
+    expect_equal(m$allDetectedFrom, 32)
+    # perfectly separated detections give no estimate, only the empirical
+    # figure in its own column
     o2 <- c(0, 0, 0, 5, 9, 20, 40, 80, 160, 320)
     m2 <- runMetrics(powerLawSE(o2, e))
-    expect_equal(m2$lod, 8)
-    expect_true(is.na(runMetrics(powerLawSE(rep(0, 10), e))$lod))
+    expect_true(is.na(m2$lod))
+    expect_equal(m2$lodStatus, "separated")
+    expect_equal(m2$allDetectedFrom, 8)
+    m3 <- runMetrics(powerLawSE(rep(0, 10), e))
+    expect_true(is.na(m3$lod))
+    expect_equal(m3$lodStatus, "none_detected")
+    expect_true(is.na(m3$allDetectedFrom))
+})
+
+test_that("a limit outside the tested amounts is refused, not clamped", {
+    # the fitted 95 percent point lies near 27, above the largest amount 8
+    m <- runMetrics(powerLawSE(c(0, 5, 0, 5), c(1, 2, 4, 8)))
+    expect_true(is.na(m$lod))
+    expect_equal(m$lodStatus, "outside_range")
+    expect_equal(m$allDetectedFrom, 8)
+})
+
+test_that("detection that falls with amount is a failed fit", {
+    m <- runMetrics(powerLawSE(c(5, 0, 5, 0, 0), c(1, 2, 4, 8, 16)))
+    expect_true(is.na(m$lod))
+    expect_equal(m$lodStatus, "fit_failed")
+    expect_true(is.na(m$allDetectedFrom))
 })
 
 test_that("ratioAccuracy matches hand-computed errors", {

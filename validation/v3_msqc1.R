@@ -49,7 +49,7 @@ agg <- do.call(rbind, lapply(split(m8, m8$instrument), function(d)
                r2Median = stats::median(d$r2),
                residSDMedian = stats::median(d$residSD),
                lodMedian = stats::median(d$lod),
-               lodCensoredRuns = sum(d$lodCensored))))
+               allDetectedRuns = sum(d$lodStatus == "all_detected"))))
 write.csv(agg, "validation/out/v3_8rep_by_instrument.csv", row.names = FALSE)
 cat("msqc1_8rep, per-run dose response by instrument:\n")
 print(agg, digits = 3, row.names = FALSE)
