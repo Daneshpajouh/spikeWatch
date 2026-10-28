@@ -7,6 +7,7 @@ import csv
 import re
 
 OUT = "validation/out-v2/"
+OUT_A2 = "validation/out-v2a/"  # addendum 2: C5, C6 and their confirmation
 FAMILIES = ["F0", "F1", "F2", "F3", "F4", "F5"]
 DRIFTS = ["compression_small", "compression", "compression_ramp",
           "sensitivity_loss", "precision_loss"]
@@ -16,13 +17,13 @@ DRIFT_NAMES = {"null": "no drift", "compression_small": "compression -0.05",
                "sensitivity_loss": "sensitivity loss",
                "precision_loss": "precision loss"}
 PAIRS = {"C1": "U-T vs U-F", "C2": "slope vs B3", "C3": "residSD vs B2",
-         "C4": "offset vs B1"}
+         "C4": "offset vs B1", "C5": "residSD vs B4", "C6": "U-T vs U-F2"}
 DETS = ["slope", "residSD", "offset", "UT", "B1", "B2", "B3", "UF"]
 DET_NAMES = {"UT": "U-T (slope or residSD)", "UF": "U-F (B2 or B3)"}
 
 
-def rows(name):
-    with open(OUT + name, newline="") as f:
+def rows(name, out=OUT):
+    with open(out + name, newline="") as f:
         return list(csv.DictReader(f))
 
 
@@ -44,7 +45,7 @@ def headline():
     hl = rows("headline.csv")
     get = {(r["pair"], r["scenario"], r["chart"]): r for r in hl}
     body = []
-    for p in PAIRS:
+    for p in ("C1", "C2", "C3", "C4"):
         for d in DRIFTS:
             cells = []
             for ch in ("cusum", "ewma"):
@@ -68,7 +69,7 @@ def dedup():
                        f0[k]["detect_without"] == f1[k]["detect_without"] for k in f0)
     hl = {(r["pair"], r["scenario"], r["chart"]): r["headline"] for r in rows("headline.csv")}
     body = []
-    for p in PAIRS:
+    for p in ("C1", "C2", "C3", "C4"):
         for sc in ("sensitivity_loss", "precision_loss"):
             for ch in ("cusum", "ewma"):
                 if hl[(p, sc, ch)] == "none":
@@ -85,6 +86,14 @@ def dedup():
     note = ("F1 had the same detection rates as F0 in %d of 16 sensitivity-loss cells and %d of 16 "
             "precision-loss cells." % (same["sensitivity_loss"], same["precision_loss"]))
     return note + "\n\n" + table(["Pair", "Drift", "Chart", "Claim", "Families with F1 left out"], body)
+
+
+def real_v2():
+    r = rows("real_msqc1_dil_linearity.csv")
+    body = [[x["instrument"], x["runs"], x["doses"], "%.3f" % float(x["doseSlope"]),
+             "%.3f to %.3f" % (float(x["ciLow"]), float(x["ciHigh"]))] for x in r]
+    return ("msqc1 dilution series at the v2 code (`minAmount = \"auto\"` over every run):\n\n" +
+            table(["Instrument", "Runs", "Doses", "Slope against dose", "95% interval"], body))
 
 
 def detection(chart, H):
@@ -130,6 +139,42 @@ def confirm():
                   "Difference, points (95% interval)", "Verdict"], body)
 
 
+def addendum2():
+    """C5 and C6 under the gain rule, and the addendum 2 confirmation."""
+    hl = {(r["pair"], r["scenario"], r["chart"]): r for r in rows("headline.csv", OUT_A2)}
+    c = rows("comparisons.csv", OUT_A2)
+    body = []
+    for p in ("C3", "C5", "C1", "C6"):
+        for d in DRIFTS:
+            cells = []
+            for ch in ("cusum", "ewma"):
+                r = hl[(p, d, ch)]
+                g, lo = int(r["families_gain_both_H"]), int(r["families_loss_both_H"])
+                word = {"gain": "**gain**", "loss": "**loss**", "none": "none"}[r["headline"]]
+                cells.append("%s (gain in %d, loss in %d)" % (word, g, lo))
+            body.append([PAIRS[p], DRIFT_NAMES[d]] + cells)
+    out = table(["Pair (with truth vs without)", "Drift", "CUSUM", "EWMA"], body)
+    det = {(r["detector"], r["scenario"]): r for r in rows("scores.csv", OUT_A2)
+           if r["family"] == "F0" and r["chart"] == "cusum" and r["H"] == "20"
+           and r["limits"] == "calibrated"}
+    rates = table(["Detector", "No drift", "Precision loss"],
+                  [[n, pct(det[(d, "null")]["rate"]), pct(det[(d, "precision_loss")]["rate"])]
+                   for d, n in (("residSD", "residSD"), ("B2", "B2"), ("B4", "B4 (profileResidSD)"),
+                                ("UT", "U-T"), ("UF", "U-F"), ("UF2", "U-F2 (B3 or B4)"))])
+    try:
+        cf = rows("confirm2.csv", OUT_A2)
+        conf = table(["Family", "Pair", "Chart", "Runs", "With truth", "Without",
+                      "Difference, points (95% interval)", "Verdict"],
+                     [[r["family"], PAIRS[r["pair"]], r["chart"].upper(), r["H"],
+                       pct(r["detect_truth"]), pct(r["detect_without"]),
+                       "%+.1f (%+.1f to %+.1f)" % tuple(100 * float(r[k]) for k in ("diff", "ci_low", "ci_high")),
+                       r["verdict"]] for r in cf])
+    except FileNotFoundError:
+        conf = "Not yet run."
+    return (out + "\n\nDetection in the base family (F0), CUSUM, 20 monitored runs, calibrated limits:\n\n"
+            + rates + "\n\nConfirmation on untouched seeds 910001 to 910400, precision loss:\n\n" + conf)
+
+
 def fill(text, tag, body):
     pat = re.compile(r"(<!-- %s -->\n).*?(<!-- /%s -->)" % (tag, tag), re.S)
     if not pat.search(text):
@@ -140,6 +185,8 @@ def fill(text, tag, body):
 readme = open("README.md").read()
 readme = fill(readme, "PV2-HEADLINE", headline())
 readme = fill(readme, "PV2-DEDUP", dedup())
+readme = fill(readme, "PV2-REAL", real_v2())
+readme = fill(readme, "PV2-A2", addendum2())
 readme = fill(readme, "PV2-DETECT", "CUSUM, 20 monitored runs:\n\n" + detection("cusum", 20)
               + "\n\nEWMA, 20 monitored runs:\n\n" + detection("ewma", 20))
 readme = fill(readme, "PV2-DEFAULTS", defaults())
