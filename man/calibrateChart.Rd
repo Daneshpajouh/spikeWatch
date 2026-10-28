@@ -39,6 +39,8 @@ repeatable limit.}
 
 \item{lambda}{EWMA weight, between 0 and 1.}
 
+\item{k}{CUSUM reference value, in sigma.}
+
 \item{sigma}{Spread estimate: \code{"mr"} or \code{"sd"}.}
 }
 \value{

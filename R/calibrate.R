@@ -23,6 +23,7 @@
 #'
 #' @inheritParams driftChart
 #' @param method `"cusum"` or `"ewma"`.
+#' @param k CUSUM reference value, in sigma.
 #' @param alpha Target probability of any false alarm within `horizon`
 #'   runs.
 #' @param horizon Number of monitored runs the target applies to.
