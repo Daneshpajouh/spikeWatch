@@ -61,8 +61,8 @@ simulateSpikeRuns(
 \item{saturation}{Fraction by which the log2 mean is compressed above
 the saturation level; 0 for none.}
 
-\item{saturationAt}{Quantile of the design amounts that sets the
-saturation level.}
+\item{saturationAt}{Quantile of the log2 design amounts. The ceiling
+is \code{log2(scale)} plus that quantile.}
 
 \item{spikeBiasSD}{Standard deviation of the fixed per-spike log2 bias.}
 
@@ -113,9 +113,11 @@ spike towards it, as a rising background does. Total spike counts
 then barely move.
 \item \code{counts = "nbinom"}: negative binomial counts with size \code{size} in
 place of Poisson.
-\item \code{saturation}: above the log2 mean of the \code{saturationAt} quantile of
-design amounts at depth 0, the log2 mean is compressed by this
-fraction (0.5 halves the rise).
+\item \code{saturation}: above a fixed ceiling, the log2 mean is compressed by
+this fraction (0.5 halves the rise). The ceiling is \code{log2(scale)}
+plus the \code{saturationAt} quantile of the log2 design amounts: the
+log2 mean of that amount at depth 0 when the slope is 1. It does not
+move with the slope, as a detector's ceiling would not.
 \item \code{spikeBiasSD}: each spike gets a fixed log2 bias, normal with this
 standard deviation, drawn once and kept in every run.
 \item \code{slopeSD}: the slope varies from run to run as normal with this

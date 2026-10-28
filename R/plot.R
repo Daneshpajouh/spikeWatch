@@ -7,8 +7,9 @@
 #' @param detect Detection threshold, as in [runMetrics()].
 #' @param minAmount The fit range, as used by [runMetrics()]: the line is
 #'   fitted to detected spikes at or above it, and a dashed line marks it.
-#'   Pass `attr(metrics, "minAmount")` to draw the same fit; `NA` draws
-#'   no line.
+#'   The default 0 fits every detected spike, while [runMetrics()]
+#'   defaults to `"auto"`: pass `attr(metrics, "minAmount")` to draw
+#'   the same fit; `NA` draws no line.
 #'
 #' @return A `ggplot` object. Undetected spikes are drawn at the bottom
 #'   edge as open points.

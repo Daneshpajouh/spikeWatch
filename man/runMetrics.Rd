@@ -39,8 +39,11 @@ fitted on a biased range. \code{lod} always uses all spikes.}
 
 \item{baseline}{Runs used to choose \code{minAmount = "auto"}: a single
 number is the count of leading runs; otherwise run indices, run names
-or a logical vector. \code{NULL} uses every run, so one failed run raises
-the range for all; name runs known to be good instead.}
+or a logical vector. \code{NULL} (the default) uses every run, which suits
+one experiment scored once, such as a dilution series. For runs that
+will be charted, name the good baseline runs: with \code{NULL}, a later
+run that misses a low spike raises the range, and so changes the fit
+figures, of every run.}
 }
 \value{
 A \code{data.frame} with one row per sample and columns \code{run},

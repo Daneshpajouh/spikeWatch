@@ -65,8 +65,8 @@
 #' @param size Negative binomial size; smaller is more overdispersed.
 #' @param saturation Fraction by which the log2 mean is compressed above
 #'   the saturation level; 0 for none.
-#' @param saturationAt Quantile of the design amounts that sets the
-#'   saturation level.
+#' @param saturationAt Quantile of the log2 design amounts. The ceiling
+#'   is `log2(scale)` plus that quantile.
 #' @param spikeBiasSD Standard deviation of the fixed per-spike log2 bias.
 #' @param slopeSD Standard deviation of the run-to-run slope.
 #' @param runCor Correlation between neighbouring runs of depth and slope.

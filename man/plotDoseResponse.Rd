@@ -26,8 +26,9 @@ plotDoseResponse(
 
 \item{minAmount}{The fit range, as used by \code{\link[=runMetrics]{runMetrics()}}: the line is
 fitted to detected spikes at or above it, and a dashed line marks it.
-Pass \code{attr(metrics, "minAmount")} to draw the same fit; \code{NA} draws
-no line.}
+The default 0 fits every detected spike, while \code{\link[=runMetrics]{runMetrics()}}
+defaults to \code{"auto"}: pass \code{attr(metrics, "minAmount")} to draw
+the same fit; \code{NA} draws no line.}
 }
 \value{
 A \code{ggplot} object. Undetected spikes are drawn at the bottom

@@ -47,7 +47,7 @@ Read at source on 2026-10-27:
 - Panorama AutoQC (Bereman and others, Journal of Proteome Research 15(12), 4763-4769, 2016, doi:10.1021/acs.jproteome.6b00744): an automated pipeline that extracts "identification-free metrics" from targeted peptides and shows them with "Levey-Jennings and Pareto plots" across instruments.
 - Anaquin (Bioconductor): analysis of sequins, "synthetic sequencing spike-in controls".
 
-Truth-based QC and control charts are not new. What spikeWatch adds is narrower: one R object model in which every run is scored against the known spike amounts, for RNA and proteomics designs alike. Its validation compares it with the best charts we could build without the known amounts. In simulation the amounts did not give a better alarm for any planted drift; what they add is per-run figures in units a lab can read. Its ERCC design table comes from erccdashboard.
+Truth-based QC and control charts are not new. What spikeWatch adds is narrower: one R object model in which every run is scored against the known spike amounts, for RNA and proteomics designs alike. Its validation compares it with the best charts we could build without the known amounts. In simulation, under the frozen rule, the amounts gave one gain that was not confirmed on fresh seeds (EWMA, compression -0.05) and no better alarm elsewhere; what they add is per-run figures in units a lab can read. Its ERCC design table comes from erccdashboard.
 
 ## Validation
 

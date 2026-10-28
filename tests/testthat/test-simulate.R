@@ -63,6 +63,21 @@ test_that("a top pivot raises the spikes below the top under compression", {
     expect_lt(abs(stats::median(top$r[top$e == max(top$e)])), 0.1)
 })
 
+test_that("saturation compresses above log2(scale) plus the log2 quantile", {
+    # Amounts 1 and 100, slope 1: log2 means are 0 and log2(100) above
+    # log2(scale). The ceiling is 0.9 * log2(100) above it, and half the
+    # excess is kept. The quantile of the amounts themselves would give
+    # 6.57 for the top spike instead of 6.31.
+    d <- spikeDesign(c("lo", "hi"), c(1, 100))
+    set.seed(11)
+    s <- simulateSpikeRuns(d, nRuns = 1, noise = 0, depthSD = 0,
+                           scale = 1e4, saturation = 0.5)
+    y <- log2(SummarizedExperiment::assay(s, "counts")[, 1] / 1e4)
+    top <- 0.9 * log2(100)
+    expect_lt(abs(y[["hi"]] - (top + 0.5 * (log2(100) - top))), 0.02)
+    expect_lt(abs(y[["lo"]]), 0.05)
+})
+
 test_that("saturation flattens the top and nbinom spreads the counts", {
     d <- erccDesign()
     set.seed(6)

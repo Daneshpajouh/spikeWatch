@@ -137,6 +137,21 @@ test_that("minAmount auto takes the lowest amount every run detects", {
     expect_equal(attr(runMetrics(se, minAmount = 0), "minAmount"), 0)
 })
 
+test_that("minAmount auto is the joint cutoff across unequal ladders", {
+    # Run 2 misses amount 2. Cutoffs 1 and 2 fail; at 3 every cell is
+    # detected at twice its amount, so both slopes are 1. Taking the
+    # highest per-run cutoff would give 4 and leave run 1 two points.
+    counts <- matrix(c(2, 6, 18, 54, 0, 8, 16, 32), nrow = 4,
+                     dimnames = list(paste0("s", 1:4), c("r1", "r2")))
+    expected <- matrix(c(1, 3, 9, 27, 2, 4, 8, 16), nrow = 4,
+                       dimnames = dimnames(counts))
+    se <- SummarizedExperiment::SummarizedExperiment(
+        list(counts = counts, expected = expected))
+    m <- runMetrics(se)
+    expect_equal(attr(m, "minAmount"), 3)
+    expect_equal(m$slope, c(1, 1))
+})
+
 test_that("minAmount auto gives NA fit figures when no amount qualifies", {
     e <- c(1, 2, 4)
     se <- twoRunSE(c(2, 4, 0), c(2, 4, 8), e)

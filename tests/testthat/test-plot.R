@@ -21,6 +21,7 @@ test_that("the dose-response line is the runMetrics fit on the log axes", {
     line <- ggplot2::layer_data(p, 2)
     # Scales transform before the smoother runs, so the line is fitted on
     # log10 axes: its slope there is the log2 slope of runMetrics.
-    slope <- diff(range(line$y)) / diff(range(line$x))
+    ends <- line[order(line$x), ][c(1, nrow(line)), ]
+    slope <- diff(ends$y) / diff(ends$x)
     expect_equal(slope, m$slope[1], tolerance = 1e-8)
 })

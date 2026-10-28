@@ -22,6 +22,17 @@ test_that("EWMA statistic and first limit match the formulas", {
     expect_equal(ch$upper[6] - 1.4, 3 * s * sqrt(0.2 / 1.8 * (1 - 0.8^2)))
 })
 
+test_that("EWMA starts after the last baseline run when runs are skipped", {
+    # Baseline 1, 2, 4, 5 has mean 0.5; run 3 is outside it but before
+    # its end, so it neither enters the statistic nor signals.
+    x <- c(0, 1, 100, 0, 1, 50)
+    ch <- suppressWarnings(driftChart(x, baseline = c(1, 2, 4, 5),
+                                      method = "ewma", lambda = 0.2))
+    expect_true(all(is.na(ch$stat[1:5])))
+    expect_false(any(ch$signal[1:5]))
+    expect_equal(ch$stat[6], 0.2 * 50 + 0.8 * 0.5)
+})
+
 test_that("CUSUM accumulates in sigma units from the first monitoring run", {
     x <- c(0, 1, 0, 1, 0, 3, 3)
     ch <- suppressWarnings(

@@ -22,6 +22,9 @@ known amounts to score every run, the same way every time, and to watch
 those scores across runs to show drift. The charts are exploratory, not validated run-release alarms:
 at the default limits, 15.7% to 35.2% of simulated drift-free series raised a
 false alarm within 20 monitored runs, so check their limits on your own runs first.
+In the package's simulation study, charts of the known-amount figures did not beat
+the best truth-free charts, such as `profileResidSD`, under the precommitted rule,
+apart from one EWMA gain not confirmed on fresh seeds (see the README).
 
 The known amounts live in an assay beside the measurements. That one idea
 covers both kinds of design:
