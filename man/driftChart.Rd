@@ -73,6 +73,15 @@ every run.
 
 Runs with a missing value are carried: the chart statistic does not
 move and the run cannot signal.
+
+The default limits are not validated run-release limits. In the
+package's simulations with a 20-run baseline and the defaults (\code{L = 3},
+\code{h = 5}), a CUSUM or EWMA chart of \code{slope}, \code{residSD} or \code{offset} raised
+a false alarm within 20 monitored runs in 15.7 to 19.2 percent of
+drift-free series in the base family and in 36.7 to 83.4 percent when
+runs were correlated; the U-T and U-F union charts reached up to 35.2
+and 87.3 percent. Check the limits on your own runs before acting on an
+alarm.
 }
 \examples{
 set.seed(1)

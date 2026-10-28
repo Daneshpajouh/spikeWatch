@@ -14,11 +14,12 @@ Description: Turns the known amounts of spike-in controls into accuracy
     Across runs it charts any of these figures with Shewhart, EWMA or
     CUSUM charts against a baseline, to show drift across runs; the
     charts are exploratory: in the package's simulations at the default
-    limits, a CUSUM or EWMA chart of slope, residSD or offset raised a
-    false alarm within 20 runs in 15.7 to 19.2 percent of drift-free
-    series in the base family and in 36.7 to 83.4 percent when runs were
-    correlated (up to 35.2 and 87.3 percent for the union charts tested),
-    so their limits need checking on local runs.
+    limits with a 20-run baseline, a CUSUM or EWMA chart of slope,
+    residSD or offset raised a false alarm within 20 monitored runs in
+    15.7 to 19.2 percent of drift-free series in the base family and in
+    36.7 to 83.4 percent when runs were correlated (up to 35.2 and 87.3
+    percent for the displayed U-T and U-F union charts), so their limits
+    need checking on local runs.
 License: GPL-3
 Encoding: UTF-8
 Depends: R (>= 4.6.0), SummarizedExperiment

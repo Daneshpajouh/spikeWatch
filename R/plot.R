@@ -5,11 +5,14 @@
 #' @param assay Name or index of the measured assay.
 #' @param expected Name of the expected-amount assay.
 #' @param detect Detection threshold, as in [runMetrics()].
-#' @param minAmount The fit range, as used by [runMetrics()]: the line is
+#' @param minAmount The fit range, as in [runMetrics()]: the line is
 #'   fitted to detected spikes at or above it, and a dashed line marks it.
-#'   The default 0 fits every detected spike, while [runMetrics()]
-#'   defaults to `"auto"`: pass `attr(metrics, "minAmount")` to draw
-#'   the same fit; `NA` draws no line.
+#'   `"auto"` (the default) chooses it from the runs named by `baseline`
+#'   exactly as [runMetrics()] does, so with the same `detect` and
+#'   `baseline` the line is the fit behind that run's `slope`. A number
+#'   fixes it (0 fits every detected spike); `NA` draws no line.
+#' @param baseline Runs used to choose `minAmount = "auto"`, as in
+#'   [runMetrics()]. `NULL` (the default) uses every run.
 #'
 #' @return A `ggplot` object. Undetected spikes are drawn at the bottom
 #'   edge as open points. A run with no spike above `detect` is an error.
@@ -17,12 +20,23 @@
 #' @examples
 #' set.seed(1)
 #' runs <- simulateSpikeRuns(erccDesign(), nRuns = 2)
-#' m <- runMetrics(runs)
-#' plotDoseResponse(runs, 1, minAmount = attr(m, "minAmount"))
+#' plotDoseResponse(runs, 1)
 #' @export
 plotDoseResponse <- function(se, run = 1L, assay = 1L,
                              expected = "expected", detect = 0,
-                             minAmount = 0) {
+                             minAmount = "auto", baseline = NULL) {
+    noAuto <- FALSE
+    if (identical(minAmount, "auto")) {
+        obs <- as.matrix(SummarizedExperiment::assay(se, assay))
+        expd <- as.matrix(SummarizedExperiment::assay(se, expected))
+        use <- .runIndex(baseline, colnames(se), ncol(obs))
+        minAmount <- .autoMinAmount(obs[, use, drop = FALSE],
+                                    expd[, use, drop = FALSE], detect)
+        noAuto <- is.na(minAmount)
+    } else if (length(minAmount) != 1L || !(is.na(minAmount) ||
+               (is.numeric(minAmount) && minAmount >= 0))) {
+        stop("'minAmount' must be \"auto\", NA or one amount of at least 0")
+    }
     o <- SummarizedExperiment::assay(se, assay)[, run]
     e <- SummarizedExperiment::assay(se, expected)[, run]
     keep <- !is.na(e) & e > 0
@@ -32,6 +46,10 @@ plotDoseResponse <- function(se, run = 1L, assay = 1L,
     if (!any(df$detected))
         stop("no spike is above detect = ", detect, " in run ", run,
              ", so there is nothing to plot on the log axes")
+    if (noAuto)
+        warning("no expected amount is detected in every baseline run; ",
+                "no fit line is drawn. Set minAmount or name good runs in ",
+                "'baseline'")
     floor <- min(df$measured[df$detected], 1, na.rm = TRUE)
     df$measured[!df$detected] <- floor
     df$group[is.na(df$group)] <- "spike"

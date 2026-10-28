@@ -42,7 +42,9 @@
 #'   `intercept`, `r2`, `residSD` and `offset`. Spikes near the detection
 #'   limit are seen only when their count happens to be high, which pulls
 #'   the slope down and ties it to depth. Choosing spikes by their known
-#'   amount, not by what was measured, avoids that. `"auto"` (the default)
+#'   amount, not by what was measured, reduced that bias in the package's
+#'   simulations, though the automatic choice is itself made from baseline
+#'   detections and does not guarantee an unbiased slope. `"auto"` (the default)
 #'   takes the smallest expected amount at and above which every spike is
 #'   detected in every run named by `baseline`; a number fixes it. When no
 #'   amount qualifies, the fit figures are `NA` with a warning rather than

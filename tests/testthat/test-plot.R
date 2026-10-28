@@ -37,3 +37,33 @@ test_that("a run with nothing detected stops, and a named run is the title", {
     colnames(unnamed) <- NULL
     expect_equal(plotDoseResponse(unnamed, 2)$labels$title, "2")
 })
+
+test_that("by default the line uses the auto range runMetrics chooses", {
+    set.seed(3)
+    s <- simulateSpikeRuns(erccDesign(), nRuns = 4)
+    slopeOf <- function(p) {
+        line <- ggplot2::layer_data(p, 2)
+        ends <- line[order(line$x), ][c(1, nrow(line)), ]
+        diff(ends$y) / diff(ends$x)
+    }
+    m <- runMetrics(s)
+    p <- plotDoseResponse(s, 1)
+    expect_equal(ggplot2::layer_data(p, 3)$xintercept, log10(attr(m, "minAmount")))
+    expect_equal(slopeOf(p), m$slope[1], tolerance = 1e-8)
+    m2 <- runMetrics(s, baseline = 2)
+    expect_equal(slopeOf(plotDoseResponse(s, 1, baseline = 2)), m2$slope[1], tolerance = 1e-8)
+    expect_error(plotDoseResponse(s, 1, minAmount = -1), "must be")
+    expect_error(plotDoseResponse(s, 1, minAmount = "all"), "must be")
+})
+
+test_that("an auto range that no amount meets warns and draws no line", {
+    set.seed(3)
+    s <- simulateSpikeRuns(erccDesign(), nRuns = 2)
+    i <- which.max(SummarizedExperiment::assay(s, "expected")[, 2])
+    a <- SummarizedExperiment::assay(s, 1)
+    a[i, 2] <- 0
+    SummarizedExperiment::assay(s, 1) <- a
+    expect_warning(p <- plotDoseResponse(s, 1), "no fit line is drawn")
+    expect_equal(nrow(p$layers[[2]]$data), 0L)
+    expect_warning(runMetrics(s), "fit figures are NA")
+})

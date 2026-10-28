@@ -31,7 +31,9 @@ above this threshold and not \code{NA}.}
 \code{intercept}, \code{r2}, \code{residSD} and \code{offset}. Spikes near the detection
 limit are seen only when their count happens to be high, which pulls
 the slope down and ties it to depth. Choosing spikes by their known
-amount, not by what was measured, avoids that. \code{"auto"} (the default)
+amount, not by what was measured, reduced that bias in the package's
+simulations, though the automatic choice is itself made from baseline
+detections and does not guarantee an unbiased slope. \code{"auto"} (the default)
 takes the smallest expected amount at and above which every spike is
 detected in every run named by \code{baseline}; a number fixes it. When no
 amount qualifies, the fit figures are \code{NA} with a warning rather than

@@ -153,3 +153,12 @@ test_that("a missing run after the EWMA has moved neither resets it nor advances
     expect_equal(ch$upper[7], 1.4 + 0.6 / 1.128)
     expect_equal(ch$upper[8], 1.4 + 5 * sqrt(41) / 47)
 })
+
+test_that("a missing run after the CUSUM has moved neither resets nor adds to it", {
+    x <- c(0, 1, 0, 1, 0, 3, NA, 3)
+    ch <- suppressWarnings(driftChart(x, baseline = 5, method = "cusum", sigma = "sd"))
+    z <- (3 - 0.4) / sqrt(0.3) - 0.5
+    expect_equal(ch$cusumUp[c(6, 7, 8)], c(z, z, 2 * z))
+    expect_equal(ch$cusumLow[c(6, 7, 8)], c(0, 0, 0))
+    expect_false(ch$signal[7])
+})

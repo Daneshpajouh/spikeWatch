@@ -10,7 +10,8 @@ plotDoseResponse(
   assay = 1L,
   expected = "expected",
   detect = 0,
-  minAmount = 0
+  minAmount = "auto",
+  baseline = NULL
 )
 }
 \arguments{
@@ -24,11 +25,15 @@ plotDoseResponse(
 
 \item{detect}{Detection threshold, as in \code{\link[=runMetrics]{runMetrics()}}.}
 
-\item{minAmount}{The fit range, as used by \code{\link[=runMetrics]{runMetrics()}}: the line is
+\item{minAmount}{The fit range, as in \code{\link[=runMetrics]{runMetrics()}}: the line is
 fitted to detected spikes at or above it, and a dashed line marks it.
-The default 0 fits every detected spike, while \code{\link[=runMetrics]{runMetrics()}}
-defaults to \code{"auto"}: pass \code{attr(metrics, "minAmount")} to draw
-the same fit; \code{NA} draws no line.}
+\code{"auto"} (the default) chooses it from the runs named by \code{baseline}
+exactly as \code{\link[=runMetrics]{runMetrics()}} does, so with the same \code{detect} and
+\code{baseline} the line is the fit behind that run's \code{slope}. A number
+fixes it (0 fits every detected spike); \code{NA} draws no line.}
+
+\item{baseline}{Runs used to choose \code{minAmount = "auto"}, as in
+\code{\link[=runMetrics]{runMetrics()}}. \code{NULL} (the default) uses every run.}
 }
 \value{
 A \code{ggplot} object. Undetected spikes are drawn at the bottom
@@ -40,6 +45,5 @@ Plot measured against expected spike-in amounts for one run
 \examples{
 set.seed(1)
 runs <- simulateSpikeRuns(erccDesign(), nRuns = 2)
-m <- runMetrics(runs)
-plotDoseResponse(runs, 1, minAmount = attr(m, "minAmount"))
+plotDoseResponse(runs, 1)
 }

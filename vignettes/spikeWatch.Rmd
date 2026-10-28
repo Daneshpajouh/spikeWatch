@@ -16,21 +16,21 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 
 # Why
 
-Spike-in controls are added at amounts we know. Most pipelines use them
-once, to normalise or to check one experiment. spikeWatch uses the same
+Spike-in controls are added at amounts we know. spikeWatch uses those
 known amounts to score every run, the same way every time, and to watch
 those scores across runs to show drift. The charts are exploratory, not validated run-release alarms:
-at the default limits, a CUSUM or EWMA chart of `slope`, `residSD` or `offset` raised a
+at the default limits with a 20-run baseline, a CUSUM or EWMA chart of `slope`, `residSD` or `offset` raised a
 false alarm within 20 monitored runs in 15.7% to 19.2% of simulated drift-free series in the
 base family, and in 36.7% to 83.4% when runs were correlated (up to 35.2% and 87.3% for the
-union charts tested), so check their limits on your own runs first.
+displayed U-T and U-F union charts), so check their limits on your own runs first.
 In the package's simulation study, charts of the known-amount figures did not beat
 the best truth-free charts, such as `profileResidSD`, under the precommitted rule,
 apart from one EWMA gain, which had a higher false-alarm rate than its truth-free
 comparator in all 12 of its family and horizon cells and is not yet tested on fresh
 seeds (see the README). These figures come from the validation in the package's source
 repository (the `validation/` folder at the URL in DESCRIPTION, with its plan, scripts
-and outputs), which is not part of the package tarball.
+and outputs; the main study ran at commit d7dfeb0 and addendum 2's outputs were committed at
+5fb0966), which is not part of the package tarball.
 
 The known amounts live in an assay beside the measurements. That one idea
 covers both kinds of design:

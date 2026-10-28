@@ -18,6 +18,9 @@ DRIFT_NAMES = {"null": "no drift", "compression_small": "compression -0.05",
                "precision_loss": "precision loss"}
 PAIRS = {"C1": "U-T vs U-F", "C2": "slope vs B3", "C3": "residSD vs B2",
          "C4": "offset vs B1", "C5": "residSD vs B4", "C6": "U-T vs U-F2"}
+# The detectors each pair compares, as in pv2_2_score.R: truth side first.
+PAIR_DETS = {"C1": ("UT", "UF"), "C2": ("slope", "B3"), "C3": ("residSD", "B2"),
+             "C4": ("offset", "B1"), "C5": ("residSD", "B4"), "C6": ("UT", "UF2")}
 DETS = ["slope", "residSD", "offset", "UT", "B1", "B2", "B3", "UF"]
 DET_NAMES = {"UT": "U-T (slope or residSD)", "UF": "U-F (B2 or B3)"}
 
@@ -62,6 +65,8 @@ def null_row(out, family, det, chart, H):
          and r["chart"] == chart and r["H"] == H and r["limits"] == "calibrated" and r["scenario"] == "null"]
     if len(r) != 1:
         raise SystemExit("no single null row for %s" % ((out, family, det, chart, H),))
+    if abs(float(r[0]["rate"]) - float(r[0]["signalled"]) / float(r[0]["n"])) > 1e-9:
+        raise SystemExit("null rate is not signalled/n for %s" % ((out, family, det, chart, H),))
     return r[0]
 
 
@@ -88,12 +93,33 @@ def gains(out=OUT):
         # Every row, not only the claimed gains: the per-side flags must give the scorer's fap_flag, and each
         # side's false-alarm rate must be its null row's rate. Both sides are looked up, so a bad id always stops.
         where = (r["family"], r["pair"], r["scenario"], r["chart"], r["H"])
+        if (r["truth"], r["without"]) != PAIR_DETS[r["pair"]]:
+            raise SystemExit("detectors do not match the pair for %s" % (where,))
+        # The scorer's verdict rule: the bootstrap interval of the difference lies above or below zero.
+        lo, hi = float(r["ci_low"]), float(r["ci_high"])
+        if r["verdict"] != ("gain" if lo > 0 else "loss" if hi < 0 else "no clear difference"):
+            raise SystemExit("verdict disagrees with its interval for %s" % (where,))
+        if abs(float(r["diff"]) - (float(r["detect_truth"]) - float(r["detect_without"]))) > 1e-9:
+            raise SystemExit("diff is not detect_truth - detect_without for %s" % (where,))
         sides = [off_side(out, r["family"], r[d], r["chart"], r["H"]) for d in ("truth", "without")]
         if (r["fap_flag"] == "TRUE") != any(sides):
             raise SystemExit("per-side flags disagree with fap_flag for %s" % (where,))
         for d in ("truth", "without"):
             if abs(float(r["fap_" + d]) - float(null_row(out, r["family"], r[d], r["chart"], r["H"])["rate"])) > 1e-9:
                 raise SystemExit("fap_%s is not the null rate for %s" % (d, where))
+    # The headline rule of pv2_2_score.R, counted again from the rows: the same verdict at both horizons in a
+    # family, and a gain or loss in at least five of the six families.
+    for r in rows("headline.csv", out):
+        key = (r["pair"], r["scenario"], r["chart"])
+        fam = {}
+        for c in cells.get(key, []):
+            fam.setdefault(c["family"], []).append(c["verdict"])
+        both = ["gain" if all(v == "gain" for v in vs) else "loss" if all(v == "loss" for v in vs) else "mixed"
+                for vs in fam.values()]
+        g, lo = both.count("gain"), both.count("loss")
+        word = "gain" if g >= 5 else "loss" if lo >= 5 else "none"
+        if (len(fam), int(r["families_gain_both_H"]), int(r["families_loss_both_H"]), r["headline"]) != (6, g, lo, word):
+            raise SystemExit("headline.csv disagrees with comparisons.csv for %s" % (key,))
     body = []
     for key in claimed:
         cs = cells[key]
@@ -214,8 +240,13 @@ def defaults():
 
 def null_rates(out):
     """The evaluation's false-alarm rate on fresh null seeds for each family, pair, chart and horizon."""
-    return {(r["family"], r["pair"], r["chart"], r["H"]): (pct1(r["fap_truth"]), pct1(r["fap_without"]))
-            for r in rows("comparisons.csv", out)}
+    rates = {}
+    for r in rows("comparisons.csv", out):
+        # The same detectors' null rates on every drift row; gains() has checked each against scores.csv.
+        v = (pct1(r["fap_truth"]), pct1(r["fap_without"]))
+        if rates.setdefault((r["family"], r["pair"], r["chart"], r["H"]), v) != v:
+            raise SystemExit("false-alarm rates differ across drifts for %s" % ((r["family"], r["pair"]),))
+    return rates
 
 
 def correlated_null():

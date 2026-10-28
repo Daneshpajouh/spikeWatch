@@ -26,7 +26,7 @@ plotDrift(ch)
 
 For a dilution series, give the design one amount per spike and each sample a dose column: `addTruth(se, design, dose = "fmol")`. `simulateSpikeRuns()` makes series with a planted drift, to test a chart and its limits before trusting them. The vignette walks through both designs.
 
-`minAmount` matters. Spikes near the detection limit are seen only when their count happens to be high, so fitting every detected spike pulls the slope down and ties it to depth. Choosing spikes by their known amount, not by what was measured, avoids that. In 200 simulated runs with no drift (`validation/v0_min_amount.R`; true slope 1):
+`minAmount` matters. Spikes near the detection limit are seen only when their count happens to be high, so fitting every detected spike pulls the slope down and ties it to depth. Choosing spikes by their known amount, not by what was measured, reduced that bias in these simulations; the automatic choice is itself made from the baseline runs' detections, so it does not guarantee an unbiased slope. In 200 simulated runs with no drift (`validation/v0_min_amount.R`; true slope 1):
 
 <!-- V0 -->
 | minAmount | Mean slope | SD of slope | Correlation with depth |
@@ -55,7 +55,7 @@ Two rounds, each with its plan, detectors and rule for claiming a gain committed
 
 ## Validation, version 2 (current code)
 
-These results were computed at commit d7dfeb0. That commit also held `calibrateChart()`, which is not in this release (see "Setting limits from a short baseline" below); to rerun `validation/pv2_2_score.R` as it ran, use the `calibrate-chart` branch. Since d7dfeb0 the package's R code has changed only in help text and comments, apart from removing `calibrateChart()`; the validation scripts gained B4, C5 and C6 for addendum 2, whose outputs were committed at 5fb0966.
+These results were computed at commit d7dfeb0. That commit also held `calibrateChart()`, which is not in this release (see "Setting limits from a short baseline" below); to rerun `validation/pv2_2_score.R` as it ran, use the `calibrate-chart` branch. Since d7dfeb0 the code behind the validated figures and charts is unchanged apart from removing `calibrateChart()`. Two other changes affect no validated figure: `r2` is `NA` rather than `NaN` for a flat run, and `plotDoseResponse()` now stops when nothing is detected and by default draws its line over the same automatic range as `runMetrics()`. Help text and comments also changed; the validation scripts gained B4, C5 and C6 for addendum 2, whose outputs were committed at 5fb0966.
 
 Plan: `validation/PLAN_v2.md`, committed before any v2 number, with one dated addendum that corrected a sentence and changed no rule. Scripts `validation/pv2_*.R`; outputs `validation/out-v2/`; tables by `validation/render_readme_v2.py`.
 
@@ -222,7 +222,7 @@ Confirmation on untouched seeds 910001 to 910400, precision loss. Each row is on
 
 **What this says.** Under the frozen rule, against the strongest truth-free charts we know how to build, the known amounts gave one gain: U-T against U-F2 under compression -0.05, on the EWMA chart, in all six families. On the CUSUM chart the same pair gains in three families and loses in none, short of the five the rule needs. The EWMA cell was not part of the confirmation on fresh seeds, so it is a gain under the rule that is not yet tested on fresh confirmation seeds. Its truth side also had the higher false-alarm rate in every family and horizon. Where both sides caught nearly every series, the detection difference is about the size of that gap, so there the gain may be extra alarms; where the profile chart missed many series, the difference is far larger than the gap (addendum 2, cells of the claimed gain). No other gain against the strongest truth-free charts meets the rule for any planted drift. The precision-loss gains in the first table came from comparing with B2 and U-F; against `profileResidSD` (B4), and against the union of B3 and B4 (U-F2), neither of which needs the amounts, there is no difference under the rule, and the confirmation on untouched seeds agrees (addendum 2, above). Rows marked "at ceiling" there are ones where both charts caught every series: they show no advantage at the tested drift size, not that the two charts are equal in power. Under compression, the truth-based slope and the profile slope both catch every planted drift within 20 runs in the base family, and no pair shows a gain at -0.10 or for the ramp, while residSD loses to B2 and offset loses to B1 there. Under sensitivity loss the truth-free union U-F wins against U-T (against U-F2 there is no difference under the rule): the spread of counts reacts to depth directly, while slope and residSD react less, though residSD still catches much of it; the truth-based `offset` catches that drift as well as the total count does.
 
-**What the package is for, given that.** The known amounts give per-run figures in units a lab understands (a slope of 1, a detection limit in attomoles), and the real-data checks below test those figures. Apart from the one EWMA gain not yet tested on fresh confirmation seeds, they did not give a better alarm at the drift sizes tested. These per-run figures are model-dependent QC summaries: the residual spread carries each molecule's own response as well as the run's precision. A lab that only wants alarms can chart the profile figures, which need no amounts, after checking their limits on its own runs. Where a truth-based figure loses a pair, it is paired with a truth-free chart that reacts to a different drift.
+**What the package is for, given that.** The known amounts give per-run figures in units a lab understands (a slope of 1, a detection limit in attomoles), and the real-data checks below test those figures. Apart from the one EWMA gain not yet tested on fresh confirmation seeds, no gain for them met the frozen headline rule at the drift sizes tested. These per-run figures are model-dependent QC summaries: the residual spread carries each molecule's own response as well as the run's precision. A lab that only wants alarms can chart the profile figures, which need no amounts, after checking their limits on its own runs. Where a truth-based figure loses a pair, it is paired with a truth-free chart that reacts to a different drift.
 
 Detection in the base family (F0) at calibrated limits, share of series with any signal within 20 monitored runs (the null column is the false-alarm rate on fresh seeds; other families and the 10-run horizon are in `validation/out-v2/scores.csv`):
 
@@ -269,7 +269,7 @@ EWMA, 20 monitored runs:
 | U-F (B2 or B3) | 15.3% | 33.7% | 20.0% | 35.2% |
 <!-- /PV2-DEFAULTS -->
 
-**Setting limits from a short baseline.** The plan also tested `calibrateChart()`, a bootstrap that sets a chart's limit for a stated false-alarm rate from the baseline runs. It failed its own pass rule in 5 of the 6 families, so it is not in this release. The function, its tests and its full results, including the pass table by family, are on the `calibrate-chart` branch and are not in this release. Until a version passes, expect the default limits to give more false alarms than they promise, as the table above shows.
+**Setting limits from a short baseline.** The plan also tested `calibrateChart()`, a bootstrap that sets a chart's limit for a stated false-alarm rate from the baseline runs. It failed its own pass rule in 5 of the 6 families (`validation/out-v2/calibrate.csv`, not rendered here), so it is not in this release. The function, its tests and its full results, including the pass table by family, are on the `calibrate-chart` branch and are not in this release. Until a version passes, expect the default limits to give more false alarms than they promise, as the table above shows.
 
 **Correlated runs.** When runs drift slowly from day to day (family F5), the CUSUM and EWMA charts alarm far too often. With no drift at all, 36.7% to 83.4% of series raised a false alarm within 20 monitored runs at the default limits (slope, residSD, offset and B3, both charts; table below). The charts assume independent runs. If yours are not, model the correlation first.
 
@@ -385,7 +385,7 @@ What this shows, under the rule frozen in the plan (a gain is claimed only when 
 - Larger compression: every chart except offset and residSD detects it in every clean series, so no chart detects more often and no gain is claimed. The slope chart's median delay is the shortest, but delay is not part of the frozen rule.
 - Precision loss: the residual spread chart detects it in every clean series, while the two charts without truth stay near their false alarm rates. Its own false alarm rate was higher than B1's and B2's, so under the frozen rule no gain is claimed, though the gap in detection is large.
 - Sensitivity loss: the offset chart and total counts do equally well. Known amounts add nothing here.
-- False alarms: every chart raised one within 10 runs after the baseline in 7 to 12 per cent of series. That is the cost of limits estimated from 20 runs. A longer baseline or a larger `h` lowers it; this was not tested here.
+- False alarms: every chart raised one within 10 runs after the baseline in 7 to 12 per cent of series. That is the cost of limits estimated from 20 runs. A longer baseline or a larger `h` is expected to lower it; that was not tested here.
 
 ### V2. Real RNA-seq: SEQC ERCC counts
 
@@ -411,7 +411,7 @@ Lab 5 of the SEQC interlaboratory study, as shipped in erccdashboard: 4 runs of 
 | -1.000 | 21 | 0.011 | 0.300 |
 <!-- /V2 -->
 
-The slopes sit close to 1 and the measured ratios match the designed 4:1, 1:1, 1:1.5 and 1:2 with small median errors. The detection limit follows depth: the run with the fewest reads has the highest limit.
+The slopes sit close to 1 and the measured ratios match the designed 4:1, 1:1, 1:1.5 and 1:2 with small median errors. The detection limit differs between runs (last column above).
 
 ### V3. Real targeted proteomics: msqc1
 
