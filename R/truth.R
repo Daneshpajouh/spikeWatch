@@ -62,6 +62,12 @@ addTruth <- function(se, design, mix = NULL, dose = NULL,
     rows <- match(design$feature, rownames(se))
     if (all(is.na(rows)))
         stop("no design feature matches a row name of 'se'")
+    miss <- unique(design$feature[is.na(rows)])
+    if (length(miss))
+        warning(length(miss), " design feature(s) not in the row names of ",
+                "'se', so they get no expected amount: ",
+                paste(miss[seq_len(min(5L, length(miss)))], collapse = ", "),
+                if (length(miss) > 5L) ", ..." else "")
     expected <- matrix(NA_real_, nrow(se), ncol(se),
                        dimnames = dimnames(se))
     for (m in mixes) {

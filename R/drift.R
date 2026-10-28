@@ -4,7 +4,10 @@
 #' behaviour over a baseline of runs known to be good. The centre is the
 #' baseline mean. The spread `sigma` is estimated from the baseline by the
 #' average moving range divided by 1.128 (`"mr"`, the usual estimate for
-#' individual values) or by the standard deviation (`"sd"`).
+#' individual values) or by the standard deviation (`"sd"`). Moving ranges
+#' are taken only between baseline runs that are next to each other in run
+#' order and both observed, so a gap or a missing run never makes two
+#' distant runs neighbours.
 #'
 #' * `"shewhart"`: an individuals chart. Signals when a run lies more than
 #'   `L` sigma from the centre.
@@ -65,15 +68,23 @@ driftChart <- function(x, metric = NULL, baseline = 20L,
     base <- if (length(baseline) == 1L) seq_len(baseline) else baseline
     if (any(base < 1L | base > n))
         stop("baseline indices fall outside the series")
+    base <- sort(unique(as.integer(base)))
     xb <- x[base]
-    xb <- xb[!is.na(xb)]
+    ok <- !is.na(xb)
+    pair <- which(ok[-length(ok)] & ok[-1L] & diff(base) == 1L)
+    xb <- xb[ok]
     if (length(xb) < 3L)
         stop("the baseline needs at least three non-missing runs")
     if (length(xb) < 20L)
         warning("the baseline has fewer than 20 non-missing runs; ",
                 "its limits are uncertain")
     mu <- mean(xb)
-    s <- if (sigma == "mr") mean(abs(diff(xb))) / 1.128 else stats::sd(xb)
+    if (sigma == "mr" && !length(pair))
+        stop("the baseline has no two adjacent observed runs for a ",
+             "moving range")
+    s <- if (sigma == "mr")
+        mean(abs(x[base][pair + 1L] - x[base][pair])) / 1.128 else
+        stats::sd(xb)
     if (!is.finite(s) || s <= 0)
         stop("the baseline has no spread; cannot set limits")
     out <- if (method == "shewhart") .shewhart(x, mu, s, L) else
@@ -156,8 +167,8 @@ driftChart <- function(x, metric = NULL, baseline = 20L,
 #' First run that signals on a control chart
 #'
 #' @param chart A chart from [driftChart()].
-#' @param after Ignore signals at or before this run index. Defaults to
-#'   the last baseline run.
+#' @param after Ignore signals at or before this run index. `NULL` (the
+#'   default) uses the last baseline run.
 #'
 #' @return The index of the first signalling run, or `NA` if none.
 #'
@@ -166,7 +177,11 @@ driftChart <- function(x, metric = NULL, baseline = 20L,
 #'                  baseline = 20, method = "shewhart")
 #' firstSignal(ch)
 #' @export
-firstSignal <- function(chart, after = max(which(chart$baseline))) {
+firstSignal <- function(chart, after = NULL) {
+    if (!any(chart$baseline))
+        stop("the chart has no baseline runs")
+    if (is.null(after))
+        after <- max(which(chart$baseline))
     hit <- which(chart$signal & seq_len(nrow(chart)) > after)
     if (length(hit)) hit[1] else NA_integer_
 }

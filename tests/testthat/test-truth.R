@@ -24,3 +24,11 @@ test_that("addTruth refuses inputs it cannot match", {
     expect_error(addTruth(tinySE(m), d3, mix = "mix"), "not in the design")
     expect_error(addTruth(m, d3), "SummarizedExperiment")
 })
+
+test_that("addTruth warns about design features it cannot place", {
+    m <- matrix(1, 2, 2, dimnames = list(c("s1", "g"), c("x", "y")))
+    d <- spikeDesign(c("s1", "s2", "s3"), c(1, 2, 4))
+    expect_warning(se <- addTruth(tinySE(m), d), "2 design feature")
+    e <- SummarizedExperiment::assay(se, "expected")
+    expect_equal(unname(e["s1", ]), c(1, 1))
+})

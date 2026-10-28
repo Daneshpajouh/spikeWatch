@@ -151,3 +151,42 @@ test_that("minAmount auto gives NA fit figures when no amount qualifies", {
     expect_error(runMetrics(se, minAmount = "low"), "minAmount")
     expect_error(runMetrics(se, baseline = 3), "outside")
 })
+
+test_that("the logistic limit matches a fit worked out by hand", {
+    # amount 1: 1 of 4 detected; amount 4: 3 of 4. The two-point fit is
+    # exact: logit -log(3) at log2 amount 0 and log(3) at 2, slope log(3).
+    e <- rep(c(1, 4), each = 4)
+    o <- c(5, 0, 0, 0, 5, 5, 5, 0)
+    m50 <- runMetrics(powerLawSE(o, e), lodProb = 0.5, minAmount = 0)
+    expect_equal(m50$lodStatus, "fit")
+    expect_equal(m50$lod, 2, tolerance = 1e-6)
+    # the 95 percent point, 2^((log(19) + log(3)) / log(3)) or about 12.8,
+    # lies above the largest amount, so it is refused
+    m95 <- runMetrics(powerLawSE(o, e), lodProb = 0.95, minAmount = 0)
+    expect_true(is.na(m95$lod))
+    expect_equal(m95$lodStatus, "outside_range")
+})
+
+test_that("residSD is the residual standard error, divisor n - 2", {
+    e <- c(1, 2, 4, 8)
+    # residuals 0.1, -0.1, -0.1, 0.1 are orthogonal to 1 and log2(e)
+    o <- 2^(log2(e) + c(0.1, -0.1, -0.1, 0.1))
+    m <- runMetrics(powerLawSE(o, e))
+    expect_equal(m$slope, 1)
+    expect_equal(m$residSD, sqrt(4 * 0.01 / 2))
+})
+
+test_that("ratioAccuracy refuses shared samples and empty spike sets", {
+    m <- matrix(c(8, 2, 4, 2), nrow = 2,
+                dimnames = list(c("u", "s"), c("x", "y")))
+    se <- SummarizedExperiment::SummarizedExperiment(
+        list(counts = m),
+        colData = S4Vectors::DataFrame(mix = c("A", "B"),
+                                       row.names = c("x", "y")))
+    d <- spikeDesign(rep(c("u", "s"), 2), amount = c(4, 1, 1, 1),
+                     mix = rep(c("A", "B"), each = 2))
+    se <- addTruth(se, d, mix = "mix")
+    expect_error(ratioAccuracy(se, c("x", "y"), "y"), "share a sample")
+    expect_error(ratioAccuracy(se, "x", "y", detect = 100),
+                 "no spike is detected")
+})

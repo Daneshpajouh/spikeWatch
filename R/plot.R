@@ -69,10 +69,10 @@ plotDoseResponse <- function(se, run = 1L, assay = 1L,
 plotDrift <- function(chart, title = NULL) {
     df <- chart
     df$i <- seq_len(nrow(df))
-    nb <- max(which(df$baseline))
+    b <- which(df$baseline)
     ggplot2::ggplot(df, ggplot2::aes(.data$i, .data$stat)) +
-        ggplot2::annotate("rect", xmin = 0.5, xmax = nb + 0.5, ymin = -Inf,
-                          ymax = Inf, alpha = 0.1) +
+        ggplot2::annotate("rect", xmin = b - 0.5, xmax = b + 0.5,
+                          ymin = -Inf, ymax = Inf, alpha = 0.1) +
         ggplot2::geom_line(colour = "grey40", na.rm = TRUE) +
         ggplot2::geom_point(ggplot2::aes(colour = .data$signal),
                             na.rm = TRUE) +

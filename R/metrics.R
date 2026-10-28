@@ -9,7 +9,8 @@
 #'   compression. Needs at least three detected spikes and more than one
 #'   distinct expected amount, otherwise `NA`. Only spikes with an expected
 #'   amount of at least `minAmount` enter the fit (see below).
-#' * `residSD`: standard deviation of the fit residuals, a precision figure.
+#' * `residSD`: residual standard error of the fit (divisor n - 2), a
+#'   precision figure.
 #' * `offset`: median of log2 measured minus log2 expected, over the same
 #'   spikes as the fit. It moves with sequencing depth or instrument
 #'   response, and is defined even when all spikes in a run share one
@@ -146,7 +147,7 @@ runMetrics <- function(se, assay = 1L, expected = "expected", detect = 0,
             res$intercept <- unname(cf[1])
             res$slope <- unname(cf[2])
             res$r2 <- 1 - sum(r^2) / sum((lo - mean(lo))^2)
-            res$residSD <- stats::sd(r)
+            res$residSD <- sqrt(sum(r^2) / (length(r) - 2L))
         }
     }
     lodFit <- .lod(e, det, lodProb)
@@ -230,6 +231,8 @@ ratioAccuracy <- function(se, groupA, groupB, assay = 1L,
     b <- .cols(se, groupB)
     if (!length(a) || !length(b))
         stop("both groups need at least one sample")
+    if (length(intersect(a, b)))
+        stop("'groupA' and 'groupB' share a sample")
     ea <- rowMeans(expd[, a, drop = FALSE])
     eb <- rowMeans(expd[, b, drop = FALSE])
     oa <- obs[, a, drop = FALSE]
@@ -237,6 +240,8 @@ ratioAccuracy <- function(se, groupA, groupB, assay = 1L,
     seen <- function(m) rowSums(is.na(m) | m <= detect) == 0
     measuredLR <- log2(rowMeans(oa)) - log2(rowMeans(ob))
     spike <- !is.na(ea) & !is.na(eb) & ea > 0 & eb > 0 & seen(oa) & seen(ob)
+    if (!any(spike))
+        stop("no spike is detected in every sample of both groups")
     expectedLR <- log2(ea) - log2(eb)
     shift <- 0
     if (is.logical(center)) {

@@ -75,3 +75,34 @@ test_that("driftChart refuses a baseline it cannot use", {
     expect_error(driftChart(1:5, baseline = 9), "outside")
     expect_error(driftChart(data.frame(a = 1:5)), "metric")
 })
+
+test_that("moving ranges never pair runs across a gap", {
+    # only the ranges 10 to 12 and 12 to 10 are between neighbours
+    x <- c(10, 12, NA, 12, 10, 11)
+    ch <- suppressWarnings(driftChart(x, baseline = 5, method = "shewhart"))
+    expect_equal(attr(ch, "sigma"), 2 / 1.128)
+    y <- c(10, 12, 99, 12, 10, 11)
+    ch2 <- suppressWarnings(driftChart(y, baseline = c(1, 2, 4, 5),
+                                       method = "shewhart"))
+    expect_equal(attr(ch2, "sigma"), 2 / 1.128)
+    expect_error(suppressWarnings(
+        driftChart(c(1, NA, 2, NA, 3, 4), baseline = 5)), "adjacent")
+    # the standard deviation uses every observed baseline value
+    ch3 <- suppressWarnings(driftChart(x, baseline = 5, sigma = "sd"))
+    expect_equal(attr(ch3, "sigma"), stats::sd(c(10, 12, 12, 10)))
+})
+
+test_that("the lower CUSUM catches a fall", {
+    ch <- suppressWarnings(driftChart(c(-1, 0, 1, -6), baseline = 3,
+                                      method = "cusum", sigma = "sd"))
+    expect_equal(ch$cusumLow[4], 5.5)
+    expect_equal(ch$cusumUp[4], 0)
+    expect_true(ch$signal[4])
+})
+
+test_that("firstSignal refuses a chart without a baseline", {
+    ch <- suppressWarnings(driftChart(c(1, 2, 1, 2, 1, 6), baseline = 5,
+                                      method = "shewhart"))
+    ch$baseline <- FALSE
+    expect_error(firstSignal(ch), "no baseline")
+})
