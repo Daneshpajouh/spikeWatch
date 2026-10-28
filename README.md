@@ -11,7 +11,7 @@ The known amounts sit in an assay beside the measurements, cell by cell. That on
 BiocManager::install("Daneshpajouh/spikeWatch")
 ```
 
-R 4.4 or later. Imports SummarizedExperiment, S4Vectors and ggplot2.
+R 4.6 or later. Imports SummarizedExperiment, S4Vectors and ggplot2.
 
 ## Use
 

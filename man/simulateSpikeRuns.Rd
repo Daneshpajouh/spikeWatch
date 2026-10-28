@@ -16,8 +16,7 @@ simulateSpikeRuns(
   driftType = c("slope", "offset", "noise"),
   driftSize = 0,
   driftShape = c("step", "ramp"),
-  rampRuns = 5L,
-  seed = NULL
+  rampRuns = 5L
 )
 }
 \arguments{
@@ -44,8 +43,6 @@ simulateSpikeRuns(
 \item{driftShape}{\code{"step"} or \code{"ramp"}.}
 
 \item{rampRuns}{Runs over which a ramp reaches full size.}
-
-\item{seed}{Optional random seed.}
 }
 \value{
 A \code{SummarizedExperiment} with assays \code{counts} and \code{expected},
@@ -53,7 +50,8 @@ and \code{colData} columns \code{mix}, \code{depth} (log2) and \code{drifted}.
 }
 \description{
 Makes count data for a series of runs of one spike-in mix, with an
-optional drift planted at a known run. It exists to test charts and
+optional drift planted at a known run. Call \code{\link[=set.seed]{set.seed()}} first for a
+repeatable series. It exists to test charts and
 thresholds before trusting them on real data: the truth of every run,
 and whether it drifted, is in the output.
 }
@@ -80,9 +78,9 @@ With \code{driftShape = "ramp"} the change grows linearly to \code{driftSize}
 over \code{rampRuns} runs instead of stepping.
 }
 \examples{
+set.seed(42)
 runs <- simulateSpikeRuns(erccDesign(), nRuns = 30, driftAt = 21,
-                          driftType = "slope", driftSize = -0.1,
-                          seed = 42)
+                          driftType = "slope", driftSize = -0.1)
 m <- runMetrics(runs)
 firstSignal(driftChart(m, "slope", baseline = 15))
 }

@@ -40,7 +40,8 @@
 #' @return A `data.frame` with one row per sample.
 #'
 #' @examples
-#' runs <- simulateSpikeRuns(erccDesign(), nRuns = 3, seed = 1)
+#' set.seed(1)
+#' runs <- simulateSpikeRuns(erccDesign(), nRuns = 3)
 #' runMetrics(runs)
 #' @export
 runMetrics <- function(se, assay = 1L, expected = "expected", detect = 0,
@@ -138,8 +139,10 @@ runMetrics <- function(se, assay = 1L, expected = "expected", detect = 0,
 #'
 #' @examples
 #' ercc <- erccDesign()
-#' a <- simulateSpikeRuns(ercc, nRuns = 3, mix = "Mix1", seed = 1)
-#' b <- simulateSpikeRuns(ercc, nRuns = 3, mix = "Mix2", seed = 2)
+#' set.seed(1)
+#' a <- simulateSpikeRuns(ercc, nRuns = 3, mix = "Mix1")
+#' set.seed(2)
+#' b <- simulateSpikeRuns(ercc, nRuns = 3, mix = "Mix2")
 #' colnames(b) <- paste0("b", seq_len(3))
 #' both <- cbind(a, b)
 #' ratioAccuracy(both, 1:3, 4:6)$summary

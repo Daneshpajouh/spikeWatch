@@ -64,6 +64,7 @@ logistic fit has no finite estimate.
 }
 }
 \examples{
-runs <- simulateSpikeRuns(erccDesign(), nRuns = 3, seed = 1)
+set.seed(1)
+runs <- simulateSpikeRuns(erccDesign(), nRuns = 3)
 runMetrics(runs)
 }

@@ -47,9 +47,9 @@ a little higher.
 ```{r simulate}
 library(spikeWatch)
 ercc <- erccDesign()
+set.seed(7)
 runs <- simulateSpikeRuns(ercc, nRuns = 40, mix = "Mix1", driftAt = 31,
-                          driftType = "slope", driftSize = -0.1,
-                          seed = 7)
+                          driftType = "slope", driftSize = -0.1)
 runs
 ```
 
@@ -121,8 +121,10 @@ With samples from two mixes, `ratioAccuracy()` compares measured and
 expected log2 ratios, spike by spike and per expected ratio:
 
 ```{r ratio}
-a <- simulateSpikeRuns(ercc, nRuns = 3, mix = "Mix1", seed = 1)
-b <- simulateSpikeRuns(ercc, nRuns = 3, mix = "Mix2", seed = 2)
+set.seed(1)
+a <- simulateSpikeRuns(ercc, nRuns = 3, mix = "Mix1")
+set.seed(2)
+b <- simulateSpikeRuns(ercc, nRuns = 3, mix = "Mix2")
 colnames(b) <- paste0("b", 1:3)
 ratioAccuracy(cbind(a, b), 1:3, 4:6)$summary
 ```

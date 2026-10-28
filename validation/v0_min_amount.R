@@ -2,7 +2,8 @@
 # ERCC Mix 1. Compares the slope fitted on every detected spike with the
 # slope fitted on spikes chosen by known amount.
 suppressMessages(library(spikeWatch))
-s <- simulateSpikeRuns(erccDesign(), nRuns = 200, seed = 11)
+set.seed(11)
+s <- simulateSpikeRuns(erccDesign(), nRuns = 200)
 out <- do.call(rbind, lapply(c(0, 1, 10), function(a) {
     m <- runMetrics(s, minAmount = a)
     data.frame(minAmount = a, meanSlope = mean(m$slope),

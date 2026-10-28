@@ -15,12 +15,12 @@ Description: Turns the known amounts of spike-in controls into accuracy
     CUSUM charts against a baseline, so a run that drifts is flagged.
 License: GPL-3
 Encoding: UTF-8
-Depends: R (>= 4.4.0), SummarizedExperiment
+Depends: R (>= 4.6.0), SummarizedExperiment
 Imports: ggplot2, methods, rlang, S4Vectors, stats, utils
 Suggests: BiocStyle, knitr, rmarkdown, testthat (>= 3.0.0)
 VignetteBuilder: knitr
 biocViews: QualityControl, RNASeq, Proteomics, MassSpectrometry,
-    Transcriptomics, Software
+    Transcriptomics, Sequencing, Software
 URL: https://github.com/Daneshpajouh/spikeWatch
 BugReports: https://github.com/Daneshpajouh/spikeWatch/issues
 Config/testthat/edition: 3

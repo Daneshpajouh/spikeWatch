@@ -27,9 +27,10 @@ rows <- list()
 for (nm in names(scen)) {
     sc <- scen[[nm]]
     for (seed in 1:200) {
+        set.seed(seed)
         se <- simulateSpikeRuns(design, nRuns = 40, mix = "Mix1",
                                 driftAt = sc$at, driftType = sc$type,
-                                driftSize = sc$size, seed = seed)
+                                driftSize = sc$size)
         m <- runMetrics(se, minAmount = 1)
         nt <- noTruth(se)
         series <- list(slope = m$slope, residSD = m$residSD,

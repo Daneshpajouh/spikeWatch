@@ -1,5 +1,6 @@
 test_that("plots build", {
-    s <- simulateSpikeRuns(erccDesign(), nRuns = 12, seed = 1)
+    set.seed(1)
+    s <- simulateSpikeRuns(erccDesign(), nRuns = 12)
     expect_s3_class(plotDoseResponse(s, 1), "ggplot")
     ch <- driftChart(runMetrics(s), "slope", baseline = 8)
     p <- plotDrift(ch, "slope")

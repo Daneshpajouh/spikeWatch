@@ -10,7 +10,8 @@
 #'   edge as open points.
 #'
 #' @examples
-#' runs <- simulateSpikeRuns(erccDesign(), nRuns = 2, seed = 1)
+#' set.seed(1)
+#' runs <- simulateSpikeRuns(erccDesign(), nRuns = 2)
 #' plotDoseResponse(runs, 1)
 #' @export
 plotDoseResponse <- function(se, run = 1L, assay = 1L,

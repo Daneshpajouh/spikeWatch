@@ -44,8 +44,10 @@ A spike enters only if it is detected in every sample of both groups.
 }
 \examples{
 ercc <- erccDesign()
-a <- simulateSpikeRuns(ercc, nRuns = 3, mix = "Mix1", seed = 1)
-b <- simulateSpikeRuns(ercc, nRuns = 3, mix = "Mix2", seed = 2)
+set.seed(1)
+a <- simulateSpikeRuns(ercc, nRuns = 3, mix = "Mix1")
+set.seed(2)
+b <- simulateSpikeRuns(ercc, nRuns = 3, mix = "Mix2")
 colnames(b) <- paste0("b", seq_len(3))
 both <- cbind(a, b)
 ratioAccuracy(both, 1:3, 4:6)$summary
