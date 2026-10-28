@@ -1,7 +1,8 @@
 # Plan v2, step 1: simulate every series and keep its per-run figures.
 # Rules in PLAN_v2.md. Usage: Rscript validation/pv2_1_series.R OUTDIR [SET]
 # SET is "main" (calibration, evaluation null and drift seeds) or
-# "confirm" (the confirmation seeds, run once after the main results).
+# "confirm" (the confirmation seeds, run once after the main results) or
+# "confirm2" (precision loss on seeds 910001 to 910400; addendum 2).
 suppressMessages(library(spikeWatch))
 args <- commandArgs(trailingOnly = TRUE)
 outdir <- args[1]
@@ -40,6 +41,9 @@ jobs <- if (set == "main") list(
     list(list(role = "confirm", drift = "compression", seeds = 900001:900400),
          list(role = "confirm", drift = "sensitivity_loss",
               seeds = 900001:900400))
+if (set == "confirm2")
+    jobs <- list(list(role = "confirm", drift = "precision_loss",
+                      seeds = 910001:910400))
 famNames <- if (set == "main") names(families) else c("F0", "F5")
 
 figures <- function(se) {
@@ -51,17 +55,17 @@ figures <- function(se) {
     b2 <- unname(apply(sc, 2, function(v) stats::sd(log2(v[v > 0]))))
     p <- profileMetrics(se, baseline = 20)
     cbind(slope = m$slope, residSD = m$residSD, offset = m$offset,
-          B1 = b1, B2 = b2, B3 = p$profileSlope)
+          B1 = b1, B2 = b2, B3 = p$profileSlope, B4 = p$profileResidSD)
 }
 
 runFamily <- function(fam) {
     out <- list()
     for (jb in jobs) {
         dr <- drifts[[jb$drift]]
-        arr <- array(NA_real_, c(length(jb$seeds), 40, 6),
+        arr <- array(NA_real_, c(length(jb$seeds), 40, 7),
                      dimnames = list(jb$seeds, NULL,
                                      c("slope", "residSD", "offset", "B1",
-                                       "B2", "B3")))
+                                       "B2", "B3", "B4")))
         for (i in seq_along(jb$seeds)) {
             set.seed(jb$seeds[i])
             se <- do.call(simulateSpikeRuns, c(list(

@@ -6,17 +6,19 @@ sdir <- args[1]
 outdir <- args[2]
 dir.create(outdir, showWarnings = FALSE, recursive = TRUE)
 fams <- paste0("F", 0:5)
-figs <- c("slope", "residSD", "offset", "B1", "B2", "B3")
+figs <- c("slope", "residSD", "offset", "B1", "B2", "B3", "B4")
 dets <- list(slope = "slope", residSD = "residSD", offset = "offset",
              B1 = "B1", B2 = "B2", B3 = "B3",
-             UT = c("slope", "residSD"), UF = c("B2", "B3"))
+             UT = c("slope", "residSD"), UF = c("B2", "B3"),
+             B4 = "B4", UF2 = c("B3", "B4"))
 charts <- c("cusum", "ewma")
 Hs <- c(10, 20)
 defaults <- c(cusum = 5, ewma = 3)
 drifts <- c("compression_small", "compression", "compression_ramp",
             "sensitivity_loss", "precision_loss")
 pairs <- list(C1 = c("UT", "UF"), C2 = c("slope", "B3"),
-              C3 = c("residSD", "B2"), C4 = c("offset", "B1"))
+              C3 = c("residSD", "B2"), C4 = c("offset", "B1"),
+              C5 = c("residSD", "B4"), C6 = c("UT", "UF2"))
 
 # Standardized statistic over the 20 monitored runs: CUSUM sums in sigma
 # units, EWMA distance over its exact standard deviation. A missing run
@@ -135,8 +137,10 @@ scoreFamily <- function(fam) {
     }
     cmps <- do.call(rbind, cmp)
 
-    # calibrateChart() on each series' own baseline.
+    # calibrateChart() on each series' own baseline; it is not in this
+    # release (addendum 2), so the block runs only where it exists.
     cc <- list()
+    if (exists("calibrateChart", mode = "function"))
     for (key in c("eval:null", paste0("eval:", drifts))) {
         arr <- ser[[key]]
         seeds <- as.integer(dimnames(arr)[[1]])
@@ -180,7 +184,7 @@ if (any(bad)) {
     stop("scoring failed for ", paste(fams[bad], collapse = ", "))
 }
 for (part in c("thresholds", "scores", "comparisons", "calibrate"))
-    utils::write.csv(do.call(rbind, lapply(out, `[[`, part)),
+    if (!is.null(out[[1]][[part]])) utils::write.csv(do.call(rbind, lapply(out, `[[`, part)),
                      file.path(outdir, paste0(part, ".csv")),
                      row.names = FALSE)
 
