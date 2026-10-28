@@ -14,6 +14,13 @@
 #'   decision interval `h` sigma. `stat` is the larger of the upper and
 #'   lower sums.
 #'
+#' The EWMA and CUSUM statistics start fresh at the first run after the
+#' last baseline run (the EWMA at the centre, the CUSUM sums at zero), so
+#' monitoring never inherits what the baseline runs built up. Their rows up
+#' to the last baseline run have `stat`, `lower` and `upper` set to `NA`
+#' and never signal. The Shewhart chart has no memory and is shown for
+#' every run.
+#'
 #' Runs with a missing value are carried: the chart statistic does not
 #' move and the run cannot signal.
 #'
@@ -21,7 +28,8 @@
 #'   from [runMetrics()] together with `metric`.
 #' @param metric Column of `x` to chart when `x` is a `data.frame`.
 #' @param baseline Either the number of leading runs that form the
-#'   baseline, or their indices.
+#'   baseline, or their indices. Fewer than 20 non-missing baseline runs
+#'   give a warning: limits from a short baseline are themselves uncertain.
 #' @param method One of `"ewma"`, `"cusum"` or `"shewhart"`.
 #' @param lambda EWMA weight, between 0 and 1.
 #' @param L Limit width in sigma for the Shewhart and EWMA charts.
@@ -35,10 +43,10 @@
 #' @examples
 #' set.seed(1)
 #' x <- c(rnorm(20, 1, 0.02), rnorm(10, 0.95, 0.02))
-#' ch <- driftChart(x, baseline = 15, method = "ewma")
+#' ch <- driftChart(x, baseline = 20, method = "ewma")
 #' firstSignal(ch)
 #' @export
-driftChart <- function(x, metric = NULL, baseline = 10L,
+driftChart <- function(x, metric = NULL, baseline = 20L,
                        method = c("ewma", "cusum", "shewhart"),
                        lambda = 0.2, L = 3, k = 0.5, h = 5,
                        sigma = c("mr", "sd")) {
@@ -61,14 +69,17 @@ driftChart <- function(x, metric = NULL, baseline = 10L,
     xb <- xb[!is.na(xb)]
     if (length(xb) < 3L)
         stop("the baseline needs at least three non-missing runs")
+    if (length(xb) < 20L)
+        warning("the baseline has fewer than 20 non-missing runs; ",
+                "its limits are uncertain")
     mu <- mean(xb)
     s <- if (sigma == "mr") mean(abs(diff(xb))) / 1.128 else stats::sd(xb)
     if (!is.finite(s) || s <= 0)
         stop("the baseline has no spread; cannot set limits")
-    out <- switch(method,
-        shewhart = .shewhart(x, mu, s, L),
-        ewma = .ewma(x, mu, s, lambda, L),
-        cusum = .cusum(x, mu, s, k, h))
+    out <- if (method == "shewhart") .shewhart(x, mu, s, L) else
+        .afterBaseline(x, max(base), function(y) switch(method,
+            ewma = .ewma(y, mu, s, lambda, L),
+            cusum = .cusum(y, mu, s, k, h)))
     res <- data.frame(run = runs, value = x, out,
                       baseline = seq_len(n) %in% base,
                       stringsAsFactors = FALSE)
@@ -78,6 +89,22 @@ driftChart <- function(x, metric = NULL, baseline = 10L,
         cusum = c(k = k, h = h))
     attr(res, "sigma") <- s
     res
+}
+
+# Runs the chart on the runs after the last baseline run only; the rows up
+# to it keep the column layout with NA statistics and no signal.
+.afterBaseline <- function(x, last, chart) {
+    n <- length(x)
+    shape <- chart(x[1L])
+    pad <- shape[rep(1L, last), , drop = FALSE]
+    pad[] <- lapply(pad, function(col)
+        if (is.logical(col)) rep(FALSE, last) else rep(NA_real_, last))
+    pad$center <- rep(shape$center[1L], last)
+    if (last >= n)
+        return(pad)
+    out <- rbind(pad, chart(x[(last + 1L):n]))
+    rownames(out) <- NULL
+    out
 }
 
 .shewhart <- function(x, mu, s, L) {
@@ -135,8 +162,8 @@ driftChart <- function(x, metric = NULL, baseline = 10L,
 #' @return The index of the first signalling run, or `NA` if none.
 #'
 #' @examples
-#' ch <- driftChart(c(1, 1.01, 0.99, 1, 1.02, 0.5), baseline = 5,
-#'                  method = "shewhart")
+#' ch <- driftChart(c(rep(c(1, 1.01, 0.99, 1.02), 5), 0.5),
+#'                  baseline = 20, method = "shewhart")
 #' firstSignal(ch)
 #' @export
 firstSignal <- function(chart, after = max(which(chart$baseline))) {

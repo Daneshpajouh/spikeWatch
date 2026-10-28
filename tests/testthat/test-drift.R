@@ -1,6 +1,7 @@
 test_that("Shewhart limits use the moving range", {
     x <- c(1, 2, 1, 2, 1, 6)
-    ch <- driftChart(x, baseline = 5, method = "shewhart")
+    expect_warning(ch <- driftChart(x, baseline = 5, method = "shewhart"),
+                   "fewer than 20")
     s <- 1 / 1.128
     expect_equal(attr(ch, "sigma"), s)
     expect_equal(ch$upper[1], 1.4 + 3 * s)
@@ -10,32 +11,66 @@ test_that("Shewhart limits use the moving range", {
 })
 
 test_that("EWMA statistic and first limit match the formulas", {
-    x <- c(1, 2, 1, 2, 1, 3)
-    ch <- driftChart(x, baseline = 5, method = "ewma", lambda = 0.2)
-    expect_equal(ch$stat[1], 0.2 * 1 + 0.8 * 1.4)
-    expect_equal(ch$stat[2], 0.2 * 2 + 0.8 * ch$stat[1])
+    x <- c(1, 2, 1, 2, 1, 3, 2)
+    ch <- suppressWarnings(
+        driftChart(x, baseline = 5, method = "ewma", lambda = 0.2))
+    expect_true(all(is.na(ch$stat[1:5])))
+    expect_equal(ch$center[1:5], rep(1.4, 5))
+    expect_equal(ch$stat[6], 0.2 * 3 + 0.8 * 1.4)
+    expect_equal(ch$stat[7], 0.2 * 2 + 0.8 * ch$stat[6])
     s <- 1 / 1.128
-    expect_equal(ch$upper[1] - 1.4, 3 * s * sqrt(0.2 / 1.8 * (1 - 0.8^2)))
+    expect_equal(ch$upper[6] - 1.4, 3 * s * sqrt(0.2 / 1.8 * (1 - 0.8^2)))
 })
 
-test_that("CUSUM accumulates in sigma units", {
+test_that("CUSUM accumulates in sigma units from the first monitoring run", {
     x <- c(0, 1, 0, 1, 0, 3, 3)
-    ch <- driftChart(x, baseline = 5, method = "cusum", sigma = "sd")
+    ch <- suppressWarnings(
+        driftChart(x, baseline = 5, method = "cusum", sigma = "sd"))
     s <- stats::sd(c(0, 1, 0, 1, 0))
     z <- (3 - 0.4) / s - 0.5
-    expect_equal(ch$cusumUp[7] - ch$cusumUp[5], 2 * z)
+    expect_true(all(is.na(ch$cusumUp[1:5])))
+    expect_equal(ch$cusumUp[6], z)
+    expect_equal(ch$cusumUp[7], 2 * z)
+})
+
+test_that("monitoring does not inherit what the baseline built up", {
+    x <- c(rep(-1, 10), rep(1, 10), 0, 0)
+    for (m in c("cusum", "ewma")) {
+        ch <- driftChart(x, baseline = 20, method = m)
+        expect_true(all(is.na(ch$stat[1:20])))
+        expect_false(any(ch$signal))
+        expect_equal(ch$stat[21], 0)
+    }
+})
+
+test_that("a baseline covering every run leaves nothing to monitor", {
+    x <- c(1, 2, 1, 2, 1)
+    ch <- suppressWarnings(driftChart(x, baseline = 5, method = "cusum"))
+    expect_equal(nrow(ch), 5L)
+    expect_true(all(is.na(ch$stat)))
+    expect_false(any(ch$signal))
+    expect_true(is.na(firstSignal(ch)))
 })
 
 test_that("missing values carry the statistic and never signal", {
     x <- c(1, 2, 1, 2, 1, NA, 9)
-    ch <- driftChart(x, baseline = 5, method = "ewma")
-    expect_equal(ch$stat[6], ch$stat[5])
+    ch <- suppressWarnings(driftChart(x, baseline = 5, method = "ewma"))
+    expect_equal(ch$stat[6], 1.4)
     expect_false(ch$signal[6])
     expect_true(ch$signal[7])
 })
 
+test_that("the default baseline is 20 runs and a short one warns", {
+    set.seed(3)
+    x <- rnorm(25)
+    expect_silent(ch <- driftChart(x, method = "cusum"))
+    expect_equal(sum(ch$baseline), 20L)
+    expect_warning(driftChart(x, baseline = 19), "fewer than 20")
+})
+
 test_that("driftChart refuses a baseline it cannot use", {
-    expect_error(driftChart(c(1, 1, 1, 1), baseline = 3), "no spread")
+    expect_error(suppressWarnings(driftChart(c(1, 1, 1, 1), baseline = 3)),
+                 "no spread")
     expect_error(driftChart(1:5, baseline = 2), "at least three")
     expect_error(driftChart(1:5, baseline = 9), "outside")
     expect_error(driftChart(data.frame(a = 1:5)), "metric")

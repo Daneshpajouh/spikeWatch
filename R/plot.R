@@ -45,11 +45,12 @@ plotDoseResponse <- function(se, run = 1L, assay = 1L,
 #' @param title Plot title.
 #'
 #' @return A `ggplot` object: the chart statistic by run, its limits, the
-#'   baseline runs shaded and signalling runs in red.
+#'   baseline runs shaded and signalling runs in red. EWMA and CUSUM charts
+#'   start after the baseline, so their baseline runs show no statistic.
 #'
 #' @examples
-#' ch <- driftChart(c(1, 1.01, 0.99, 1, 1.02, 0.9, 0.85), baseline = 5,
-#'                  method = "ewma")
+#' ch <- driftChart(c(rep(c(1, 1.01, 0.99, 1.02), 5), 0.9, 0.85),
+#'                  baseline = 20, method = "ewma")
 #' plotDrift(ch)
 #' @importFrom rlang .data
 #' @export
@@ -60,10 +61,13 @@ plotDrift <- function(chart, title = NULL) {
     ggplot2::ggplot(df, ggplot2::aes(.data$i, .data$stat)) +
         ggplot2::annotate("rect", xmin = 0.5, xmax = nb + 0.5, ymin = -Inf,
                           ymax = Inf, alpha = 0.1) +
-        ggplot2::geom_line(colour = "grey40") +
-        ggplot2::geom_point(ggplot2::aes(colour = .data$signal)) +
-        ggplot2::geom_line(ggplot2::aes(y = .data$upper), linetype = 2) +
-        ggplot2::geom_line(ggplot2::aes(y = .data$lower), linetype = 2) +
+        ggplot2::geom_line(colour = "grey40", na.rm = TRUE) +
+        ggplot2::geom_point(ggplot2::aes(colour = .data$signal),
+                            na.rm = TRUE) +
+        ggplot2::geom_line(ggplot2::aes(y = .data$upper), linetype = 2,
+                           na.rm = TRUE) +
+        ggplot2::geom_line(ggplot2::aes(y = .data$lower), linetype = 2,
+                           na.rm = TRUE) +
         ggplot2::geom_hline(ggplot2::aes(yintercept = .data$center),
                             colour = "grey60") +
         ggplot2::scale_colour_manual(values = c(`FALSE` = "black",
