@@ -1,7 +1,8 @@
 """Plant each bug in mutants.tsv into a fresh copy of the committed head
 and run the test suite on it. A mutant is killed when at least one test
-fails or errors. Run from the repository root; writes
-validation/mutants/results.tsv. The mutant copies are left in a new
+fails or errors. Run from the repository root:
+python3 run_mutants.py [MUTANTS.tsv [RESULTS.tsv]]; the defaults are
+validation/mutants/mutants.tsv and results.tsv. The mutant copies are left in a new
 folder under the system temporary directory, named in the output.
 
 Each line of mutants.tsv: file, exact text to replace, replacement. The
@@ -15,7 +16,9 @@ import tempfile
 root = os.getcwd()
 head = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"],
                                text=True).strip()
-lines = open("validation/mutants/mutants.tsv").read().strip().split("\n")
+src = sys.argv[1] if len(sys.argv) > 1 else "validation/mutants/mutants.tsv"
+dst = sys.argv[2] if len(sys.argv) > 2 else "validation/mutants/results.tsv"
+lines = open(src).read().strip().split("\n")
 rows = []
 tmp = tempfile.mkdtemp(prefix="spikewatch-mutants-")
 for i, line in enumerate(lines, 1):
@@ -40,10 +43,10 @@ for i, line in enumerate(lines, 1):
     n = int(k[0].split()[1]) if k else -1
     verdict = "KILLED" if n > 0 or r.returncode != 0 else "SURVIVED"
     rows.append(("m%02d" % i, f, verdict, "failing tests: %d" % n))
-with open("validation/mutants/results.tsv", "w") as out:
+with open(dst, "w") as out:
     out.write("# head %s\n" % head)
     for r in rows:
         out.write("\t".join(r) + "\n")
-print(open("validation/mutants/results.tsv").read())
+print(open(dst).read())
 print("mutant copies:", tmp)
 sys.exit(0 if all(r[2] == "KILLED" for r in rows) else 1)

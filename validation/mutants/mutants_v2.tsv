@@ -1,0 +1,15 @@
+R/drift.R	out <- rbind(pad, chart(x[(last + 1L):n]))	out <- rbind(pad, chart(x)[(last + 1L):n, , drop = FALSE])
+R/drift.R	if (length(xb) < 20L)	if (length(xb) < 10L)
+R/drift.R	pair <- which(ok[-length(ok)] & ok[-1L] & diff(base) == 1L)	pair <- which(ok[-length(ok)] & ok[-1L] & diff(base) >= 1L)
+R/drift.R	h <- as.vector(unname(h))	h <- h
+R/metrics.R	if (lx < min(x) || lx > max(x))	if (FALSE)
+R/metrics.R	use <- .runIndex(baseline, colnames(se), ncol(obs))	use <- seq_len(ncol(obs))
+R/metrics.R	res$residSD <- sqrt(sum(r^2) / (length(r) - 2L))	res$residSD <- sqrt(sum(r^2) / (length(r) - 1L))
+R/calibrate.R	mu <- rowMeans(xs)	mu <- rep(mean(xb), B)
+R/calibrate.R	thr <- sort(m)[ceiling((1 - alpha) * B)]	thr <- sort(m)[ceiling((1 - 2 * alpha) * B)]
+R/calibrate.R	w <- sqrt(lambda / (2 - lambda) * (1 - (1 - lambda)^(2 * t)))	w <- sqrt(lambda / (2 - lambda))
+R/calibrate.R	u[s <= 0, ] <- Inf	u[s <= 0, ] <- 0
+R/profile.R	use <- rowSums(seen) == length(base)	use <- rowSums(seen) > 0
+R/profile.R	ref <- rowMeans(y[, base, drop = FALSE])	ref <- rowMeans(y)
+R/simulate.R	out[i] <- rho * out[i - 1L] + sqrt(1 - rho^2) * e[i]	out[i] <- rho * out[i - 1L] + e[i]
+R/simulate.R	lmu <- lmu + stats::rnorm(nrow(d), 0, spikeBiasSD)	lmu <- lmu + stats::rnorm(length(lmu), 0, spikeBiasSD)
