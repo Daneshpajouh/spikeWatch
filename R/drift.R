@@ -57,7 +57,7 @@ driftChart <- function(x, metric = NULL, baseline = 20L,
                        sigma = c("mr", "sd")) {
     method <- match.arg(method)
     sigma <- match.arg(sigma)
-    # Limits from calibrateChart() arrive named and with attributes.
+    # Limits may arrive named and with attributes.
     lambda <- as.vector(unname(lambda))
     L <- as.vector(unname(L))
     k <- as.vector(unname(k))

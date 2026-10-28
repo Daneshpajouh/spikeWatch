@@ -95,18 +95,8 @@ response, `lod` for sensitivity at the low end.
 The default limits (`h = 5` for CUSUM, `L = 3` for EWMA) treat the
 baseline's centre and spread as exact. With 20 baseline runs they are
 not, and the chart gives more false alarms than those limits suggest.
-`calibrateChart()` sets the limit for a stated false-alarm probability
-over a stated number of monitored runs, by a bootstrap that re-estimates
-the centre and spread each time:
-
-```{r calibrate, fig.width = 6, fig.height = 3.5}
-set.seed(2)
-h <- calibrateChart(m, "slope", baseline = 20, method = "cusum",
-                    alpha = 0.05, horizon = 20, B = 1000)
-c(h)
-ch2 <- driftChart(m, "slope", baseline = 20, method = "cusum", h = h)
-firstSignal(ch2)
-```
+The package's validation reports how many, so read a first signal from
+a short baseline with that in mind.
 
 `profileMetrics()` gives the figures a lab could chart without the known
 amounts, from the profile of the same spikes over the baseline runs. They
@@ -167,8 +157,8 @@ mixtures (AUC, LODR and ratio bias between two samples). MSstatsQC charts
 per-peptide run metrics such as retention time and peak area over time,
 with X, moving range and CUSUM charts and change point estimation, from a
 guide set of good runs. Anaquin analyses sequins. spikeWatch scores each
-run against the known spike amounts and charts those scores, with limits
-calibrated for a short baseline; it does not replace a full QC platform.
+run against the known spike amounts and charts those scores; it does not
+replace a full QC platform.
 
 # Session information
 

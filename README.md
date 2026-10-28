@@ -2,7 +2,7 @@
 
 spikeWatch scores every run against the known amounts of its spike-in controls, and charts those scores across runs so that a run that drifts is flagged. It is an R package built on SummarizedExperiment.
 
-The known amounts sit in an assay beside the measurements, cell by cell. That one idea covers feature-level designs, where each spike has its own amount (the ERCC RNA mixes), and sample-level designs, where the amount changes from sample to sample (a peptide or UPS1 dilution series). Per run, spikeWatch reports the dose-response slope and fit, the residual spread, the overall response and the detection limit. Between two groups it reports fold-change accuracy against the designed ratios. Across runs it puts any of those figures on a Shewhart, EWMA or CUSUM chart with limits from a baseline of good runs, and `calibrateChart()` sets those limits for a stated false-alarm rate, counting the error in a short baseline.
+The known amounts sit in an assay beside the measurements, cell by cell. That one idea covers feature-level designs, where each spike has its own amount (the ERCC RNA mixes), and sample-level designs, where the amount changes from sample to sample (a peptide or UPS1 dilution series). Per run, spikeWatch reports the dose-response slope and fit, the residual spread, the overall response and the detection limit. Between two groups it reports fold-change accuracy against the designed ratios. Across runs it puts any of those figures on a Shewhart, EWMA or CUSUM chart with limits from a baseline of good runs.
 
 ## Install
 
@@ -19,8 +19,7 @@ R 4.6 or later. Imports SummarizedExperiment, S4Vectors and ggplot2.
 library(spikeWatch)
 se <- addTruth(se, erccDesign(), mix = "mix")   # colData column "mix" says Mix1 or Mix2
 m <- runMetrics(se, assay = "counts", baseline = 20)   # fit range chosen from runs 1 to 20
-h <- calibrateChart(m, "slope", baseline = 20, method = "cusum", alpha = 0.05, horizon = 20)
-ch <- driftChart(m, "slope", baseline = 20, method = "cusum", h = h)
+ch <- driftChart(m, "slope", baseline = 20, method = "cusum")
 firstSignal(ch)
 plotDrift(ch)
 ```
@@ -48,13 +47,15 @@ Read at source on 2026-10-27:
 - Panorama AutoQC (Bereman and others, Journal of Proteome Research 15(12), 4763-4769, 2016, doi:10.1021/acs.jproteome.6b00744): an automated pipeline that extracts "identification-free metrics" from targeted peptides and shows them with "Levey-Jennings and Pareto plots" across instruments.
 - Anaquin (Bioconductor): analysis of sequins, "synthetic sequencing spike-in controls".
 
-Truth-based QC and control charts are not new. What spikeWatch adds is narrower: one R object model in which every run is scored against the known spike amounts, for RNA and proteomics designs alike, and chart limits calibrated for the short baselines labs actually have. Its validation compares it with the best chart we could build without the known amounts, and reports where the amounts help and where they do not. Its ERCC design table comes from erccdashboard.
+Truth-based QC and control charts are not new. What spikeWatch adds is narrower: one R object model in which every run is scored against the known spike amounts, for RNA and proteomics designs alike. Its validation compares it with the best chart we could build without the known amounts, and reports where the amounts help and where they do not. Its ERCC design table comes from erccdashboard.
 
 ## Validation
 
 Two rounds, each with its plan, detectors and rule for claiming a gain committed before any of its results were computed. Every figure is filled in from the output files by a script; none is typed.
 
 ## Validation, version 2 (current code)
+
+These results were computed at commit d7dfeb0. That commit also held `calibrateChart()`, which is not in this release (see "Setting limits from a short baseline" below); to rerun `validation/pv2_2_score.R` as it ran, use the `calibrate-chart` branch.
 
 Plan: `validation/PLAN_v2.md`, committed before any v2 number, with one dated addendum that corrected a sentence and changed no rule. Scripts `validation/pv2_*.R`; outputs `validation/out-v2/`; tables by `validation/render_readme_v2.py`.
 
@@ -136,20 +137,9 @@ EWMA, 20 monitored runs:
 | U-F (B2 or B3) | 15.3% | 33.7% | 20.0% | 35.2% |
 <!-- /PV2-DEFAULTS -->
 
-**calibrateChart().** Run on each series' own 20 baseline runs (500 bootstrap replicates, target 5%), for slope, residSD, offset and B3, both charts, both horizons: 16 cells per family. The pass rule fixed in the plan: the upper end of every cell's 95% interval at or below 8%.
+**Setting limits from a short baseline.** The plan also tested `calibrateChart()`, a bootstrap that sets a chart's limit for a stated false-alarm rate from the baseline runs. It failed its own pass rule in 5 of the 6 families, so it is not in this release. The function, its tests and its full results are on the `calibrate-chart` branch. Until a version passes, expect the default limits to give more false alarms than they promise, as the table above shows.
 
-<!-- PV2-CALIBRATE -->
-| Family | calibrateChart false alarms (16 cells) | Highest cell | Pass rule | Default limits, 20 runs | Failed calls |
-|---|---|---|---|---|---|
-| F0 | 4.2% to 9.2% | B3 EWMA, 20 runs | fails | 15.7% to 24.0% | 0 |
-| F1 | 4.2% to 9.2% | B3 EWMA, 20 runs | fails | 15.7% to 24.0% | 0 |
-| F2 | 3.8% to 6.1% | B3 CUSUM, 20 runs | holds | 12.9% to 19.1% | 0 |
-| F3 | 3.5% to 9.6% | B3 CUSUM, 20 runs | fails | 15.3% to 27.5% | 0 |
-| F4 | 3.8% to 8.6% | B3 EWMA, 20 runs | fails | 15.5% to 23.7% | 0 |
-| F5 | 13.7% to 65.8% | offset CUSUM, 20 runs | fails | 36.7% to 83.4% | 0 |
-<!-- /PV2-CALIBRATE -->
-
-F1 differs from F0 only when the slope drifts, so their no-drift rows come from the same series. It fails its own pass rule in most families. Where runs are independent the miss is narrow: the worst cell is the profile slope, a few points over target, and the truth-based figures come closer to it, against far higher rates at the default limits. With correlated runs (F5) every chart in this package fails badly, at default and calibrated limits alike: the bootstrap, like the textbook limits, assumes independent runs. If your runs drift slowly from day to day, these charts will alarm often; model the correlation first.
+**Correlated runs.** When runs drift slowly from day to day (family F5), every chart in this package alarms far too often. With no drift at all, 36.7% to 83.4% of series raised a false alarm within 20 monitored runs at the default limits (slope, residSD, offset and B3, both charts). The charts assume independent runs. If yours are not, model the correlation first.
 
 **Confirmation on untouched seeds**, run once after everything above was written down (seeds 900001 to 900400, thresholds from the calibration seeds):
 
