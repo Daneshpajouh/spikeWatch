@@ -106,3 +106,16 @@ test_that("firstSignal refuses a chart without a baseline", {
     ch$baseline <- FALSE
     expect_error(firstSignal(ch), "no baseline")
 })
+
+test_that("driftChart takes a named limit with attributes", {
+    set.seed(3)
+    x <- c(rnorm(20), rnorm(10, 2))
+    h <- structure(c(h = 5), alpha = 0.05, method = "cusum")
+    L <- structure(c(L = 3), alpha = 0.05, method = "ewma")
+    a <- driftChart(x, baseline = 20, method = "cusum", h = h)
+    b <- driftChart(x, baseline = 20, method = "cusum", h = 5)
+    expect_equal(a$signal, b$signal)
+    expect_equal(nrow(a), 30)
+    e <- driftChart(x, baseline = 20, method = "ewma", L = L)
+    expect_equal(e$upper, driftChart(x, baseline = 20, L = 3)$upper)
+})

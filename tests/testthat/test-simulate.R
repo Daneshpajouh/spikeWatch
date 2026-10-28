@@ -29,3 +29,82 @@ test_that("a ramp reaches full size after rampRuns", {
                            driftType = "offset", driftSize = 2)
     expect_equal(s$drifted, c(rep(FALSE, 4), rep(TRUE, 8)))
 })
+
+test_that("departures are off by default and change only what they name", {
+    d <- erccDesign()
+    set.seed(9)
+    a <- simulateSpikeRuns(d, nRuns = 6)
+    set.seed(9)
+    b <- simulateSpikeRuns(d, nRuns = 6, pivot = "median",
+                           counts = "poisson", saturation = 0,
+                           spikeBiasSD = 0, slopeSD = 0, runCor = 0)
+    expect_identical(SummarizedExperiment::assay(a, "counts"),
+                     SummarizedExperiment::assay(b, "counts"))
+    expect_error(simulateSpikeRuns(d, runCor = 1), "runCor")
+    expect_error(simulateSpikeRuns(d, saturation = 1), "saturation")
+})
+
+test_that("a top pivot raises the spikes below the top under compression", {
+    d <- erccDesign()
+    run <- function(pivot) {
+        set.seed(2)
+        s <- simulateSpikeRuns(d, nRuns = 2, driftAt = 2, driftSize = -0.3,
+                               noise = 0, depthSD = 0, pivot = pivot,
+                               scale = 1000)
+        cnt <- SummarizedExperiment::assay(s, "counts")
+        e <- SummarizedExperiment::assay(s, "expected")[, 1]
+        list(r = log2((cnt[, 2] + 1) / (cnt[, 1] + 1)), e = e)
+    }
+    top <- run("top")
+    mid <- run("median")
+    upper <- top$e > stats::median(top$e) & top$e < max(top$e)
+    expect_gt(stats::median(top$r[upper]), 0.2)
+    expect_lt(stats::median(mid$r[upper]), -0.2)
+    expect_lt(abs(stats::median(top$r[top$e == max(top$e)])), 0.1)
+})
+
+test_that("saturation flattens the top and nbinom spreads the counts", {
+    d <- erccDesign()
+    set.seed(6)
+    flat <- simulateSpikeRuns(d, nRuns = 1, noise = 0, depthSD = 0,
+                              saturation = 0.5, scale = 100)
+    set.seed(6)
+    full <- simulateSpikeRuns(d, nRuns = 1, noise = 0, depthSD = 0,
+                              scale = 100)
+    cf <- SummarizedExperiment::assay(flat, "counts")[, 1]
+    cu <- SummarizedExperiment::assay(full, "counts")[, 1]
+    e <- SummarizedExperiment::assay(full, "expected")[, 1]
+    hi <- e == max(e)
+    expect_true(all(cf[hi] < cu[hi]))
+    expect_equal(cf[e < stats::quantile(e, 0.5)],
+                 cu[e < stats::quantile(e, 0.5)], tolerance = 0.5)
+    set.seed(7)
+    p <- simulateSpikeRuns(d, nRuns = 30, noise = 0, depthSD = 0,
+                           scale = 100)
+    set.seed(7)
+    n <- simulateSpikeRuns(d, nRuns = 30, noise = 0, depthSD = 0,
+                           scale = 100, counts = "nbinom", size = 5)
+    v <- function(s) stats::median(apply(
+        SummarizedExperiment::assay(s, "counts")[hi, , drop = FALSE], 1,
+        stats::var) / rowMeans(
+        SummarizedExperiment::assay(s, "counts")[hi, , drop = FALSE]))
+    expect_gt(v(n), 10 * v(p))
+})
+
+test_that("spike biases persist across runs and runCor links runs", {
+    d <- erccDesign()
+    set.seed(12)
+    s <- simulateSpikeRuns(d, nRuns = 2, noise = 0, depthSD = 0,
+                           spikeBiasSD = 1, scale = 1000)
+    cnt <- SummarizedExperiment::assay(s, "counts")
+    e <- SummarizedExperiment::assay(s, "expected")[, 1]
+    ok <- e > stats::median(e)
+    b1 <- log2(cnt[ok, 1] / (1000 * e[ok]))
+    b2 <- log2(cnt[ok, 2] / (1000 * e[ok]))
+    expect_gt(stats::cor(b1, b2), 0.95)
+    expect_gt(stats::sd(b1), 0.5)
+    set.seed(13)
+    r <- simulateSpikeRuns(d, nRuns = 400, runCor = 0.8)
+    expect_gt(stats::cor(r$depth[-1], r$depth[-400]), 0.65)
+    expect_lt(abs(stats::sd(r$depth) - 0.5), 0.12)
+})

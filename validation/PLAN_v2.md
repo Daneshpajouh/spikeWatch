@@ -21,7 +21,7 @@ Each family is reported apart. Parameters not named take the `simulateSpikeRuns(
 | Family | Departure from the base model |
 |---|---|
 | F0 base | none (the v1 model) |
-| F1 top pivot | the slope turns about the highest design amount, so compression lowers every spike below the top |
+| F1 top pivot | the slope turns about the highest design amount, so the top spike keeps its level and compression raises every lower spike towards it (see addendum 1) |
 | F2 overdispersed | negative binomial counts with size 10 in place of Poisson |
 | F3 saturation | the log2 mean is compressed by half above the log2 mean of the 90th percentile design amount at depth 0 |
 | F4 spike biases | each spike carries a fixed log2 bias, normal with SD 0.5, drawn once per series and kept in every run |
@@ -115,4 +115,4 @@ Before the README is finished, a search for a public, licensed series of many ru
 
 ## Addenda
 
-None yet.
+1. 2026-10-27 23:35 PT, before any v2 number was computed. The F1 line first said compression about the top amount "lowers every spike below the top". That is wrong: a slope below 1 pulls every spike towards the pivot, so with the pivot at the top the lower spikes rise, as a rising background does, and total spike counts barely move. The code was right and a test caught the sentence. Only the description changed; the family, its parameters and every rule stay as committed in 1e585e0.

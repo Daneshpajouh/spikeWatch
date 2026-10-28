@@ -16,7 +16,15 @@ simulateSpikeRuns(
   driftType = c("slope", "offset", "noise"),
   driftSize = 0,
   driftShape = c("step", "ramp"),
-  rampRuns = 5L
+  rampRuns = 5L,
+  pivot = c("median", "top"),
+  counts = c("poisson", "nbinom"),
+  size = 10,
+  saturation = 0,
+  saturationAt = 0.9,
+  spikeBiasSD = 0,
+  slopeSD = 0,
+  runCor = 0
 )
 }
 \arguments{
@@ -43,6 +51,24 @@ simulateSpikeRuns(
 \item{driftShape}{\code{"step"} or \code{"ramp"}.}
 
 \item{rampRuns}{Runs over which a ramp reaches full size.}
+
+\item{pivot}{\code{"median"} or \code{"top"}: the amount the slope turns about.}
+
+\item{counts}{\code{"poisson"} or \code{"nbinom"}.}
+
+\item{size}{Negative binomial size; smaller is more overdispersed.}
+
+\item{saturation}{Fraction by which the log2 mean is compressed above
+the saturation level; 0 for none.}
+
+\item{saturationAt}{Quantile of the design amounts that sets the
+saturation level.}
+
+\item{spikeBiasSD}{Standard deviation of the fixed per-spike log2 bias.}
+
+\item{slopeSD}{Standard deviation of the run-to-run slope.}
+
+\item{runCor}{Correlation between neighbouring runs of depth and slope.}
 }
 \value{
 A \code{SummarizedExperiment} with assays \code{counts} and \code{expected},
@@ -76,6 +102,26 @@ sensitivity across all spikes.
 
 With \code{driftShape = "ramp"} the change grows linearly to \code{driftSize}
 over \code{rampRuns} runs instead of stepping.
+
+Departures from that model, for testing a chart away from the model
+the fit assumes. Each is off by default, and the defaults give the same
+counts as earlier versions for the same seed.
+\itemize{
+\item \code{pivot = "top"}: the slope turns about the highest design amount, so
+compression lowers every spike below the top.
+\item \code{counts = "nbinom"}: negative binomial counts with size \code{size} in
+place of Poisson.
+\item \code{saturation}: above the log2 mean of the \code{saturationAt} quantile of
+design amounts at depth 0, the log2 mean is compressed by this
+fraction (0.5 halves the rise).
+\item \code{spikeBiasSD}: each spike gets a fixed log2 bias, normal with this
+standard deviation, drawn once and kept in every run.
+\item \code{slopeSD}: the slope varies from run to run as normal with this
+standard deviation, before any drift.
+\item \code{runCor}: run depth and the slope wobble follow AR(1) with this
+correlation between neighbouring runs, at the standard deviations
+given.
+}
 }
 \examples{
 set.seed(42)

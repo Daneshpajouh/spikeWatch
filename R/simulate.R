@@ -26,6 +26,26 @@
 #' With `driftShape = "ramp"` the change grows linearly to `driftSize`
 #' over `rampRuns` runs instead of stepping.
 #'
+#' Departures from that model, for testing a chart away from the model
+#' the fit assumes. Each is off by default, and the defaults give the same
+#' counts as earlier versions for the same seed.
+#' * `pivot = "top"`: the slope turns about the highest design amount, so
+#'   the top spike keeps its level and compression raises every lower
+#'   spike towards it, as a rising background does. Total spike counts
+#'   then barely move.
+#' * `counts = "nbinom"`: negative binomial counts with size `size` in
+#'   place of Poisson.
+#' * `saturation`: above the log2 mean of the `saturationAt` quantile of
+#'   design amounts at depth 0, the log2 mean is compressed by this
+#'   fraction (0.5 halves the rise).
+#' * `spikeBiasSD`: each spike gets a fixed log2 bias, normal with this
+#'   standard deviation, drawn once and kept in every run.
+#' * `slopeSD`: the slope varies from run to run as normal with this
+#'   standard deviation, before any drift.
+#' * `runCor`: run depth and the slope wobble follow AR(1) with this
+#'   correlation between neighbouring runs, at the standard deviations
+#'   given.
+#'
 #' @param design A design from [spikeDesign()] or [erccDesign()].
 #' @param nRuns Number of runs.
 #' @param mix The design mix used in every run. Defaults to the first.
@@ -38,6 +58,16 @@
 #' @param driftSize Size of the change.
 #' @param driftShape `"step"` or `"ramp"`.
 #' @param rampRuns Runs over which a ramp reaches full size.
+#' @param pivot `"median"` or `"top"`: the amount the slope turns about.
+#' @param counts `"poisson"` or `"nbinom"`.
+#' @param size Negative binomial size; smaller is more overdispersed.
+#' @param saturation Fraction by which the log2 mean is compressed above
+#'   the saturation level; 0 for none.
+#' @param saturationAt Quantile of the design amounts that sets the
+#'   saturation level.
+#' @param spikeBiasSD Standard deviation of the fixed per-spike log2 bias.
+#' @param slopeSD Standard deviation of the run-to-run slope.
+#' @param runCor Correlation between neighbouring runs of depth and slope.
 #'
 #' @return A `SummarizedExperiment` with assays `counts` and `expected`,
 #'   and `colData` columns `mix`, `depth` (log2) and `drifted`.
@@ -54,9 +84,18 @@ simulateSpikeRuns <- function(design, nRuns = 30L, mix = NULL, scale = 10,
                               driftAt = NA, driftType = c("slope", "offset",
                                                           "noise"),
                               driftSize = 0, driftShape = c("step", "ramp"),
-                              rampRuns = 5L) {
+                              rampRuns = 5L, pivot = c("median", "top"),
+                              counts = c("poisson", "nbinom"), size = 10,
+                              saturation = 0, saturationAt = 0.9,
+                              spikeBiasSD = 0, slopeSD = 0, runCor = 0) {
     driftType <- match.arg(driftType)
     driftShape <- match.arg(driftShape)
+    pivot <- match.arg(pivot)
+    counts <- match.arg(counts)
+    if (runCor < 0 || runCor >= 1)
+        stop("'runCor' must be in [0, 1)")
+    if (saturation < 0 || saturation >= 1)
+        stop("'saturation' must be in [0, 1)")
     mix <- mix %||% design$mix[1]
     d <- design[design$mix == mix, , drop = FALSE]
     if (!nrow(d))
@@ -66,24 +105,47 @@ simulateSpikeRuns <- function(design, nRuns = 30L, mix = NULL, scale = 10,
         driftShape == "step") as.numeric(j >= driftAt) else
         pmin(pmax((j - driftAt + 1) / rampRuns, 0), 1)
     change <- driftSize * step
-    depth <- stats::rnorm(nRuns, 0, depthSD)
+    depth <- .ar1(stats::rnorm(nRuns), runCor) * depthSD
     slopes <- rep(slope, nRuns)
+    if (slopeSD > 0)
+        slopes <- slopes + .ar1(stats::rnorm(nRuns), runCor) * slopeSD
     sds <- rep(noise, nRuns)
     if (driftType == "slope") slopes <- slopes + change
     if (driftType == "offset") depth <- depth + change
     if (driftType == "noise") sds <- sds + change
-    pivot <- log2(stats::median(d$amount))
     la <- log2(d$amount)
-    lmu <- outer(la - pivot, slopes) + pivot + log2(scale)
+    piv <- if (pivot == "top") max(la) else log2(stats::median(d$amount))
+    lmu <- outer(la - piv, slopes) + piv + log2(scale)
+    if (spikeBiasSD > 0)
+        lmu <- lmu + stats::rnorm(nrow(d), 0, spikeBiasSD)
     lmu <- sweep(lmu, 2, depth, "+")
+    if (saturation > 0) {
+        top <- log2(scale) + stats::quantile(la, saturationAt, names = FALSE)
+        over <- lmu > top
+        lmu[over] <- top + (1 - saturation) * (lmu[over] - top)
+    }
     lmu <- lmu + sweep(matrix(stats::rnorm(length(lmu)), nrow(lmu)), 2,
                        sds, "*")
-    counts <- matrix(stats::rpois(length(lmu), 2^lmu), nrow(lmu),
-                     dimnames = list(d$feature, sprintf("run%02d", j)))
+    y <- if (counts == "nbinom")
+        stats::rnbinom(length(lmu), size = size, mu = 2^lmu) else
+        stats::rpois(length(lmu), 2^lmu)
+    y <- matrix(y, nrow(lmu),
+                dimnames = list(d$feature, sprintf("run%02d", j)))
     cd <- S4Vectors::DataFrame(mix = rep(mix, nRuns), depth = depth,
                                drifted = change != 0,
-                               row.names = colnames(counts))
+                               row.names = colnames(y))
     se <- SummarizedExperiment::SummarizedExperiment(
-        list(counts = counts), colData = cd)
+        list(counts = y), colData = cd)
     addTruth(se, d, mix = "mix")
+}
+
+# Stationary AR(1) with unit variance from independent standard normals;
+# with rho = 0 it returns e unchanged.
+.ar1 <- function(e, rho) {
+    if (rho == 0 || length(e) < 2L)
+        return(e)
+    out <- e
+    for (i in 2:length(e))
+        out[i] <- rho * out[i - 1L] + sqrt(1 - rho^2) * e[i]
+    out
 }
