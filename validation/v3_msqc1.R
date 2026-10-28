@@ -25,10 +25,20 @@ toSE <- function(x) {
     SummarizedExperiment(list(area = a), colData = cd)
 }
 
+# A peptide with no rows for a run is not in that instrument's method: it
+# was never measured, so it has no expected value. A peptide with rows
+# but zero area was measured and not detected, and still counts.
+dropUnmeasured <- function(se) {
+    e <- assay(se, "expected")
+    e[is.na(assay(se, "area"))] <- NA
+    assay(se, "expected") <- e
+    se
+}
+
 dir.create("validation/out", showWarnings = FALSE)
 
 # 8 replicates per instrument: per-run dose response.
-se8 <- addTruth(toSE(msqc1_8rep), design)
+se8 <- dropUnmeasured(addTruth(toSE(msqc1_8rep), design))
 m8 <- runMetrics(se8, assay = "area")
 m8$instrument <- se8$instrument
 write.csv(m8, "validation/out/v3_8rep_run_metrics.csv", row.names = FALSE)
@@ -47,7 +57,7 @@ print(agg, digits = 3, row.names = FALSE)
 # Dilution series: the sample-level dose enters the truth.
 sed <- toSE(msqc1_dil)
 sed <- sed[, !is.na(sed$dose) & sed$dose > 0]
-sed <- addTruth(sed, design, dose = "dose")
+sed <- dropUnmeasured(addTruth(sed, design, dose = "dose"))
 md <- runMetrics(sed, assay = "area")
 md$instrument <- sed$instrument
 md$dose <- sed$dose
