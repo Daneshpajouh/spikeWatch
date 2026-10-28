@@ -40,8 +40,10 @@
 #' @param sigma Spread estimate: `"mr"` or `"sd"`.
 #'
 #' @return A `data.frame` with one row per run: `run`, `value`, `stat`,
-#'   `center`, `lower`, `upper`, `baseline` and `signal`. Attributes hold
-#'   the method, its parameters and the baseline `sigma`.
+#'   `center`, `lower`, `upper`, `baseline` and `signal`; a CUSUM chart
+#'   also has `cusumUp` and `cusumLow`, the upper and lower sums in sigma
+#'   units. Attributes hold the method, its parameters and the baseline
+#'   `sigma`.
 #'
 #' @examples
 #' set.seed(1)

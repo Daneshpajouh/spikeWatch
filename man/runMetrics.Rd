@@ -43,9 +43,12 @@ or a logical vector. \code{NULL} uses every run, so one failed run raises
 the range for all; name runs known to be good instead.}
 }
 \value{
-A \code{data.frame} with one row per sample. Its \code{"minAmount"}
-attribute holds the amount used, to pass on to
-\code{\link[=plotDoseResponse]{plotDoseResponse()}}.
+A \code{data.frame} with one row per sample and columns \code{run},
+\code{nSpikes} (spikes with an expected amount above 0), \code{nDetected} (of
+those, the ones detected), \code{slope}, \code{intercept}, \code{r2}, \code{residSD},
+\code{offset}, \code{lod}, \code{lodStatus} and \code{allDetectedFrom}, as described
+above. Its \code{"minAmount"} attribute holds the amount used, to pass on
+to \code{\link[=plotDoseResponse]{plotDoseResponse()}}.
 }
 \description{
 For each sample, compares the measured spike-in values with their

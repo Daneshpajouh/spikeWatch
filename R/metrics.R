@@ -52,9 +52,12 @@
 #'   or a logical vector. `NULL` uses every run, so one failed run raises
 #'   the range for all; name runs known to be good instead.
 #'
-#' @return A `data.frame` with one row per sample. Its `"minAmount"`
-#'   attribute holds the amount used, to pass on to
-#'   [plotDoseResponse()].
+#' @return A `data.frame` with one row per sample and columns `run`,
+#'   `nSpikes` (spikes with an expected amount above 0), `nDetected` (of
+#'   those, the ones detected), `slope`, `intercept`, `r2`, `residSD`,
+#'   `offset`, `lod`, `lodStatus` and `allDetectedFrom`, as described
+#'   above. Its `"minAmount"` attribute holds the amount used, to pass on
+#'   to [plotDoseResponse()].
 #'
 #' @examples
 #' set.seed(1)
@@ -208,9 +211,11 @@ runMetrics <- function(se, assay = 1L, expected = "expected", detect = 0,
 #'   proteome whose true ratio is 1.
 #' @param detect Detection threshold, as in [runMetrics()].
 #'
-#' @return A list with `features`, one row per spike (expected and
-#'   measured log2 ratio, error), and `summary`, one row per expected
-#'   ratio (number of spikes, median error, root mean square error).
+#' @return A list of two `data.frame`s. `features` has one row per spike
+#'   with columns `feature`, `expectedLog2Ratio`, `measuredLog2Ratio`
+#'   (after centring) and `error` (measured minus expected). `summary` has
+#'   one row per expected ratio with columns `expectedLog2Ratio`,
+#'   `nSpikes`, `medianError` and `rmse` (root mean square error).
 #'
 #' @examples
 #' ercc <- erccDesign()

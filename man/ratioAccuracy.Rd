@@ -33,9 +33,11 @@ proteome whose true ratio is 1.}
 \item{detect}{Detection threshold, as in \code{\link[=runMetrics]{runMetrics()}}.}
 }
 \value{
-A list with \code{features}, one row per spike (expected and
-measured log2 ratio, error), and \code{summary}, one row per expected
-ratio (number of spikes, median error, root mean square error).
+A list of two \code{data.frame}s. \code{features} has one row per spike
+with columns \code{feature}, \code{expectedLog2Ratio}, \code{measuredLog2Ratio}
+(after centring) and \code{error} (measured minus expected). \code{summary} has
+one row per expected ratio with columns \code{expectedLog2Ratio},
+\code{nSpikes}, \code{medianError} and \code{rmse} (root mean square error).
 }
 \description{
 Compares the measured log2 ratio of each spike between two groups of

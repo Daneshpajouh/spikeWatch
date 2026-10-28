@@ -108,7 +108,9 @@ the fit assumes. Each is off by default, and the defaults give the same
 counts as earlier versions for the same seed.
 \itemize{
 \item \code{pivot = "top"}: the slope turns about the highest design amount, so
-compression lowers every spike below the top.
+the top spike keeps its level and compression raises every lower
+spike towards it, as a rising background does. Total spike counts
+then barely move.
 \item \code{counts = "nbinom"}: negative binomial counts with size \code{size} in
 place of Poisson.
 \item \code{saturation}: above the log2 mean of the \code{saturationAt} quantile of

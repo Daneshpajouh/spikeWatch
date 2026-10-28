@@ -38,8 +38,10 @@ give a warning: limits from a short baseline are themselves uncertain.}
 }
 \value{
 A \code{data.frame} with one row per run: \code{run}, \code{value}, \code{stat},
-\code{center}, \code{lower}, \code{upper}, \code{baseline} and \code{signal}. Attributes hold
-the method, its parameters and the baseline \code{sigma}.
+\code{center}, \code{lower}, \code{upper}, \code{baseline} and \code{signal}; a CUSUM chart
+also has \code{cusumUp} and \code{cusumLow}, the upper and lower sums in sigma
+units. Attributes hold the method, its parameters and the baseline
+\code{sigma}.
 }
 \description{
 Tracks a per-run figure from \code{\link[=runMetrics]{runMetrics()}}, in run order, against its
