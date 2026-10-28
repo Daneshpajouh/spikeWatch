@@ -1,7 +1,8 @@
 """Plant each bug in mutants.tsv into a fresh copy of the committed head
 and run the test suite on it. A mutant is killed when at least one test
 fails or errors. Run from the repository root; writes
-validation/mutants/results.tsv.
+validation/mutants/results.tsv. The mutant copies are left in a new
+folder under the system temporary directory, named in the output.
 
 Each line of mutants.tsv: file, exact text to replace, replacement. The
 text must occur exactly once, or the mutant is reported as not applied.
@@ -16,7 +17,8 @@ head = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"],
                                text=True).strip()
 lines = open("validation/mutants/mutants.tsv").read().strip().split("\n")
 rows = []
-with tempfile.TemporaryDirectory() as tmp:
+tmp = tempfile.mkdtemp(prefix="spikewatch-mutants-")
+if True:
     for i, line in enumerate(lines, 1):
         f, old, new = line.split("\t")
         d = os.path.join(tmp, "m%02d" % i)
@@ -44,4 +46,5 @@ with open("validation/mutants/results.tsv", "w") as out:
     for r in rows:
         out.write("\t".join(r) + "\n")
 print(open("validation/mutants/results.tsv").read())
+print("mutant copies:", tmp)
 sys.exit(0 if all(r[2] == "KILLED" for r in rows) else 1)
