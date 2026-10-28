@@ -2,4 +2,3 @@
 .Rhistory
 *.tar.gz
 spikeWatch.Rcheck/
-validation/out/
