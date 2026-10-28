@@ -31,7 +31,8 @@
 #'   repeatable limit.
 #'
 #' @return A named number, `h` for CUSUM or `L` for EWMA, to pass to
-#'   [driftChart()]. Attributes hold `alpha`, `horizon`, `B` and `method`.
+#'   [driftChart()]. A bootstrap baseline with no spread counts as a false
+#'   alarm; when too many have none the limit is `Inf`, with a warning. Attributes hold `alpha`, `horizon`, `B` and `method`.
 #'
 #' @references Gandy A, Kvaløy JT (2013). Guaranteed conditional
 #'   performance of control charts via bootstrap methods. Scandinavian
@@ -79,6 +80,10 @@ calibrateChart <- function(x, metric = NULL, baseline = 20L,
     u[s <= 0, ] <- Inf
     m <- if (method == "cusum") .cusumMax(u, k) else .ewmaMax(u, lambda)
     thr <- sort(m)[ceiling((1 - alpha) * B)]
+    if (is.infinite(thr))
+        warning("more than alpha of the bootstrap baselines have no ",
+                "spread, so the limit is infinite and the chart cannot ",
+                "signal; use a longer or less discrete baseline")
     out <- stats::setNames(thr, if (method == "cusum") "h" else "L")
     attr(out, "alpha") <- alpha
     attr(out, "horizon") <- horizon

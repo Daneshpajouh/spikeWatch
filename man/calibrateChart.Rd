@@ -45,7 +45,8 @@ repeatable limit.}
 }
 \value{
 A named number, \code{h} for CUSUM or \code{L} for EWMA, to pass to
-\code{\link[=driftChart]{driftChart()}}. Attributes hold \code{alpha}, \code{horizon}, \code{B} and \code{method}.
+\code{\link[=driftChart]{driftChart()}}. A bootstrap baseline with no spread counts as a false
+alarm; when too many have none the limit is \code{Inf}, with a warning. Attributes hold \code{alpha}, \code{horizon}, \code{B} and \code{method}.
 }
 \description{
 Sets the CUSUM decision interval \code{h} or the EWMA limit width \code{L} so that

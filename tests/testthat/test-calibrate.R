@@ -47,3 +47,51 @@ test_that("calibrateChart refuses bad inputs", {
     expect_error(calibrateChart(c(1, NA, NA, 2), baseline = 4), "three")
     expect_error(calibrateChart(data.frame(a = 1:30)), "metric")
 })
+
+test_that("calibrateChart matches a plain loop on the same draws", {
+    x <- c(0.3, -1.2, 0.8, 0.1, -0.4, 1.5, -0.9, 0.2, 0.6, -0.1)
+    n <- length(x)
+    B <- 400
+    H <- 6
+    ref <- function(method, alpha) {
+        set.seed(11)
+        xs <- matrix(x[sample.int(n, n * B, replace = TRUE)], B)
+        fut <- matrix(x[sample.int(n, B * H, replace = TRUE)], B)
+        m <- numeric(B)
+        for (b in seq_len(B)) {
+            mu <- mean(xs[b, ])
+            s <- mean(abs(diff(xs[b, ]))) / 1.128
+            cu <- cl <- z <- 0
+            for (t in seq_len(H)) {
+                u <- (fut[b, t] - mu) / s
+                if (method == "cusum") {
+                    cu <- max(0, cu + u - 0.5)
+                    cl <- max(0, cl - u - 0.5)
+                    m[b] <- max(m[b], cu, cl)
+                } else {
+                    z <- 0.2 * u + 0.8 * z
+                    w <- sqrt(0.2 / 1.8 * (1 - 0.8^(2 * t)))
+                    m[b] <- max(m[b], abs(z) / w)
+                }
+            }
+        }
+        sort(m)[ceiling((1 - alpha) * B)]
+    }
+    for (method in c("cusum", "ewma")) for (alpha in c(0.05, 0.2)) {
+        set.seed(11)
+        got <- suppressWarnings(calibrateChart(x, baseline = n,
+            method = method, alpha = alpha, horizon = H, B = B))
+        expect_equal(unname(c(got)), ref(method, alpha))
+    }
+})
+
+test_that("bootstrap baselines with no spread count as alarms", {
+    set.seed(3)
+    expect_warning(h <- calibrateChart(c(1, 1, 2, rnorm(17)), baseline = 3,
+                                       B = 400, horizon = 5), "no spread")
+    expect_true(is.infinite(h))
+    expect_warning(e <- calibrateChart(c(1, 1, 2, rnorm(17)), baseline = 3,
+                                       B = 400, horizon = 5, method = "ewma"),
+                   "no spread")
+    expect_true(is.infinite(e))
+})
