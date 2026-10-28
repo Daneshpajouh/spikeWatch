@@ -108,3 +108,17 @@ test_that("spike biases persist across runs and runCor links runs", {
     expect_gt(stats::cor(r$depth[-1], r$depth[-400]), 0.65)
     expect_lt(abs(stats::sd(r$depth) - 0.5), 0.12)
 })
+
+test_that("a ramp plants the change linearly up to full size", {
+    set.seed(1)
+    s <- simulateSpikeRuns(erccDesign(), nRuns = 12, driftAt = 5,
+                           driftShape = "ramp", rampRuns = 4,
+                           driftType = "offset", driftSize = 2,
+                           depthSD = 0)
+    expect_equal(s$depth, c(0, 0, 0, 0, 0.5, 1, 1.5, 2, 2, 2, 2, 2))
+    set.seed(1)
+    st <- simulateSpikeRuns(erccDesign(), nRuns = 6, driftAt = 3,
+                            driftType = "offset", driftSize = 2,
+                            depthSD = 0)
+    expect_equal(st$depth, c(0, 0, 2, 2, 2, 2))
+})
