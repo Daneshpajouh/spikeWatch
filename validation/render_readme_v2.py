@@ -50,13 +50,19 @@ def off_side(out, family, det, chart, H):
     """
     key = (out, family, det, chart, H)
     if key not in _SIDE:
-        r = [r for r in rows("scores.csv", out) if r["family"] == family and r["detector"] == det
-             and r["chart"] == chart and r["H"] == H and r["limits"] == "calibrated" and r["scenario"] == "null"]
-        if len(r) != 1:
-            raise SystemExit("no single null row for %s" % (key,))
-        lo, hi = float(r[0]["ci_low"]), float(r[0]["ci_high"])
+        r = null_row(out, family, det, chart, H)
+        lo, hi = float(r["ci_low"]), float(r["ci_high"])
         _SIDE[key] = "high" if lo > 0.05 else "low" if hi < 0.05 else ""
     return _SIDE[key]
+
+
+def null_row(out, family, det, chart, H):
+    """The one scores.csv row for this detector on fresh null seeds with calibrated limits; stops if not one."""
+    r = [r for r in rows("scores.csv", out) if r["family"] == family and r["detector"] == det
+         and r["chart"] == chart and r["H"] == H and r["limits"] == "calibrated" and r["scenario"] == "null"]
+    if len(r) != 1:
+        raise SystemExit("no single null row for %s" % ((out, family, det, chart, H),))
+    return r[0]
 
 
 _SIDE = {}
@@ -79,12 +85,15 @@ def gains(out=OUT):
     cells = {}
     for r in rows("comparisons.csv", out):
         cells.setdefault((r["pair"], r["scenario"], r["chart"]), []).append(r)
-        # Every row, not only the claimed gains: the per-side flags must give the scorer's fap_flag.
-        either = bool(off_side(out, r["family"], r["truth"], r["chart"], r["H"])
-                      or off_side(out, r["family"], r["without"], r["chart"], r["H"]))
-        if (r["fap_flag"] == "TRUE") != either:
-            raise SystemExit("per-side flags disagree with fap_flag for %s"
-                             % ((r["family"], r["pair"], r["scenario"], r["chart"], r["H"]),))
+        # Every row, not only the claimed gains: the per-side flags must give the scorer's fap_flag, and each
+        # side's false-alarm rate must be its null row's rate. Both sides are looked up, so a bad id always stops.
+        where = (r["family"], r["pair"], r["scenario"], r["chart"], r["H"])
+        sides = [off_side(out, r["family"], r[d], r["chart"], r["H"]) for d in ("truth", "without")]
+        if (r["fap_flag"] == "TRUE") != any(sides):
+            raise SystemExit("per-side flags disagree with fap_flag for %s" % (where,))
+        for d in ("truth", "without"):
+            if abs(float(r["fap_" + d]) - float(null_row(out, r["family"], r[d], r["chart"], r["H"])["rate"])) > 1e-9:
+                raise SystemExit("fap_%s is not the null rate for %s" % (d, where))
     body = []
     for key in claimed:
         cs = cells[key]

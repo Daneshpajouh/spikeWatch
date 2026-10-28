@@ -25,3 +25,15 @@ test_that("the dose-response line is the runMetrics fit on the log axes", {
     slope <- diff(ends$y) / diff(ends$x)
     expect_equal(slope, m$slope[1], tolerance = 1e-8)
 })
+
+test_that("a run with nothing detected stops, and a named run is the title", {
+    set.seed(1)
+    s <- simulateSpikeRuns(erccDesign(), nRuns = 2)
+    expect_error(plotDoseResponse(s, 1, detect = Inf), "no spike is above detect")
+    name <- colnames(s)[2]
+    expect_equal(plotDoseResponse(s, name)$labels$title, name)
+    expect_equal(plotDoseResponse(s, 2)$labels$title, name)
+    unnamed <- s
+    colnames(unnamed) <- NULL
+    expect_equal(plotDoseResponse(unnamed, 2)$labels$title, "2")
+})

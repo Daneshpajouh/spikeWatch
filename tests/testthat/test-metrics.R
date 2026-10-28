@@ -212,3 +212,9 @@ test_that("ratioAccuracy refuses shared samples and empty spike sets", {
     expect_error(ratioAccuracy(se, "x", "y", detect = 100),
                  "no spike is detected")
 })
+
+test_that("r2 is NA, not NaN, when every fitted spike reads the same", {
+    m <- runMetrics(powerLawSE(c(5, 5, 5, 5), c(1, 2, 4, 8)), minAmount = 0)
+    expect_identical(m$r2, NA_real_)
+    expect_equal(m$slope, 0)
+})

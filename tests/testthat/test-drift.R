@@ -144,3 +144,12 @@ test_that("driftChart takes a named limit with attributes", {
     e <- driftChart(x, baseline = 20, method = "ewma", L = L)
     expect_equal(e$upper, driftChart(x, baseline = 20, L = 3)$upper)
 })
+
+test_that("a missing run after the EWMA has moved neither resets it nor advances its step", {
+    x <- c(1, 2, 1, 2, 1, 3, NA, 3)
+    ch <- suppressWarnings(driftChart(x, baseline = 5, method = "ewma", lambda = 0.2))
+    expect_equal(ch$stat[c(6, 7, 8)], c(1.72, 1.72, 1.976))
+    expect_false(ch$signal[7])
+    expect_equal(ch$upper[7], 1.4 + 0.6 / 1.128)
+    expect_equal(ch$upper[8], 1.4 + 5 * sqrt(41) / 47)
+})

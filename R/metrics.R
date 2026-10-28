@@ -152,7 +152,9 @@ runMetrics <- function(se, assay = 1L, expected = "expected", detect = 0,
             r <- stats::residuals(fit)
             res$intercept <- unname(cf[1])
             res$slope <- unname(cf[2])
-            res$r2 <- 1 - sum(r^2) / sum((lo - mean(lo))^2)
+            ss <- sum((lo - mean(lo))^2)
+            # A run whose fitted spikes all read the same has no variance to explain.
+            res$r2 <- if (ss > 0) 1 - sum(r^2) / ss else NA_real_
             res$residSD <- sqrt(sum(r^2) / (length(r) - 2L))
         }
     }

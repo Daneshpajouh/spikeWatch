@@ -32,7 +32,7 @@ the same fit; \code{NA} draws no line.}
 }
 \value{
 A \code{ggplot} object. Undetected spikes are drawn at the bottom
-edge as open points.
+edge as open points. A run with no spike above \code{detect} is an error.
 }
 \description{
 Plot measured against expected spike-in amounts for one run

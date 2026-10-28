@@ -12,7 +12,7 @@
 #'   the same fit; `NA` draws no line.
 #'
 #' @return A `ggplot` object. Undetected spikes are drawn at the bottom
-#'   edge as open points.
+#'   edge as open points. A run with no spike above `detect` is an error.
 #'
 #' @examples
 #' set.seed(1)
@@ -29,9 +29,14 @@ plotDoseResponse <- function(se, run = 1L, assay = 1L,
     df <- data.frame(expected = e[keep], measured = o[keep],
                      group = SummarizedExperiment::rowData(se)$spikeGroup[keep])
     df$detected <- !is.na(df$measured) & df$measured > detect
+    if (!any(df$detected))
+        stop("no spike is above detect = ", detect, " in run ", run,
+             ", so there is nothing to plot on the log axes")
     floor <- min(df$measured[df$detected], 1, na.rm = TRUE)
     df$measured[!df$detected] <- floor
     df$group[is.na(df$group)] <- "spike"
+    label <- if (is.character(run)) run else colnames(se)[run]
+    if (is.null(label) || is.na(label)) label <- as.character(run)
     fitted <- if (is.na(minAmount)) df[0, ] else
         df[df$detected & df$expected >= minAmount, ]
     p <- ggplot2::ggplot(df, ggplot2::aes(.data$expected, .data$measured)) +
@@ -43,7 +48,7 @@ plotDoseResponse <- function(se, run = 1L, assay = 1L,
         ggplot2::scale_x_log10() + ggplot2::scale_y_log10() +
         ggplot2::scale_shape_manual(values = c(`TRUE` = 16, `FALSE` = 1)) +
         ggplot2::labs(x = "Expected amount", y = "Measured",
-                      title = colnames(se)[run] %||% as.character(run),
+                      title = label,
                       shape = "Detected", colour = "Group") +
         ggplot2::theme_bw()
     if (!is.na(minAmount) && minAmount > 0)
