@@ -1,0 +1,12 @@
+R/metrics.R	fit <- stats::lm(lo ~ le)	fit <- stats::lm(le ~ lo)
+R/metrics.R	res$offset <- stats::median(lo - le)	res$offset <- mean(lo - le)
+R/metrics.R	use <- det & e >= minAmount	use <- det & e > minAmount
+R/metrics.R	return(list(lod = min(e[det]), censored = FALSE))	return(list(lod = max(e[!det]), censored = FALSE))
+R/drift.R	mean(abs(diff(xb))) / 1.128	mean(abs(diff(xb))) / 1
+R/drift.R	prev <- lambda * x[i] + (1 - lambda) * prev	prev <- lambda * x[i] + (1 - lambda) * mu
+R/drift.R	cu <- max(0, cu + (x[i] - mu) / s - k)	cu <- max(0, cu + (x[i] - mu) / s + k)
+R/truth.R	expected[r, cols] <- outer(d$amount, sampleDose[cols])	expected[r, cols] <- outer(d$amount, rep(1, length(cols)))
+R/metrics.R	shift <- stats::median(measuredLR[ref])	shift <- 0
+R/simulate.R	as.numeric(j >= driftAt)	as.numeric(j > driftAt)
+R/drift.R	hit <- which(chart$signal & seq_len(nrow(chart)) > after)	hit <- which(chart$signal & seq_len(nrow(chart)) >= after)
+R/design.R	if (anyNA(amount) || any(amount <= 0))	if (anyNA(amount))

@@ -147,10 +147,21 @@ Within a run, across the 14 peptides:
 
 The first table is not a clean linearity test. Each peptide ionises differently, so a slope across different peptides mixes response factors with amounts; four instruments gave slopes well below 1. The dilution series (second table) changes the dose of the same peptides, and there the response follows dose with slopes near 1 on every instrument, some intervals including 1 and some not. For designs where each spike is a different molecule, chart the per-run figures against their own baseline rather than reading the slope as absolute linearity.
 
+## Data and licences
+
+The validation reads its data at run time from Bioconductor packages; no data from them is copied into this repository.
+
+| Package | Version read | Licence (Bioconductor index) | Used for |
+|---|---|---|---|
+| erccdashboard | 1.46.0 | GPL (>= 2) | SEQC lab 5 ERCC counts (V2); the ERCC Mix 1 and Mix 2 concentrations |
+| msqc1 | 1.40.0 | GPL | heavy peptide areas, 8 replicates and dilution series (V3) |
+
+One table does ship with the package: the 92 ERCC concentrations in `inst/extdata/ercc_mixes.tsv`, taken from erccdashboard. erccdashboard is licensed GPL (>= 2) and this package GPL-3, which that licence allows; `inst/script/make_ercc_mixes.R` records the source and the checks.
+
 ## Checks
 
 `R CMD check`, BiocCheck and the testthat suite run on every push (`.github/workflows/check.yaml`). Tests use small fixtures whose answers can be worked by hand: an exact power law, a hand-computed ratio table, and drift series whose chart values follow from the formulas.
 
 ## Licence
 
-GPL-3. The ERCC design table is taken from erccdashboard (GPL (>= 2)); `inst/script/make_ercc_mixes.R` records how and the checks run on it.
+GPL-3. See "Data and licences" for the ERCC table.
