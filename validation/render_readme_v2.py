@@ -79,6 +79,12 @@ def gains(out=OUT):
     cells = {}
     for r in rows("comparisons.csv", out):
         cells.setdefault((r["pair"], r["scenario"], r["chart"]), []).append(r)
+        # Every row, not only the claimed gains: the per-side flags must give the scorer's fap_flag.
+        either = bool(off_side(out, r["family"], r["truth"], r["chart"], r["H"])
+                      or off_side(out, r["family"], r["without"], r["chart"], r["H"]))
+        if (r["fap_flag"] == "TRUE") != either:
+            raise SystemExit("per-side flags disagree with fap_flag for %s"
+                             % ((r["family"], r["pair"], r["scenario"], r["chart"], r["H"]),))
     body = []
     for key in claimed:
         cs = cells[key]
@@ -88,11 +94,6 @@ def gains(out=OUT):
                      "%s to %s" % (pct1(ft[0]), pct1(ft[-1])), "%s to %s" % (pct1(fw[0]), pct1(fw[-1])),
                      off_count([off_side(out, r["family"], r["truth"], r["chart"], r["H"]) for r in cs]),
                      off_count([off_side(out, r["family"], r["without"], r["chart"], r["H"]) for r in cs])])
-        flagged = sum(r["fap_flag"] == "TRUE" for r in cs)
-        either = sum(bool(off_side(out, r["family"], r["truth"], r["chart"], r["H"])
-                          or off_side(out, r["family"], r["without"], r["chart"], r["H"])) for r in cs)
-        if flagged != either:
-            raise SystemExit("per-side flags disagree with fap_flag for %s" % (key,))
     if not body:
         return "No pair, drift and chart meets the gain rule here."
     return table(["Pair", "Drift", "Chart", "False alarm, with truth", "False alarm, without",

@@ -90,6 +90,17 @@ test_that("driftChart refuses a baseline it cannot use", {
     expect_error(driftChart(data.frame(a = 1:5)), "metric")
 })
 
+test_that("a missing monitoring run does not advance the EWMA step", {
+    # Baseline 1, 2, 1, 2, 1: mean 1.4, mean moving range 1, sigma 1/1.128.
+    # Run 6 is missing, so run 7 is the first monitored step: half-width
+    # 3 * sigma * 0.2 and statistic 0.2 * 9 + 0.8 * 1.4.
+    x <- c(1, 2, 1, 2, 1, NA, 9)
+    ch <- suppressWarnings(driftChart(x, baseline = 5, method = "ewma",
+                                      lambda = 0.2))
+    expect_equal(ch$upper[7], 1.4 + 0.6 / 1.128)
+    expect_equal(ch$stat[7], 2.92)
+})
+
 test_that("moving ranges never pair runs across a gap", {
     # only the ranges 10 to 12 and 12 to 10 are between neighbours
     x <- c(10, 12, NA, 12, 10, 11)

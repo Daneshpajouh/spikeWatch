@@ -14,7 +14,8 @@ Description: Turns the known amounts of spike-in controls into accuracy
     Across runs it charts any of these figures with Shewhart, EWMA or
     CUSUM charts against a baseline, to show drift across runs; the
     charts are exploratory: at the default limits, 15.7 to 35.2 percent of
-    simulated drift-free series raised a false alarm within 20 runs,
+    simulated drift-free series in the base family raised a false alarm
+    within 20 runs, and 36.7 to 87.3 percent when runs were correlated,
     so their limits need checking on local runs.
 License: GPL-3
 Encoding: UTF-8
