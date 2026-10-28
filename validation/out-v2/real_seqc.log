@@ -1,0 +1,29 @@
+ERCC rows: 92  in design: 92 
+
+minAmount chosen: 0.6866455 
+    run nSpikes nDetected slope intercept    r2 residSD offset    lod lodStatus
+ UHRR_1      92        83 0.985      4.60 0.957   0.857   4.64 1.0786       fit
+ UHRR_2      92        86 0.999      5.35 0.958   0.865   5.52 0.5926       fit
+ UHRR_3      92        87 1.002      4.97 0.964   0.797   5.16 0.6661       fit
+ UHRR_4      92        90 0.997      6.15 0.957   0.872   6.32 0.1193       fit
+ HBRR_1      92        89 0.999      5.69 0.962   0.814   5.81 0.0677       fit
+ HBRR_2      92        89 0.994      5.52 0.953   0.901   5.70 0.2384       fit
+ HBRR_3      92        87 0.997      5.74 0.961   0.819   5.91 0.2638       fit
+ HBRR_4      92        88 1.005      5.63 0.957   0.872   5.79 0.1229       fit
+ allDetectedFrom
+          0.9155
+          0.4578
+          0.9155
+          0.1144
+          0.0572
+          0.3433
+          0.1717
+          0.0858
+
+Ratio accuracy, UHRR (Mix1) over HBRR (Mix2), centred on spikes:
+ expectedLog2Ratio nSpikes medianError  rmse
+             2.000      18     -0.0297 0.257
+             0.000      18      0.0164 0.161
+            -0.585      21     -0.0156 0.279
+            -1.000      21      0.0105 0.300
+rc=0

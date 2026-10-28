@@ -1,0 +1,24 @@
+m8 minAmount chosen: 0.08 
+msqc1_8rep, per-run dose response by instrument:
+  instrument runs slopeMedian slopeMin slopeMax r2Median residSDMedian
+   QExactive    8       0.784    0.779    0.801    0.852         1.015
+ QExactiveHF    8       0.747    0.715    0.959    0.660         1.671
+       QTRAP    8       0.788    0.780    0.794    0.580         1.993
+   TRIPLETOF    8       0.718    0.704    0.778    0.876         0.846
+  TSQVantage    8       0.996    0.983    1.002    0.835         1.326
+ lodMedian allDetectedRuns
+        NA               8
+        NA               8
+        NA               8
+        NA               8
+        NA               8
+md minAmount chosen: 2.5 
+
+msqc1_dil, per-run response against known dose (slope 1 = linear):
+  instrument runs doses doseSlope ciLow ciHigh
+   QExactive   18     6     0.988 0.929  1.048
+ QExactiveHF   18     6     0.975 0.950  1.000
+       QTRAP   18     6     0.766 0.711  0.822
+   TRIPLETOF   18     6     0.982 0.936  1.028
+  TSQVantage   18     6     0.882 0.830  0.933
+rc=0

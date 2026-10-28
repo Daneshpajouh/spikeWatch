@@ -1,0 +1,481 @@
+"family","pair","truth","without","chart","H","scenario","n","detect_truth","detect_without","diff","ci_low","ci_high","verdict","fap_truth","fap_without","fap_flag"
+"F0","C1","UT","UF","cusum",10,"compression_small",400,1,1,0,0,0,"no clear difference",0.041,0.044,FALSE
+"F0","C1","UT","UF","cusum",10,"compression",400,1,1,0,0,0,"no clear difference",0.041,0.044,FALSE
+"F0","C1","UT","UF","cusum",10,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.041,0.044,FALSE
+"F0","C1","UT","UF","cusum",10,"sensitivity_loss",400,0.52,0.775,-0.255,-0.3125,-0.195,"loss",0.041,0.044,FALSE
+"F0","C1","UT","UF","cusum",10,"precision_loss",400,1,0.095,0.905,0.875,0.9325,"gain",0.041,0.044,FALSE
+"F0","C1","UT","UF","cusum",20,"compression_small",400,1,1,0,0,0,"no clear difference",0.044,0.047,FALSE
+"F0","C1","UT","UF","cusum",20,"compression",400,1,1,0,0,0,"no clear difference",0.044,0.047,FALSE
+"F0","C1","UT","UF","cusum",20,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.044,0.047,FALSE
+"F0","C1","UT","UF","cusum",20,"sensitivity_loss",400,0.6825,0.94,-0.2575,-0.3075,-0.21,"loss",0.044,0.047,FALSE
+"F0","C1","UT","UF","cusum",20,"precision_loss",400,1,0.1275,0.8725,0.84,0.905,"gain",0.044,0.047,FALSE
+"F0","C1","UT","UF","ewma",10,"compression_small",400,1,1,0,0,0,"no clear difference",0.052,0.05,FALSE
+"F0","C1","UT","UF","ewma",10,"compression",400,1,1,0,0,0,"no clear difference",0.052,0.05,FALSE
+"F0","C1","UT","UF","ewma",10,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.052,0.05,FALSE
+"F0","C1","UT","UF","ewma",10,"sensitivity_loss",400,0.45,0.69,-0.24,-0.3025,-0.18,"loss",0.052,0.05,FALSE
+"F0","C1","UT","UF","ewma",10,"precision_loss",400,1,0.095,0.905,0.875,0.9325,"gain",0.052,0.05,FALSE
+"F0","C1","UT","UF","ewma",20,"compression_small",400,1,1,0,0,0,"no clear difference",0.053,0.049,FALSE
+"F0","C1","UT","UF","ewma",20,"compression",400,1,1,0,0,0,"no clear difference",0.053,0.049,FALSE
+"F0","C1","UT","UF","ewma",20,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.053,0.049,FALSE
+"F0","C1","UT","UF","ewma",20,"sensitivity_loss",400,0.5675,0.825,-0.2575,-0.3175,-0.2,"loss",0.053,0.049,FALSE
+"F0","C1","UT","UF","ewma",20,"precision_loss",400,1,0.1475,0.8525,0.8175,0.8875,"gain",0.053,0.049,FALSE
+"F0","C2","slope","B3","cusum",10,"compression_small",400,1,1,0,0,0,"no clear difference",0.044,0.038,FALSE
+"F0","C2","slope","B3","cusum",10,"compression",400,1,1,0,0,0,"no clear difference",0.044,0.038,FALSE
+"F0","C2","slope","B3","cusum",10,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.044,0.038,FALSE
+"F0","C2","slope","B3","cusum",10,"sensitivity_loss",400,0.13,0.075,0.055,0.0225,0.0875,"gain",0.044,0.038,FALSE
+"F0","C2","slope","B3","cusum",10,"precision_loss",400,0.2375,0.1275,0.11,0.065,0.1525,"gain",0.044,0.038,FALSE
+"F0","C2","slope","B3","cusum",20,"compression_small",400,1,1,0,0,0,"no clear difference",0.057,0.055,FALSE
+"F0","C2","slope","B3","cusum",20,"compression",400,1,1,0,0,0,"no clear difference",0.057,0.055,FALSE
+"F0","C2","slope","B3","cusum",20,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.057,0.055,FALSE
+"F0","C2","slope","B3","cusum",20,"sensitivity_loss",400,0.1325,0.08,0.0524999999999999,0.0175,0.0875,"gain",0.057,0.055,FALSE
+"F0","C2","slope","B3","cusum",20,"precision_loss",400,0.25,0.15,0.1,0.0575,0.145,"gain",0.057,0.055,FALSE
+"F0","C2","slope","B3","ewma",10,"compression_small",400,1,1,0,0,0,"no clear difference",0.053,0.041,FALSE
+"F0","C2","slope","B3","ewma",10,"compression",400,1,1,0,0,0,"no clear difference",0.053,0.041,FALSE
+"F0","C2","slope","B3","ewma",10,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.053,0.041,FALSE
+"F0","C2","slope","B3","ewma",10,"sensitivity_loss",400,0.1325,0.0775,0.055,0.0225,0.09,"gain",0.053,0.041,FALSE
+"F0","C2","slope","B3","ewma",10,"precision_loss",400,0.2525,0.1225,0.13,0.0875,0.1725,"gain",0.053,0.041,FALSE
+"F0","C2","slope","B3","ewma",20,"compression_small",400,1,1,0,0,0,"no clear difference",0.05,0.049,FALSE
+"F0","C2","slope","B3","ewma",20,"compression",400,1,1,0,0,0,"no clear difference",0.05,0.049,FALSE
+"F0","C2","slope","B3","ewma",20,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.05,0.049,FALSE
+"F0","C2","slope","B3","ewma",20,"sensitivity_loss",400,0.1175,0.085,0.0325,-0.0025,0.0675,"no clear difference",0.05,0.049,FALSE
+"F0","C2","slope","B3","ewma",20,"precision_loss",400,0.2475,0.15,0.0974999999999999,0.05,0.145,"gain",0.05,0.049,FALSE
+"F0","C3","residSD","B2","cusum",10,"compression_small",400,0.035,0.935,-0.9,-0.9275625,-0.87,"loss",0.047,0.065,TRUE
+"F0","C3","residSD","B2","cusum",10,"compression",400,0.0375,1,-0.9625,-0.98,-0.9425,"loss",0.047,0.065,TRUE
+"F0","C3","residSD","B2","cusum",10,"compression_ramp",400,0.04,0.985,-0.945,-0.965,-0.9225,"loss",0.047,0.065,TRUE
+"F0","C3","residSD","B2","cusum",10,"sensitivity_loss",400,0.595,0.91,-0.315,-0.3675,-0.265,"loss",0.047,0.065,TRUE
+"F0","C3","residSD","B2","cusum",10,"precision_loss",400,1,0.07,0.93,0.905,0.9525625,"gain",0.047,0.065,TRUE
+"F0","C3","residSD","B2","cusum",20,"compression_small",400,0.035,0.985,-0.95,-0.97,-0.9275,"loss",0.06,0.044,FALSE
+"F0","C3","residSD","B2","cusum",20,"compression",400,0.0675,1,-0.9325,-0.955,-0.9074375,"loss",0.06,0.044,FALSE
+"F0","C3","residSD","B2","cusum",20,"compression_ramp",400,0.0375,1,-0.9625,-0.98,-0.9425,"loss",0.06,0.044,FALSE
+"F0","C3","residSD","B2","cusum",20,"sensitivity_loss",400,0.7475,0.975,-0.2275,-0.27,-0.185,"loss",0.06,0.044,FALSE
+"F0","C3","residSD","B2","cusum",20,"precision_loss",400,1,0.0725,0.9275,0.9025,0.9525,"gain",0.06,0.044,FALSE
+"F0","C3","residSD","B2","ewma",10,"compression_small",400,0.045,0.88,-0.835,-0.87,-0.7975,"loss",0.054,0.069,TRUE
+"F0","C3","residSD","B2","ewma",10,"compression",400,0.0525,1,-0.9475,-0.9675,-0.925,"loss",0.054,0.069,TRUE
+"F0","C3","residSD","B2","ewma",10,"compression_ramp",400,0.05,0.9825,-0.9325,-0.955,-0.905,"loss",0.054,0.069,TRUE
+"F0","C3","residSD","B2","ewma",10,"sensitivity_loss",400,0.55,0.87,-0.32,-0.375,-0.2625,"loss",0.054,0.069,TRUE
+"F0","C3","residSD","B2","ewma",10,"precision_loss",400,1,0.065,0.935,0.91,0.9575,"gain",0.054,0.069,TRUE
+"F0","C3","residSD","B2","ewma",20,"compression_small",400,0.0525,0.9425,-0.89,-0.92,-0.8575,"loss",0.058,0.063,FALSE
+"F0","C3","residSD","B2","ewma",20,"compression",400,0.0525,1,-0.9475,-0.9675625,-0.925,"loss",0.058,0.063,FALSE
+"F0","C3","residSD","B2","ewma",20,"compression_ramp",400,0.045,1,-0.955,-0.975,-0.9325,"loss",0.058,0.063,FALSE
+"F0","C3","residSD","B2","ewma",20,"sensitivity_loss",400,0.6175,0.94,-0.3225,-0.375,-0.2725,"loss",0.058,0.063,FALSE
+"F0","C3","residSD","B2","ewma",20,"precision_loss",400,1,0.0775,0.9225,0.8975,0.9475,"gain",0.058,0.063,FALSE
+"F0","C4","offset","B1","cusum",10,"compression_small",400,0.0775,0.5,-0.4225,-0.47,-0.375,"loss",0.042,0.046,FALSE
+"F0","C4","offset","B1","cusum",10,"compression",400,0.1825,0.985,-0.8025,-0.84,-0.7625,"loss",0.042,0.046,FALSE
+"F0","C4","offset","B1","cusum",10,"compression_ramp",400,0.08,0.6575,-0.5775,-0.6275,-0.5275,"loss",0.042,0.046,FALSE
+"F0","C4","offset","B1","cusum",10,"sensitivity_loss",400,0.9775,0.98,-0.00250000000000005,-0.01,0.005,"no clear difference",0.042,0.046,FALSE
+"F0","C4","offset","B1","cusum",10,"precision_loss",400,0.0575,0.0625,-0.00500000000000006,-0.0225,0.0125,"no clear difference",0.042,0.046,FALSE
+"F0","C4","offset","B1","cusum",20,"compression_small",400,0.1,0.6925,-0.5925,-0.645,-0.5475,"loss",0.048,0.047,FALSE
+"F0","C4","offset","B1","cusum",20,"compression",400,0.2625,1,-0.7375,-0.78,-0.695,"loss",0.048,0.047,FALSE
+"F0","C4","offset","B1","cusum",20,"compression_ramp",400,0.195,0.9925,-0.7975,-0.8375,-0.7575,"loss",0.048,0.047,FALSE
+"F0","C4","offset","B1","cusum",20,"sensitivity_loss",400,1,1,0,0,0,"no clear difference",0.048,0.047,FALSE
+"F0","C4","offset","B1","cusum",20,"precision_loss",400,0.07,0.09,-0.02,-0.0425,0.0025,"no clear difference",0.048,0.047,FALSE
+"F0","C4","offset","B1","ewma",10,"compression_small",400,0.065,0.4825,-0.4175,-0.4675,-0.3699375,"loss",0.049,0.055,FALSE
+"F0","C4","offset","B1","ewma",10,"compression",400,0.1775,0.975,-0.7975,-0.8375,-0.755,"loss",0.049,0.055,FALSE
+"F0","C4","offset","B1","ewma",10,"compression_ramp",400,0.075,0.6975,-0.6225,-0.67,-0.575,"loss",0.049,0.055,FALSE
+"F0","C4","offset","B1","ewma",10,"sensitivity_loss",400,0.965,0.97,-0.005,-0.0125,0,"no clear difference",0.049,0.055,FALSE
+"F0","C4","offset","B1","ewma",10,"precision_loss",400,0.055,0.075,-0.02,-0.04,0,"no clear difference",0.049,0.055,FALSE
+"F0","C4","offset","B1","ewma",20,"compression_small",400,0.0925,0.57,-0.4775,-0.5275,-0.43,"loss",0.046,0.054,FALSE
+"F0","C4","offset","B1","ewma",20,"compression",400,0.195,0.995,-0.8,-0.8375,-0.76,"loss",0.046,0.054,FALSE
+"F0","C4","offset","B1","ewma",20,"compression_ramp",400,0.1525,0.9775,-0.825,-0.8625,-0.785,"loss",0.046,0.054,FALSE
+"F0","C4","offset","B1","ewma",20,"sensitivity_loss",400,0.99,0.9925,-0.00250000000000002,-0.01,0.005,"no clear difference",0.046,0.054,FALSE
+"F0","C4","offset","B1","ewma",20,"precision_loss",400,0.0775,0.1025,-0.0250000000000001,-0.05,0,"no clear difference",0.046,0.054,FALSE
+"F1","C1","UT","UF","cusum",10,"compression_small",400,1,1,0,0,0,"no clear difference",0.041,0.044,FALSE
+"F1","C1","UT","UF","cusum",10,"compression",400,1,1,0,0,0,"no clear difference",0.041,0.044,FALSE
+"F1","C1","UT","UF","cusum",10,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.041,0.044,FALSE
+"F1","C1","UT","UF","cusum",10,"sensitivity_loss",400,0.52,0.775,-0.255,-0.315,-0.195,"loss",0.041,0.044,FALSE
+"F1","C1","UT","UF","cusum",10,"precision_loss",400,1,0.095,0.905,0.875,0.9325,"gain",0.041,0.044,FALSE
+"F1","C1","UT","UF","cusum",20,"compression_small",400,1,1,0,0,0,"no clear difference",0.044,0.047,FALSE
+"F1","C1","UT","UF","cusum",20,"compression",400,1,1,0,0,0,"no clear difference",0.044,0.047,FALSE
+"F1","C1","UT","UF","cusum",20,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.044,0.047,FALSE
+"F1","C1","UT","UF","cusum",20,"sensitivity_loss",400,0.6825,0.94,-0.2575,-0.3075,-0.2075,"loss",0.044,0.047,FALSE
+"F1","C1","UT","UF","cusum",20,"precision_loss",400,1,0.1275,0.8725,0.84,0.905,"gain",0.044,0.047,FALSE
+"F1","C1","UT","UF","ewma",10,"compression_small",400,1,1,0,0,0,"no clear difference",0.052,0.05,FALSE
+"F1","C1","UT","UF","ewma",10,"compression",400,1,1,0,0,0,"no clear difference",0.052,0.05,FALSE
+"F1","C1","UT","UF","ewma",10,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.052,0.05,FALSE
+"F1","C1","UT","UF","ewma",10,"sensitivity_loss",400,0.45,0.69,-0.24,-0.3025625,-0.1775,"loss",0.052,0.05,FALSE
+"F1","C1","UT","UF","ewma",10,"precision_loss",400,1,0.095,0.905,0.875,0.9325,"gain",0.052,0.05,FALSE
+"F1","C1","UT","UF","ewma",20,"compression_small",400,1,1,0,0,0,"no clear difference",0.053,0.049,FALSE
+"F1","C1","UT","UF","ewma",20,"compression",400,1,1,0,0,0,"no clear difference",0.053,0.049,FALSE
+"F1","C1","UT","UF","ewma",20,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.053,0.049,FALSE
+"F1","C1","UT","UF","ewma",20,"sensitivity_loss",400,0.5675,0.825,-0.2575,-0.315,-0.2,"loss",0.053,0.049,FALSE
+"F1","C1","UT","UF","ewma",20,"precision_loss",400,1,0.1475,0.8525,0.8174375,0.885,"gain",0.053,0.049,FALSE
+"F1","C2","slope","B3","cusum",10,"compression_small",400,1,1,0,0,0,"no clear difference",0.044,0.038,FALSE
+"F1","C2","slope","B3","cusum",10,"compression",400,1,1,0,0,0,"no clear difference",0.044,0.038,FALSE
+"F1","C2","slope","B3","cusum",10,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.044,0.038,FALSE
+"F1","C2","slope","B3","cusum",10,"sensitivity_loss",400,0.13,0.075,0.055,0.0225,0.0875,"gain",0.044,0.038,FALSE
+"F1","C2","slope","B3","cusum",10,"precision_loss",400,0.2375,0.1275,0.11,0.0674375,0.1525625,"gain",0.044,0.038,FALSE
+"F1","C2","slope","B3","cusum",20,"compression_small",400,1,1,0,0,0,"no clear difference",0.057,0.055,FALSE
+"F1","C2","slope","B3","cusum",20,"compression",400,1,1,0,0,0,"no clear difference",0.057,0.055,FALSE
+"F1","C2","slope","B3","cusum",20,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.057,0.055,FALSE
+"F1","C2","slope","B3","cusum",20,"sensitivity_loss",400,0.1325,0.08,0.0524999999999999,0.0175,0.0875,"gain",0.057,0.055,FALSE
+"F1","C2","slope","B3","cusum",20,"precision_loss",400,0.25,0.15,0.1,0.0574375,0.1425,"gain",0.057,0.055,FALSE
+"F1","C2","slope","B3","ewma",10,"compression_small",400,1,1,0,0,0,"no clear difference",0.053,0.041,FALSE
+"F1","C2","slope","B3","ewma",10,"compression",400,1,1,0,0,0,"no clear difference",0.053,0.041,FALSE
+"F1","C2","slope","B3","ewma",10,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.053,0.041,FALSE
+"F1","C2","slope","B3","ewma",10,"sensitivity_loss",400,0.1325,0.0775,0.055,0.0225,0.09,"gain",0.053,0.041,FALSE
+"F1","C2","slope","B3","ewma",10,"precision_loss",400,0.2525,0.1225,0.13,0.0875,0.1725,"gain",0.053,0.041,FALSE
+"F1","C2","slope","B3","ewma",20,"compression_small",400,1,1,0,0,0,"no clear difference",0.05,0.049,FALSE
+"F1","C2","slope","B3","ewma",20,"compression",400,1,1,0,0,0,"no clear difference",0.05,0.049,FALSE
+"F1","C2","slope","B3","ewma",20,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.05,0.049,FALSE
+"F1","C2","slope","B3","ewma",20,"sensitivity_loss",400,0.1175,0.085,0.0325,0,0.0675,"no clear difference",0.05,0.049,FALSE
+"F1","C2","slope","B3","ewma",20,"precision_loss",400,0.2475,0.15,0.0974999999999999,0.05,0.1475,"gain",0.05,0.049,FALSE
+"F1","C3","residSD","B2","cusum",10,"compression_small",400,0.1475,0.465,-0.3175,-0.38,-0.26,"loss",0.047,0.065,TRUE
+"F1","C3","residSD","B2","cusum",10,"compression",400,0.39,0.995,-0.605,-0.655,-0.5575,"loss",0.047,0.065,TRUE
+"F1","C3","residSD","B2","cusum",10,"compression_ramp",400,0.155,0.6925,-0.5375,-0.595,-0.48,"loss",0.047,0.065,TRUE
+"F1","C3","residSD","B2","cusum",10,"sensitivity_loss",400,0.595,0.91,-0.315,-0.3675,-0.2624375,"loss",0.047,0.065,TRUE
+"F1","C3","residSD","B2","cusum",10,"precision_loss",400,1,0.07,0.93,0.9025,0.955,"gain",0.047,0.065,TRUE
+"F1","C3","residSD","B2","cusum",20,"compression_small",400,0.2325,0.575,-0.3425,-0.4075,-0.28,"loss",0.06,0.044,FALSE
+"F1","C3","residSD","B2","cusum",20,"compression",400,0.635,1,-0.365,-0.41,-0.32,"loss",0.06,0.044,FALSE
+"F1","C3","residSD","B2","cusum",20,"compression_ramp",400,0.4525,0.99,-0.5375,-0.5875,-0.4875,"loss",0.06,0.044,FALSE
+"F1","C3","residSD","B2","cusum",20,"sensitivity_loss",400,0.7475,0.975,-0.2275,-0.2725,-0.185,"loss",0.06,0.044,FALSE
+"F1","C3","residSD","B2","cusum",20,"precision_loss",400,1,0.0725,0.9275,0.9024375,0.95,"gain",0.06,0.044,FALSE
+"F1","C3","residSD","B2","ewma",10,"compression_small",400,0.085,0.41,-0.325,-0.3775,-0.27,"loss",0.054,0.069,TRUE
+"F1","C3","residSD","B2","ewma",10,"compression",400,0.265,0.9875,-0.7225,-0.765,-0.675,"loss",0.054,0.069,TRUE
+"F1","C3","residSD","B2","ewma",10,"compression_ramp",400,0.105,0.665,-0.56,-0.615,-0.5049375,"loss",0.054,0.069,TRUE
+"F1","C3","residSD","B2","ewma",10,"sensitivity_loss",400,0.55,0.87,-0.32,-0.375,-0.265,"loss",0.054,0.069,TRUE
+"F1","C3","residSD","B2","ewma",10,"precision_loss",400,1,0.065,0.935,0.9075,0.9575,"gain",0.054,0.069,TRUE
+"F1","C3","residSD","B2","ewma",20,"compression_small",400,0.0725,0.465,-0.3925,-0.4475,-0.34,"loss",0.058,0.063,FALSE
+"F1","C3","residSD","B2","ewma",20,"compression",400,0.2825,0.9975,-0.715,-0.7575,-0.6725,"loss",0.058,0.063,FALSE
+"F1","C3","residSD","B2","ewma",20,"compression_ramp",400,0.2275,0.9725,-0.745,-0.7875,-0.7,"loss",0.058,0.063,FALSE
+"F1","C3","residSD","B2","ewma",20,"sensitivity_loss",400,0.6175,0.94,-0.3225,-0.37,-0.2725,"loss",0.058,0.063,FALSE
+"F1","C3","residSD","B2","ewma",20,"precision_loss",400,1,0.0775,0.9225,0.895,0.9475,"gain",0.058,0.063,FALSE
+"F1","C4","offset","B1","cusum",10,"compression_small",400,0.4575,0.0575,0.4,0.35,0.4475,"gain",0.042,0.046,FALSE
+"F1","C4","offset","B1","cusum",10,"compression",400,0.975,0.0925,0.8825,0.85,0.915,"gain",0.042,0.046,FALSE
+"F1","C4","offset","B1","cusum",10,"compression_ramp",400,0.61,0.0575,0.5525,0.505,0.6,"gain",0.042,0.046,FALSE
+"F1","C4","offset","B1","cusum",10,"sensitivity_loss",400,0.9775,0.98,-0.00250000000000005,-0.0125,0.005,"no clear difference",0.042,0.046,FALSE
+"F1","C4","offset","B1","cusum",10,"precision_loss",400,0.0575,0.0625,-0.00500000000000006,-0.0225,0.0125,"no clear difference",0.042,0.046,FALSE
+"F1","C4","offset","B1","cusum",20,"compression_small",400,0.62,0.085,0.535,0.485,0.5825625,"gain",0.048,0.047,FALSE
+"F1","C4","offset","B1","cusum",20,"compression",400,0.9975,0.15,0.8475,0.81,0.8825,"gain",0.048,0.047,FALSE
+"F1","C4","offset","B1","cusum",20,"compression_ramp",400,0.9925,0.12,0.8725,0.84,0.905,"gain",0.048,0.047,FALSE
+"F1","C4","offset","B1","cusum",20,"sensitivity_loss",400,1,1,0,0,0,"no clear difference",0.048,0.047,FALSE
+"F1","C4","offset","B1","cusum",20,"precision_loss",400,0.07,0.09,-0.02,-0.045,0.0025,"no clear difference",0.048,0.047,FALSE
+"F1","C4","offset","B1","ewma",10,"compression_small",400,0.435,0.0675,0.3675,0.3175,0.415,"gain",0.049,0.055,FALSE
+"F1","C4","offset","B1","ewma",10,"compression",400,0.9575,0.0875,0.87,0.835,0.9025,"gain",0.049,0.055,FALSE
+"F1","C4","offset","B1","ewma",10,"compression_ramp",400,0.59,0.065,0.525,0.475,0.575,"gain",0.049,0.055,FALSE
+"F1","C4","offset","B1","ewma",10,"sensitivity_loss",400,0.965,0.97,-0.005,-0.0125,0,"no clear difference",0.049,0.055,FALSE
+"F1","C4","offset","B1","ewma",10,"precision_loss",400,0.055,0.075,-0.02,-0.04,0,"no clear difference",0.049,0.055,FALSE
+"F1","C4","offset","B1","ewma",20,"compression_small",400,0.535,0.0875,0.4475,0.3975,0.4975,"gain",0.046,0.054,FALSE
+"F1","C4","offset","B1","ewma",20,"compression",400,0.9925,0.1225,0.87,0.835,0.9025,"gain",0.046,0.054,FALSE
+"F1","C4","offset","B1","ewma",20,"compression_ramp",400,0.9625,0.1125,0.85,0.815,0.885,"gain",0.046,0.054,FALSE
+"F1","C4","offset","B1","ewma",20,"sensitivity_loss",400,0.99,0.9925,-0.00250000000000002,-0.0100625,0.005,"no clear difference",0.046,0.054,FALSE
+"F1","C4","offset","B1","ewma",20,"precision_loss",400,0.0775,0.1025,-0.0250000000000001,-0.05,0,"no clear difference",0.046,0.054,FALSE
+"F2","C1","UT","UF","cusum",10,"compression_small",400,1,1,0,0,0,"no clear difference",0.046,0.037,FALSE
+"F2","C1","UT","UF","cusum",10,"compression",400,1,1,0,0,0,"no clear difference",0.046,0.037,FALSE
+"F2","C1","UT","UF","cusum",10,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.046,0.037,FALSE
+"F2","C1","UT","UF","cusum",10,"sensitivity_loss",400,0.16,0.7425,-0.5825,-0.6375625,-0.525,"loss",0.046,0.037,FALSE
+"F2","C1","UT","UF","cusum",10,"precision_loss",400,0.995,0.0625,0.9325,0.9075,0.955,"gain",0.046,0.037,FALSE
+"F2","C1","UT","UF","cusum",20,"compression_small",400,1,1,0,0,0,"no clear difference",0.041,0.056,FALSE
+"F2","C1","UT","UF","cusum",20,"compression",400,1,1,0,0,0,"no clear difference",0.041,0.056,FALSE
+"F2","C1","UT","UF","cusum",20,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.041,0.056,FALSE
+"F2","C1","UT","UF","cusum",20,"sensitivity_loss",400,0.1925,0.93,-0.7375,-0.7825,-0.6925,"loss",0.041,0.056,FALSE
+"F2","C1","UT","UF","cusum",20,"precision_loss",400,0.9975,0.075,0.9225,0.895,0.9475,"gain",0.041,0.056,FALSE
+"F2","C1","UT","UF","ewma",10,"compression_small",400,0.9975,1,-0.00250000000000001,-0.0075,0,"no clear difference",0.058,0.039,FALSE
+"F2","C1","UT","UF","ewma",10,"compression",400,1,1,0,0,0,"no clear difference",0.058,0.039,FALSE
+"F2","C1","UT","UF","ewma",10,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.058,0.039,FALSE
+"F2","C1","UT","UF","ewma",10,"sensitivity_loss",400,0.16,0.6825,-0.5225,-0.5825,-0.4575,"loss",0.058,0.039,FALSE
+"F2","C1","UT","UF","ewma",10,"precision_loss",400,0.99,0.07,0.92,0.8925,0.945,"gain",0.058,0.039,FALSE
+"F2","C1","UT","UF","ewma",20,"compression_small",400,1,1,0,0,0,"no clear difference",0.055,0.062,FALSE
+"F2","C1","UT","UF","ewma",20,"compression",400,1,1,0,0,0,"no clear difference",0.055,0.062,FALSE
+"F2","C1","UT","UF","ewma",20,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.055,0.062,FALSE
+"F2","C1","UT","UF","ewma",20,"sensitivity_loss",400,0.2125,0.81,-0.5975,-0.6525,-0.5325,"loss",0.055,0.062,FALSE
+"F2","C1","UT","UF","ewma",20,"precision_loss",400,0.9975,0.08,0.9175,0.89,0.9425,"gain",0.055,0.062,FALSE
+"F2","C2","slope","B3","cusum",10,"compression_small",400,1,1,0,0,0,"no clear difference",0.041,0.042,FALSE
+"F2","C2","slope","B3","cusum",10,"compression",400,1,1,0,0,0,"no clear difference",0.041,0.042,FALSE
+"F2","C2","slope","B3","cusum",10,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.041,0.042,FALSE
+"F2","C2","slope","B3","cusum",10,"sensitivity_loss",400,0.05,0.05,0,-0.02,0.0225,"no clear difference",0.041,0.042,FALSE
+"F2","C2","slope","B3","cusum",10,"precision_loss",400,0.0925,0.0875,0.00500000000000008,-0.03,0.04,"no clear difference",0.041,0.042,FALSE
+"F2","C2","slope","B3","cusum",20,"compression_small",400,1,1,0,0,0,"no clear difference",0.045,0.055,FALSE
+"F2","C2","slope","B3","cusum",20,"compression",400,1,1,0,0,0,"no clear difference",0.045,0.055,FALSE
+"F2","C2","slope","B3","cusum",20,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.045,0.055,FALSE
+"F2","C2","slope","B3","cusum",20,"sensitivity_loss",400,0.0775,0.0775,0,-0.0275,0.0275,"no clear difference",0.045,0.055,FALSE
+"F2","C2","slope","B3","cusum",20,"precision_loss",400,0.115,0.0775,0.0375,0.005,0.0725,"gain",0.045,0.055,FALSE
+"F2","C2","slope","B3","ewma",10,"compression_small",400,1,1,0,0,0,"no clear difference",0.046,0.043,FALSE
+"F2","C2","slope","B3","ewma",10,"compression",400,1,1,0,0,0,"no clear difference",0.046,0.043,FALSE
+"F2","C2","slope","B3","ewma",10,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.046,0.043,FALSE
+"F2","C2","slope","B3","ewma",10,"sensitivity_loss",400,0.0525,0.0525,0,-0.025,0.0250624999999997,"no clear difference",0.046,0.043,FALSE
+"F2","C2","slope","B3","ewma",10,"precision_loss",400,0.1,0.0975,0.00250000000000004,-0.035,0.0375,"no clear difference",0.046,0.043,FALSE
+"F2","C2","slope","B3","ewma",20,"compression_small",400,1,1,0,0,0,"no clear difference",0.048,0.054,FALSE
+"F2","C2","slope","B3","ewma",20,"compression",400,1,1,0,0,0,"no clear difference",0.048,0.054,FALSE
+"F2","C2","slope","B3","ewma",20,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.048,0.054,FALSE
+"F2","C2","slope","B3","ewma",20,"sensitivity_loss",400,0.07,0.065,0.00500000000000006,-0.025,0.0325,"no clear difference",0.048,0.054,FALSE
+"F2","C2","slope","B3","ewma",20,"precision_loss",400,0.1075,0.0925,0.015,-0.0175,0.0475,"no clear difference",0.048,0.054,FALSE
+"F2","C3","residSD","B2","cusum",10,"compression_small",400,0.0375,0.855,-0.8175,-0.855,-0.7775,"loss",0.052,0.042,FALSE
+"F2","C3","residSD","B2","cusum",10,"compression",400,0.04,1,-0.96,-0.9775,-0.94,"loss",0.052,0.042,FALSE
+"F2","C3","residSD","B2","cusum",10,"compression_ramp",400,0.0375,0.9725,-0.935,-0.96,-0.91,"loss",0.052,0.042,FALSE
+"F2","C3","residSD","B2","cusum",10,"sensitivity_loss",400,0.2,0.8425,-0.6425,-0.6925,-0.5875,"loss",0.052,0.042,FALSE
+"F2","C3","residSD","B2","cusum",10,"precision_loss",400,0.9925,0.04,0.9525,0.93,0.9725,"gain",0.052,0.042,FALSE
+"F2","C3","residSD","B2","cusum",20,"compression_small",400,0.04,0.965,-0.925,-0.95,-0.8975,"loss",0.046,0.052,FALSE
+"F2","C3","residSD","B2","cusum",20,"compression",400,0.0475,1,-0.9525,-0.9725,-0.93,"loss",0.046,0.052,FALSE
+"F2","C3","residSD","B2","cusum",20,"compression_ramp",400,0.035,1,-0.965,-0.9825,-0.945,"loss",0.046,0.052,FALSE
+"F2","C3","residSD","B2","cusum",20,"sensitivity_loss",400,0.26,0.9575,-0.6975,-0.745,-0.6475,"loss",0.046,0.052,FALSE
+"F2","C3","residSD","B2","cusum",20,"precision_loss",400,0.9975,0.0575,0.94,0.915,0.9625,"gain",0.046,0.052,FALSE
+"F2","C3","residSD","B2","ewma",10,"compression_small",400,0.0375,0.8125,-0.775,-0.8175,-0.7325,"loss",0.051,0.053,FALSE
+"F2","C3","residSD","B2","ewma",10,"compression",400,0.025,1,-0.975,-0.9875,-0.9599375,"loss",0.051,0.053,FALSE
+"F2","C3","residSD","B2","ewma",10,"compression_ramp",400,0.04,0.9775,-0.9375,-0.96,-0.9125,"loss",0.051,0.053,FALSE
+"F2","C3","residSD","B2","ewma",10,"sensitivity_loss",400,0.1825,0.81,-0.6275,-0.6775,-0.575,"loss",0.051,0.053,FALSE
+"F2","C3","residSD","B2","ewma",10,"precision_loss",400,0.9925,0.045,0.9475,0.9225,0.9675,"gain",0.051,0.053,FALSE
+"F2","C3","residSD","B2","ewma",20,"compression_small",400,0.0525,0.885,-0.8325,-0.8675625,-0.7925,"loss",0.053,0.059,FALSE
+"F2","C3","residSD","B2","ewma",20,"compression",400,0.0475,1,-0.9525,-0.9725,-0.93,"loss",0.053,0.059,FALSE
+"F2","C3","residSD","B2","ewma",20,"compression_ramp",400,0.03,1,-0.97,-0.985,-0.9524375,"loss",0.053,0.059,FALSE
+"F2","C3","residSD","B2","ewma",20,"sensitivity_loss",400,0.2425,0.91,-0.6675,-0.7175,-0.615,"loss",0.053,0.059,FALSE
+"F2","C3","residSD","B2","ewma",20,"precision_loss",400,0.995,0.07,0.925,0.8975,0.95,"gain",0.053,0.059,FALSE
+"F2","C4","offset","B1","cusum",10,"compression_small",400,0.075,0.47,-0.395,-0.4425,-0.3475,"loss",0.042,0.06,FALSE
+"F2","C4","offset","B1","cusum",10,"compression",400,0.2175,0.98,-0.7625,-0.8025,-0.7175,"loss",0.042,0.06,FALSE
+"F2","C4","offset","B1","cusum",10,"compression_ramp",400,0.0825,0.68,-0.5975,-0.6475,-0.5525,"loss",0.042,0.06,FALSE
+"F2","C4","offset","B1","cusum",10,"sensitivity_loss",400,0.9725,0.965,0.0075000000000001,-0.005,0.02,"no clear difference",0.042,0.06,FALSE
+"F2","C4","offset","B1","cusum",10,"precision_loss",400,0.0425,0.08,-0.0375,-0.065,-0.01,"loss",0.042,0.06,FALSE
+"F2","C4","offset","B1","cusum",20,"compression_small",400,0.0975,0.6175,-0.52,-0.57,-0.47,"loss",0.054,0.055,FALSE
+"F2","C4","offset","B1","cusum",20,"compression",400,0.28,1,-0.72,-0.7625,-0.6774375,"loss",0.054,0.055,FALSE
+"F2","C4","offset","B1","cusum",20,"compression_ramp",400,0.1875,0.99,-0.8025,-0.84,-0.7649375,"loss",0.054,0.055,FALSE
+"F2","C4","offset","B1","cusum",20,"sensitivity_loss",400,1,1,0,0,0,"no clear difference",0.054,0.055,FALSE
+"F2","C4","offset","B1","cusum",20,"precision_loss",400,0.0525,0.0875,-0.035,-0.0625,-0.00993750000000034,"loss",0.054,0.055,FALSE
+"F2","C4","offset","B1","ewma",10,"compression_small",400,0.0625,0.4075,-0.345,-0.3925,-0.2975,"loss",0.041,0.052,FALSE
+"F2","C4","offset","B1","ewma",10,"compression",400,0.2,0.9475,-0.7475,-0.7875625,-0.7075,"loss",0.041,0.052,FALSE
+"F2","C4","offset","B1","ewma",10,"compression_ramp",400,0.07,0.615,-0.545,-0.5925,-0.4975,"loss",0.041,0.052,FALSE
+"F2","C4","offset","B1","ewma",10,"sensitivity_loss",400,0.9525,0.9225,0.03,0.01,0.0525,"gain",0.041,0.052,FALSE
+"F2","C4","offset","B1","ewma",10,"precision_loss",400,0.045,0.075,-0.03,-0.055,-0.005,"loss",0.041,0.052,FALSE
+"F2","C4","offset","B1","ewma",20,"compression_small",400,0.1025,0.525,-0.4225,-0.475,-0.37,"loss",0.06,0.059,FALSE
+"F2","C4","offset","B1","ewma",20,"compression",400,0.2525,0.9825,-0.73,-0.7725,-0.685,"loss",0.06,0.059,FALSE
+"F2","C4","offset","B1","ewma",20,"compression_ramp",400,0.1825,0.965,-0.7825,-0.8225,-0.7425,"loss",0.06,0.059,FALSE
+"F2","C4","offset","B1","ewma",20,"sensitivity_loss",400,0.9925,0.975,0.0174999999999999,0.005,0.0325,"gain",0.06,0.059,FALSE
+"F2","C4","offset","B1","ewma",20,"precision_loss",400,0.0725,0.1025,-0.03,-0.06,-0.0025,"loss",0.06,0.059,FALSE
+"F3","C1","UT","UF","cusum",10,"compression_small",400,0.92,0.9775,-0.0575,-0.0825,-0.035,"loss",0.044,0.032,TRUE
+"F3","C1","UT","UF","cusum",10,"compression",400,1,1,0,0,0,"no clear difference",0.044,0.032,TRUE
+"F3","C1","UT","UF","cusum",10,"compression_ramp",400,0.9775,1,-0.0225,-0.0375,-0.01,"loss",0.044,0.032,TRUE
+"F3","C1","UT","UF","cusum",10,"sensitivity_loss",400,0.815,0.825,-0.0100000000000001,-0.045,0.025,"no clear difference",0.044,0.032,TRUE
+"F3","C1","UT","UF","cusum",10,"precision_loss",400,1,0.065,0.935,0.91,0.9575,"gain",0.044,0.032,TRUE
+"F3","C1","UT","UF","cusum",20,"compression_small",400,0.985,1,-0.015,-0.0275,-0.005,"loss",0.036,0.039,TRUE
+"F3","C1","UT","UF","cusum",20,"compression",400,1,1,0,0,0,"no clear difference",0.036,0.039,TRUE
+"F3","C1","UT","UF","cusum",20,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.036,0.039,TRUE
+"F3","C1","UT","UF","cusum",20,"sensitivity_loss",400,0.965,0.9625,0.00250000000000003,-0.0175,0.0225,"no clear difference",0.036,0.039,TRUE
+"F3","C1","UT","UF","cusum",20,"precision_loss",400,1,0.065,0.935,0.91,0.9575,"gain",0.036,0.039,TRUE
+"F3","C1","UT","UF","ewma",10,"compression_small",400,0.835,0.9675,-0.1325,-0.1675,-0.095,"loss",0.055,0.039,FALSE
+"F3","C1","UT","UF","ewma",10,"compression",400,1,1,0,0,0,"no clear difference",0.055,0.039,FALSE
+"F3","C1","UT","UF","ewma",10,"compression_ramp",400,0.9725,1,-0.0275,-0.0425,-0.0125,"loss",0.055,0.039,FALSE
+"F3","C1","UT","UF","ewma",10,"sensitivity_loss",400,0.7225,0.745,-0.0225,-0.0625,0.02,"no clear difference",0.055,0.039,FALSE
+"F3","C1","UT","UF","ewma",10,"precision_loss",400,1,0.0825,0.9175,0.89,0.9425,"gain",0.055,0.039,FALSE
+"F3","C1","UT","UF","ewma",20,"compression_small",400,0.895,0.9925,-0.0975,-0.1275,-0.0675,"loss",0.037,0.045,FALSE
+"F3","C1","UT","UF","ewma",20,"compression",400,1,1,0,0,0,"no clear difference",0.037,0.045,FALSE
+"F3","C1","UT","UF","ewma",20,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.037,0.045,FALSE
+"F3","C1","UT","UF","ewma",20,"sensitivity_loss",400,0.84,0.875,-0.0349999999999999,-0.07,0,"no clear difference",0.037,0.045,FALSE
+"F3","C1","UT","UF","ewma",20,"precision_loss",400,1,0.09,0.91,0.8825,0.935,"gain",0.037,0.045,FALSE
+"F3","C2","slope","B3","cusum",10,"compression_small",400,0.8975,0.9675,-0.07,-0.095,-0.045,"loss",0.03,0.032,TRUE
+"F3","C2","slope","B3","cusum",10,"compression",400,1,1,0,0,0,"no clear difference",0.03,0.032,TRUE
+"F3","C2","slope","B3","cusum",10,"compression_ramp",400,0.9825,0.9975,-0.015,-0.0275,-0.005,"loss",0.03,0.032,TRUE
+"F3","C2","slope","B3","cusum",10,"sensitivity_loss",400,0.85,0.7725,0.0775,0.0425,0.1125,"gain",0.03,0.032,TRUE
+"F3","C2","slope","B3","cusum",10,"precision_loss",400,0.0825,0.085,-0.00250000000000004,-0.0275,0.0225,"no clear difference",0.03,0.032,TRUE
+"F3","C2","slope","B3","cusum",20,"compression_small",400,0.9825,0.9925,-0.01,-0.02,-0.0025,"loss",0.042,0.037,FALSE
+"F3","C2","slope","B3","cusum",20,"compression",400,1,1,0,0,0,"no clear difference",0.042,0.037,FALSE
+"F3","C2","slope","B3","cusum",20,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.042,0.037,FALSE
+"F3","C2","slope","B3","cusum",20,"sensitivity_loss",400,0.9725,0.93,0.0425,0.02,0.0675,"gain",0.042,0.037,FALSE
+"F3","C2","slope","B3","cusum",20,"precision_loss",400,0.0925,0.06,0.0325,0.0075,0.06,"gain",0.042,0.037,FALSE
+"F3","C2","slope","B3","ewma",10,"compression_small",400,0.855,0.935,-0.08,-0.11,-0.0525,"loss",0.037,0.028,TRUE
+"F3","C2","slope","B3","ewma",10,"compression",400,1,1,0,0,0,"no clear difference",0.037,0.028,TRUE
+"F3","C2","slope","B3","ewma",10,"compression_ramp",400,0.9875,0.9975,-0.01,-0.02,-0.0025,"loss",0.037,0.028,TRUE
+"F3","C2","slope","B3","ewma",10,"sensitivity_loss",400,0.785,0.6775,0.1075,0.065,0.1475,"gain",0.037,0.028,TRUE
+"F3","C2","slope","B3","ewma",10,"precision_loss",400,0.1175,0.08,0.0375,0.0075,0.0675,"gain",0.037,0.028,TRUE
+"F3","C2","slope","B3","ewma",20,"compression_small",400,0.9325,0.9675,-0.035,-0.055,-0.015,"loss",0.036,0.033,TRUE
+"F3","C2","slope","B3","ewma",20,"compression",400,1,1,0,0,0,"no clear difference",0.036,0.033,TRUE
+"F3","C2","slope","B3","ewma",20,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.036,0.033,TRUE
+"F3","C2","slope","B3","ewma",20,"sensitivity_loss",400,0.9075,0.81,0.0975,0.0625,0.1325,"gain",0.036,0.033,TRUE
+"F3","C2","slope","B3","ewma",20,"precision_loss",400,0.1125,0.08,0.0325,0.0025,0.0675,"gain",0.036,0.033,TRUE
+"F3","C3","residSD","B2","cusum",10,"compression_small",400,0.4975,0.8475,-0.35,-0.41,-0.2925,"loss",0.061,0.055,FALSE
+"F3","C3","residSD","B2","cusum",10,"compression",400,0.9725,1,-0.0275,-0.045,-0.0125,"loss",0.061,0.055,FALSE
+"F3","C3","residSD","B2","cusum",10,"compression_ramp",400,0.645,0.9725,-0.3275,-0.375,-0.28,"loss",0.061,0.055,FALSE
+"F3","C3","residSD","B2","cusum",10,"sensitivity_loss",400,0.2225,0.6175,-0.395,-0.45,-0.335,"loss",0.061,0.055,FALSE
+"F3","C3","residSD","B2","cusum",10,"precision_loss",400,1,0.0625,0.9375,0.9125,0.96,"gain",0.061,0.055,FALSE
+"F3","C3","residSD","B2","cusum",20,"compression_small",400,0.6625,0.965,-0.3025,-0.35,-0.2575,"loss",0.056,0.047,FALSE
+"F3","C3","residSD","B2","cusum",20,"compression",400,0.995,1,-0.00500000000000004,-0.0125,0,"no clear difference",0.056,0.047,FALSE
+"F3","C3","residSD","B2","cusum",20,"compression_ramp",400,0.9875,1,-0.0125,-0.025,-0.0025,"loss",0.056,0.047,FALSE
+"F3","C3","residSD","B2","cusum",20,"sensitivity_loss",400,0.2875,0.785,-0.4975,-0.5575,-0.4375,"loss",0.056,0.047,FALSE
+"F3","C3","residSD","B2","cusum",20,"precision_loss",400,1,0.075,0.925,0.8975,0.95,"gain",0.056,0.047,FALSE
+"F3","C3","residSD","B2","ewma",10,"compression_small",400,0.4025,0.8125,-0.41,-0.4725,-0.35,"loss",0.064,0.056,FALSE
+"F3","C3","residSD","B2","ewma",10,"compression",400,0.9375,1,-0.0625,-0.0875,-0.04,"loss",0.064,0.056,FALSE
+"F3","C3","residSD","B2","ewma",10,"compression_ramp",400,0.57,0.975,-0.405,-0.455,-0.355,"loss",0.064,0.056,FALSE
+"F3","C3","residSD","B2","ewma",10,"sensitivity_loss",400,0.155,0.5825,-0.4275,-0.4825,-0.37,"loss",0.064,0.056,FALSE
+"F3","C3","residSD","B2","ewma",10,"precision_loss",400,1,0.075,0.925,0.8975,0.95,"gain",0.064,0.056,FALSE
+"F3","C3","residSD","B2","ewma",20,"compression_small",400,0.545,0.92,-0.375,-0.4275,-0.32,"loss",0.072,0.054,TRUE
+"F3","C3","residSD","B2","ewma",20,"compression",400,0.9825,1,-0.0175,-0.0325,-0.005,"loss",0.072,0.054,TRUE
+"F3","C3","residSD","B2","ewma",20,"compression_ramp",400,0.95,1,-0.05,-0.0725,-0.03,"loss",0.072,0.054,TRUE
+"F3","C3","residSD","B2","ewma",20,"sensitivity_loss",400,0.225,0.695,-0.47,-0.525,-0.41,"loss",0.072,0.054,TRUE
+"F3","C3","residSD","B2","ewma",20,"precision_loss",400,1,0.085,0.915,0.885,0.9425,"gain",0.072,0.054,TRUE
+"F3","C4","offset","B1","cusum",10,"compression_small",400,0.05,0.3875,-0.3375,-0.385,-0.295,"loss",0.035,0.048,TRUE
+"F3","C4","offset","B1","cusum",10,"compression",400,0.12,0.9325,-0.8125,-0.85,-0.775,"loss",0.035,0.048,TRUE
+"F3","C4","offset","B1","cusum",10,"compression_ramp",400,0.05,0.535,-0.485,-0.535,-0.435,"loss",0.035,0.048,TRUE
+"F3","C4","offset","B1","cusum",10,"sensitivity_loss",400,0.9775,0.98,-0.00250000000000005,-0.0100625,0.005,"no clear difference",0.035,0.048,TRUE
+"F3","C4","offset","B1","cusum",10,"precision_loss",400,0.04,0.0775,-0.0375,-0.065,-0.01,"loss",0.035,0.048,TRUE
+"F3","C4","offset","B1","cusum",20,"compression_small",400,0.06,0.49,-0.43,-0.4775,-0.38,"loss",0.04,0.046,FALSE
+"F3","C4","offset","B1","cusum",20,"compression",400,0.1575,0.995,-0.8375,-0.8725,-0.8,"loss",0.04,0.046,FALSE
+"F3","C4","offset","B1","cusum",20,"compression_ramp",400,0.125,0.95,-0.825,-0.8625,-0.7875,"loss",0.04,0.046,FALSE
+"F3","C4","offset","B1","cusum",20,"sensitivity_loss",400,1,1,0,0,0,"no clear difference",0.04,0.046,FALSE
+"F3","C4","offset","B1","cusum",20,"precision_loss",400,0.0525,0.1175,-0.065,-0.1,-0.0325,"loss",0.04,0.046,FALSE
+"F3","C4","offset","B1","ewma",10,"compression_small",400,0.0525,0.375,-0.3225,-0.37,-0.2775,"loss",0.044,0.056,FALSE
+"F3","C4","offset","B1","ewma",10,"compression",400,0.1025,0.9225,-0.82,-0.8575,-0.78,"loss",0.044,0.056,FALSE
+"F3","C4","offset","B1","ewma",10,"compression_ramp",400,0.0625,0.535,-0.4725,-0.52,-0.4199375,"loss",0.044,0.056,FALSE
+"F3","C4","offset","B1","ewma",10,"sensitivity_loss",400,0.96,0.97,-0.00999999999999999,-0.02,-0.0025,"loss",0.044,0.056,FALSE
+"F3","C4","offset","B1","ewma",10,"precision_loss",400,0.0525,0.09,-0.0374999999999999,-0.065,-0.0125,"loss",0.044,0.056,FALSE
+"F3","C4","offset","B1","ewma",20,"compression_small",400,0.07,0.4075,-0.3375,-0.385,-0.2875,"loss",0.042,0.061,FALSE
+"F3","C4","offset","B1","ewma",20,"compression",400,0.145,0.9625,-0.8175,-0.855,-0.7775,"loss",0.042,0.061,FALSE
+"F3","C4","offset","B1","ewma",20,"compression_ramp",400,0.12,0.9025,-0.7825,-0.8225625,-0.745,"loss",0.042,0.061,FALSE
+"F3","C4","offset","B1","ewma",20,"sensitivity_loss",400,0.99,0.9925,-0.00250000000000002,-0.0125,0.005,"no clear difference",0.042,0.061,FALSE
+"F3","C4","offset","B1","ewma",20,"precision_loss",400,0.06,0.12,-0.06,-0.09,-0.03,"loss",0.042,0.061,FALSE
+"F4","C1","UT","UF","cusum",10,"compression_small",400,1,1,0,0,0,"no clear difference",0.061,0.061,FALSE
+"F4","C1","UT","UF","cusum",10,"compression",400,1,1,0,0,0,"no clear difference",0.061,0.061,FALSE
+"F4","C1","UT","UF","cusum",10,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.061,0.061,FALSE
+"F4","C1","UT","UF","cusum",10,"sensitivity_loss",400,0.3,0.85,-0.55,-0.6075,-0.4925,"loss",0.061,0.061,FALSE
+"F4","C1","UT","UF","cusum",10,"precision_loss",400,1,0.145,0.855,0.8225,0.89,"gain",0.061,0.061,FALSE
+"F4","C1","UT","UF","cusum",20,"compression_small",400,1,1,0,0,0,"no clear difference",0.069,0.046,TRUE
+"F4","C1","UT","UF","cusum",20,"compression",400,1,1,0,0,0,"no clear difference",0.069,0.046,TRUE
+"F4","C1","UT","UF","cusum",20,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.069,0.046,TRUE
+"F4","C1","UT","UF","cusum",20,"sensitivity_loss",400,0.385,0.945,-0.56,-0.61,-0.5075,"loss",0.069,0.046,TRUE
+"F4","C1","UT","UF","cusum",20,"precision_loss",400,1,0.105,0.895,0.865,0.925,"gain",0.069,0.046,TRUE
+"F4","C1","UT","UF","ewma",10,"compression_small",400,1,1,0,0,0,"no clear difference",0.069,0.064,TRUE
+"F4","C1","UT","UF","ewma",10,"compression",400,1,1,0,0,0,"no clear difference",0.069,0.064,TRUE
+"F4","C1","UT","UF","ewma",10,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.069,0.064,TRUE
+"F4","C1","UT","UF","ewma",10,"sensitivity_loss",400,0.31,0.76,-0.45,-0.5125,-0.385,"loss",0.069,0.064,TRUE
+"F4","C1","UT","UF","ewma",10,"precision_loss",400,1,0.155,0.845,0.8099375,0.8800625,"gain",0.069,0.064,TRUE
+"F4","C1","UT","UF","ewma",20,"compression_small",400,1,1,0,0,0,"no clear difference",0.082,0.056,TRUE
+"F4","C1","UT","UF","ewma",20,"compression",400,1,1,0,0,0,"no clear difference",0.082,0.056,TRUE
+"F4","C1","UT","UF","ewma",20,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.082,0.056,TRUE
+"F4","C1","UT","UF","ewma",20,"sensitivity_loss",400,0.385,0.875,-0.49,-0.545,-0.435,"loss",0.082,0.056,TRUE
+"F4","C1","UT","UF","ewma",20,"precision_loss",400,1,0.1575,0.8425,0.805,0.8775,"gain",0.082,0.056,TRUE
+"F4","C2","slope","B3","cusum",10,"compression_small",400,1,1,0,0,0,"no clear difference",0.055,0.062,FALSE
+"F4","C2","slope","B3","cusum",10,"compression",400,1,1,0,0,0,"no clear difference",0.055,0.062,FALSE
+"F4","C2","slope","B3","cusum",10,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.055,0.062,FALSE
+"F4","C2","slope","B3","cusum",10,"sensitivity_loss",400,0.125,0.115,0.0100000000000002,-0.0275,0.0475,"no clear difference",0.055,0.062,FALSE
+"F4","C2","slope","B3","cusum",10,"precision_loss",400,0.2875,0.19,0.0974999999999999,0.0524375,0.1475,"gain",0.055,0.062,FALSE
+"F4","C2","slope","B3","cusum",20,"compression_small",400,1,1,0,0,0,"no clear difference",0.052,0.051,FALSE
+"F4","C2","slope","B3","cusum",20,"compression",400,1,1,0,0,0,"no clear difference",0.052,0.051,FALSE
+"F4","C2","slope","B3","cusum",20,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.052,0.051,FALSE
+"F4","C2","slope","B3","cusum",20,"sensitivity_loss",400,0.13,0.085,0.0450000000000001,0.005,0.085,"gain",0.052,0.051,FALSE
+"F4","C2","slope","B3","cusum",20,"precision_loss",400,0.29,0.1825,0.1075,0.055,0.1575,"gain",0.052,0.051,FALSE
+"F4","C2","slope","B3","ewma",10,"compression_small",400,1,1,0,0,0,"no clear difference",0.059,0.06,FALSE
+"F4","C2","slope","B3","ewma",10,"compression",400,1,1,0,0,0,"no clear difference",0.059,0.06,FALSE
+"F4","C2","slope","B3","ewma",10,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.059,0.06,FALSE
+"F4","C2","slope","B3","ewma",10,"sensitivity_loss",400,0.1425,0.125,0.0174999999999999,-0.0225,0.0575,"no clear difference",0.059,0.06,FALSE
+"F4","C2","slope","B3","ewma",10,"precision_loss",400,0.3,0.1975,0.1025,0.0574375,0.15,"gain",0.059,0.06,FALSE
+"F4","C2","slope","B3","ewma",20,"compression_small",400,1,1,0,0,0,"no clear difference",0.065,0.055,TRUE
+"F4","C2","slope","B3","ewma",20,"compression",400,1,1,0,0,0,"no clear difference",0.065,0.055,TRUE
+"F4","C2","slope","B3","ewma",20,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.065,0.055,TRUE
+"F4","C2","slope","B3","ewma",20,"sensitivity_loss",400,0.135,0.1175,0.0174999999999999,-0.0225,0.0575,"no clear difference",0.065,0.055,TRUE
+"F4","C2","slope","B3","ewma",20,"precision_loss",400,0.3175,0.1825,0.135,0.0849375,0.1875,"gain",0.065,0.055,TRUE
+"F4","C3","residSD","B2","cusum",10,"compression_small",400,0.0375,0.9,-0.8625,-0.8975,-0.8275,"loss",0.052,0.043,FALSE
+"F4","C3","residSD","B2","cusum",10,"compression",400,0.0375,1,-0.9625,-0.98,-0.9425,"loss",0.052,0.043,FALSE
+"F4","C3","residSD","B2","cusum",10,"compression_ramp",400,0.03,0.9825,-0.9525,-0.9725,-0.93,"loss",0.052,0.043,FALSE
+"F4","C3","residSD","B2","cusum",10,"sensitivity_loss",400,0.345,0.8925,-0.5475,-0.6025,-0.4925,"loss",0.052,0.043,FALSE
+"F4","C3","residSD","B2","cusum",10,"precision_loss",400,1,0.0525,0.9475,0.925,0.9675,"gain",0.052,0.043,FALSE
+"F4","C3","residSD","B2","cusum",20,"compression_small",400,0.0275,0.975,-0.9475,-0.9675,-0.925,"loss",0.065,0.048,TRUE
+"F4","C3","residSD","B2","cusum",20,"compression",400,0.035,1,-0.965,-0.9825,-0.9474375,"loss",0.065,0.048,TRUE
+"F4","C3","residSD","B2","cusum",20,"compression_ramp",400,0.0375,1,-0.9625,-0.98,-0.9425,"loss",0.065,0.048,TRUE
+"F4","C3","residSD","B2","cusum",20,"sensitivity_loss",400,0.4375,0.975,-0.5375,-0.585,-0.4875,"loss",0.065,0.048,TRUE
+"F4","C3","residSD","B2","cusum",20,"precision_loss",400,1,0.065,0.935,0.91,0.9575,"gain",0.065,0.048,TRUE
+"F4","C3","residSD","B2","ewma",10,"compression_small",400,0.0525,0.865,-0.8125,-0.8575,-0.7725,"loss",0.057,0.042,FALSE
+"F4","C3","residSD","B2","ewma",10,"compression",400,0.0475,1,-0.9525,-0.9725,-0.93,"loss",0.057,0.042,FALSE
+"F4","C3","residSD","B2","ewma",10,"compression_ramp",400,0.0425,0.985,-0.9425,-0.965,-0.9175,"loss",0.057,0.042,FALSE
+"F4","C3","residSD","B2","ewma",10,"sensitivity_loss",400,0.36,0.87,-0.51,-0.5625,-0.455,"loss",0.057,0.042,FALSE
+"F4","C3","residSD","B2","ewma",10,"precision_loss",400,1,0.06,0.94,0.915,0.9625,"gain",0.057,0.042,FALSE
+"F4","C3","residSD","B2","ewma",20,"compression_small",400,0.045,0.9325,-0.8875,-0.92,-0.8525,"loss",0.068,0.051,TRUE
+"F4","C3","residSD","B2","ewma",20,"compression",400,0.03,1,-0.97,-0.9875,-0.9525,"loss",0.068,0.051,TRUE
+"F4","C3","residSD","B2","ewma",20,"compression_ramp",400,0.03,1,-0.97,-0.985,-0.9525,"loss",0.068,0.051,TRUE
+"F4","C3","residSD","B2","ewma",20,"sensitivity_loss",400,0.435,0.945,-0.51,-0.5625,-0.455,"loss",0.068,0.051,TRUE
+"F4","C3","residSD","B2","ewma",20,"precision_loss",400,1,0.0675,0.9325,0.9075,0.9575,"gain",0.068,0.051,TRUE
+"F4","C4","offset","B1","cusum",10,"compression_small",400,0.0675,0.4975,-0.43,-0.48,-0.38,"loss",0.04,0.037,FALSE
+"F4","C4","offset","B1","cusum",10,"compression",400,0.18,0.985,-0.805,-0.84,-0.765,"loss",0.04,0.037,FALSE
+"F4","C4","offset","B1","cusum",10,"compression_ramp",400,0.09,0.66,-0.57,-0.6175,-0.52,"loss",0.04,0.037,FALSE
+"F4","C4","offset","B1","cusum",10,"sensitivity_loss",400,0.98,0.98,0,-0.01,0.01,"no clear difference",0.04,0.037,FALSE
+"F4","C4","offset","B1","cusum",10,"precision_loss",400,0.0525,0.0525,0,-0.02,0.02,"no clear difference",0.04,0.037,FALSE
+"F4","C4","offset","B1","cusum",20,"compression_small",400,0.0925,0.6875,-0.595,-0.6425,-0.545,"loss",0.048,0.049,FALSE
+"F4","C4","offset","B1","cusum",20,"compression",400,0.245,1,-0.755,-0.7975,-0.7125,"loss",0.048,0.049,FALSE
+"F4","C4","offset","B1","cusum",20,"compression_ramp",400,0.19,0.9925,-0.8025,-0.84,-0.7625,"loss",0.048,0.049,FALSE
+"F4","C4","offset","B1","cusum",20,"sensitivity_loss",400,1,1,0,0,0,"no clear difference",0.048,0.049,FALSE
+"F4","C4","offset","B1","cusum",20,"precision_loss",400,0.06,0.08,-0.02,-0.045,0.0025,"no clear difference",0.048,0.049,FALSE
+"F4","C4","offset","B1","ewma",10,"compression_small",400,0.06,0.465,-0.405,-0.4525,-0.355,"loss",0.045,0.046,FALSE
+"F4","C4","offset","B1","ewma",10,"compression",400,0.1825,0.975,-0.7925,-0.8275625,-0.7525,"loss",0.045,0.046,FALSE
+"F4","C4","offset","B1","ewma",10,"compression_ramp",400,0.08,0.6625,-0.5825,-0.63,-0.5349375,"loss",0.045,0.046,FALSE
+"F4","C4","offset","B1","ewma",10,"sensitivity_loss",400,0.965,0.965,0,-0.0125,0.0125,"no clear difference",0.045,0.046,FALSE
+"F4","C4","offset","B1","ewma",10,"precision_loss",400,0.0525,0.065,-0.0125,-0.035,0.0075,"no clear difference",0.045,0.046,FALSE
+"F4","C4","offset","B1","ewma",20,"compression_small",400,0.0975,0.59,-0.4925,-0.5425,-0.445,"loss",0.051,0.056,FALSE
+"F4","C4","offset","B1","ewma",20,"compression",400,0.2225,0.99,-0.7675,-0.8075,-0.725,"loss",0.051,0.056,FALSE
+"F4","C4","offset","B1","ewma",20,"compression_ramp",400,0.165,0.9775,-0.8125,-0.8475,-0.7774375,"loss",0.051,0.056,FALSE
+"F4","C4","offset","B1","ewma",20,"sensitivity_loss",400,0.9975,0.99,0.0075,0,0.0175,"no clear difference",0.051,0.056,FALSE
+"F4","C4","offset","B1","ewma",20,"precision_loss",400,0.075,0.0925,-0.0175,-0.0425,0.0075,"no clear difference",0.051,0.056,FALSE
+"F5","C1","UT","UF","cusum",10,"compression_small",400,0.8875,0.8325,0.055,0.0275,0.085,"gain",0.055,0.045,FALSE
+"F5","C1","UT","UF","cusum",10,"compression",400,1,1,0,0,0,"no clear difference",0.055,0.045,FALSE
+"F5","C1","UT","UF","cusum",10,"compression_ramp",400,0.9575,0.92,0.0374999999999999,0.0175,0.06,"gain",0.055,0.045,FALSE
+"F5","C1","UT","UF","cusum",10,"sensitivity_loss",400,0.2725,0.4,-0.1275,-0.1825,-0.0725,"loss",0.055,0.045,FALSE
+"F5","C1","UT","UF","cusum",10,"precision_loss",400,1,0.0575,0.9425,0.92,0.965,"gain",0.055,0.045,FALSE
+"F5","C1","UT","UF","cusum",20,"compression_small",400,0.95,0.905,0.045,0.02,0.07,"gain",0.042,0.043,FALSE
+"F5","C1","UT","UF","cusum",20,"compression",400,1,1,0,0,0,"no clear difference",0.042,0.043,FALSE
+"F5","C1","UT","UF","cusum",20,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.042,0.043,FALSE
+"F5","C1","UT","UF","cusum",20,"sensitivity_loss",400,0.31,0.4725,-0.1625,-0.225,-0.1025,"loss",0.042,0.043,FALSE
+"F5","C1","UT","UF","cusum",20,"precision_loss",400,1,0.035,0.965,0.9475,0.9825,"gain",0.042,0.043,FALSE
+"F5","C1","UT","UF","ewma",10,"compression_small",400,0.845,0.7625,0.0825000000000001,0.0525,0.115,"gain",0.072,0.047,TRUE
+"F5","C1","UT","UF","ewma",10,"compression",400,1,1,0,0,0,"no clear difference",0.072,0.047,TRUE
+"F5","C1","UT","UF","ewma",10,"compression_ramp",400,0.9775,0.955,0.0225,0.0075,0.04,"gain",0.072,0.047,TRUE
+"F5","C1","UT","UF","ewma",10,"sensitivity_loss",400,0.285,0.355,-0.0699999999999998,-0.1275,-0.015,"loss",0.072,0.047,TRUE
+"F5","C1","UT","UF","ewma",10,"precision_loss",400,0.995,0.06,0.935,0.91,0.9575,"gain",0.072,0.047,TRUE
+"F5","C1","UT","UF","ewma",20,"compression_small",400,0.8825,0.8175,0.065,0.0325,0.0975,"gain",0.048,0.041,FALSE
+"F5","C1","UT","UF","ewma",20,"compression",400,1,1,0,0,0,"no clear difference",0.048,0.041,FALSE
+"F5","C1","UT","UF","ewma",20,"compression_ramp",400,1,0.9975,0.00250000000000002,0,0.0075,"no clear difference",0.048,0.041,FALSE
+"F5","C1","UT","UF","ewma",20,"sensitivity_loss",400,0.2525,0.3725,-0.12,-0.1700625,-0.0625,"loss",0.048,0.041,FALSE
+"F5","C1","UT","UF","ewma",20,"precision_loss",400,0.9925,0.04,0.9525,0.93,0.9725,"gain",0.048,0.041,FALSE
+"F5","C2","slope","B3","cusum",10,"compression_small",400,0.9,0.8575,0.0425,0.02,0.065,"gain",0.056,0.04,FALSE
+"F5","C2","slope","B3","cusum",10,"compression",400,1,1,0,0,0,"no clear difference",0.056,0.04,FALSE
+"F5","C2","slope","B3","cusum",10,"compression_ramp",400,0.965,0.95,0.015,0.0025,0.03,"gain",0.056,0.04,FALSE
+"F5","C2","slope","B3","cusum",10,"sensitivity_loss",400,0.055,0.0375,0.0175,-0.0025,0.04,"no clear difference",0.056,0.04,FALSE
+"F5","C2","slope","B3","cusum",10,"precision_loss",400,0.06,0.05,0.01,-0.0075,0.0275,"no clear difference",0.056,0.04,FALSE
+"F5","C2","slope","B3","cusum",20,"compression_small",400,0.9575,0.95,0.00749999999999999,-0.01,0.025,"no clear difference",0.041,0.043,FALSE
+"F5","C2","slope","B3","cusum",20,"compression",400,1,1,0,0,0,"no clear difference",0.041,0.043,FALSE
+"F5","C2","slope","B3","cusum",20,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.041,0.043,FALSE
+"F5","C2","slope","B3","cusum",20,"sensitivity_loss",400,0.06,0.05,0.01,-0.0075,0.0275,"no clear difference",0.041,0.043,FALSE
+"F5","C2","slope","B3","cusum",20,"precision_loss",400,0.0725,0.06,0.0125,-0.0025,0.03,"no clear difference",0.041,0.043,FALSE
+"F5","C2","slope","B3","ewma",10,"compression_small",400,0.875,0.8375,0.0375,0.0125,0.0625,"gain",0.067,0.069,TRUE
+"F5","C2","slope","B3","ewma",10,"compression",400,1,1,0,0,0,"no clear difference",0.067,0.069,TRUE
+"F5","C2","slope","B3","ewma",10,"compression_ramp",400,0.98,0.9725,0.00750000000000001,-0.005,0.02,"no clear difference",0.067,0.069,TRUE
+"F5","C2","slope","B3","ewma",10,"sensitivity_loss",400,0.08,0.0575,0.0225,0.0025,0.0425,"gain",0.067,0.069,TRUE
+"F5","C2","slope","B3","ewma",10,"precision_loss",400,0.0875,0.0775,0.00999999999999999,-0.01,0.0325,"no clear difference",0.067,0.069,TRUE
+"F5","C2","slope","B3","ewma",20,"compression_small",400,0.8925,0.8475,0.045,0.0175,0.0725,"gain",0.046,0.035,TRUE
+"F5","C2","slope","B3","ewma",20,"compression",400,1,1,0,0,0,"no clear difference",0.046,0.035,TRUE
+"F5","C2","slope","B3","ewma",20,"compression_ramp",400,1,1,0,0,0,"no clear difference",0.046,0.035,TRUE
+"F5","C2","slope","B3","ewma",20,"sensitivity_loss",400,0.065,0.04,0.025,0.0075,0.0425,"gain",0.046,0.035,TRUE
+"F5","C2","slope","B3","ewma",20,"precision_loss",400,0.08,0.05,0.03,0.01,0.0525,"gain",0.046,0.035,TRUE
+"F5","C3","residSD","B2","cusum",10,"compression_small",400,0.0475,0.5425,-0.495,-0.545,-0.4425,"loss",0.069,0.053,TRUE
+"F5","C3","residSD","B2","cusum",10,"compression",400,0.0475,0.98,-0.9325,-0.955,-0.905,"loss",0.069,0.053,TRUE
+"F5","C3","residSD","B2","cusum",10,"compression_ramp",400,0.045,0.6875,-0.6425,-0.69,-0.5925,"loss",0.069,0.053,TRUE
+"F5","C3","residSD","B2","cusum",10,"sensitivity_loss",400,0.49,0.535,-0.0450000000000001,-0.105,0.0125,"no clear difference",0.069,0.053,TRUE
+"F5","C3","residSD","B2","cusum",10,"precision_loss",400,1,0.07,0.93,0.905,0.9525,"gain",0.069,0.053,TRUE
+"F5","C3","residSD","B2","cusum",20,"compression_small",400,0.03,0.635,-0.605,-0.6525625,-0.5525,"loss",0.05,0.053,FALSE
+"F5","C3","residSD","B2","cusum",20,"compression",400,0.02,0.9975,-0.9775,-0.99,-0.9625,"loss",0.05,0.053,FALSE
+"F5","C3","residSD","B2","cusum",20,"compression_ramp",400,0.0225,0.9725,-0.95,-0.97,-0.9275,"loss",0.05,0.053,FALSE
+"F5","C3","residSD","B2","cusum",20,"sensitivity_loss",400,0.5775,0.6075,-0.0299999999999999,-0.0875,0.0275,"no clear difference",0.05,0.053,FALSE
+"F5","C3","residSD","B2","cusum",20,"precision_loss",400,1,0.0525,0.9475,0.925,0.9675,"gain",0.05,0.053,FALSE
+"F5","C3","residSD","B2","ewma",10,"compression_small",400,0.035,0.47,-0.435,-0.485,-0.38,"loss",0.065,0.051,TRUE
+"F5","C3","residSD","B2","ewma",10,"compression",400,0.0325,0.9575,-0.925,-0.95,-0.8975,"loss",0.065,0.051,TRUE
+"F5","C3","residSD","B2","ewma",10,"compression_ramp",400,0.0375,0.6975,-0.66,-0.7075,-0.6125,"loss",0.065,0.051,TRUE
+"F5","C3","residSD","B2","ewma",10,"sensitivity_loss",400,0.4625,0.4725,-0.0100000000000001,-0.0675,0.05,"no clear difference",0.065,0.051,TRUE
+"F5","C3","residSD","B2","ewma",10,"precision_loss",400,1,0.06,0.94,0.915,0.9625,"gain",0.065,0.051,TRUE
+"F5","C3","residSD","B2","ewma",20,"compression_small",400,0.0275,0.535,-0.5075,-0.56,-0.4575,"loss",0.038,0.052,FALSE
+"F5","C3","residSD","B2","ewma",20,"compression",400,0.0075,0.9825,-0.975,-0.99,-0.9575,"loss",0.038,0.052,FALSE
+"F5","C3","residSD","B2","ewma",20,"compression_ramp",400,0.015,0.965,-0.95,-0.97,-0.9275,"loss",0.038,0.052,FALSE
+"F5","C3","residSD","B2","ewma",20,"sensitivity_loss",400,0.4425,0.5375,-0.0949999999999999,-0.155,-0.0325,"loss",0.038,0.052,FALSE
+"F5","C3","residSD","B2","ewma",20,"precision_loss",400,1,0.0575,0.9425,0.92,0.965,"gain",0.038,0.052,FALSE
+"F5","C4","offset","B1","cusum",10,"compression_small",400,0.055,0.2425,-0.1875,-0.23,-0.1475,"loss",0.052,0.049,FALSE
+"F5","C4","offset","B1","cusum",10,"compression",400,0.105,0.7275,-0.6225,-0.67,-0.575,"loss",0.052,0.049,FALSE
+"F5","C4","offset","B1","cusum",10,"compression_ramp",400,0.0575,0.2975,-0.24,-0.2825,-0.1975,"loss",0.052,0.049,FALSE
+"F5","C4","offset","B1","cusum",10,"sensitivity_loss",400,0.76,0.6975,0.0625,0.0325,0.0925624999999997,"gain",0.052,0.049,FALSE
+"F5","C4","offset","B1","cusum",10,"precision_loss",400,0.065,0.0725,-0.00750000000000001,-0.025,0.01,"no clear difference",0.052,0.049,FALSE
+"F5","C4","offset","B1","cusum",20,"compression_small",400,0.0625,0.27,-0.2075,-0.25,-0.1675,"loss",0.044,0.047,FALSE
+"F5","C4","offset","B1","cusum",20,"compression",400,0.0975,0.7975,-0.7,-0.7425,-0.655,"loss",0.044,0.047,FALSE
+"F5","C4","offset","B1","cusum",20,"compression_ramp",400,0.0775,0.63,-0.5525,-0.6000625,-0.5,"loss",0.044,0.047,FALSE
+"F5","C4","offset","B1","cusum",20,"sensitivity_loss",400,0.8225,0.7725,0.0500000000000001,0.025,0.0775,"gain",0.044,0.047,FALSE
+"F5","C4","offset","B1","cusum",20,"precision_loss",400,0.065,0.065,0,-0.0200625,0.02,"no clear difference",0.044,0.047,FALSE
+"F5","C4","offset","B1","ewma",10,"compression_small",400,0.0525,0.2425,-0.19,-0.2300625,-0.145,"loss",0.057,0.044,FALSE
+"F5","C4","offset","B1","ewma",10,"compression",400,0.0975,0.655,-0.5575,-0.605,-0.5075,"loss",0.057,0.044,FALSE
+"F5","C4","offset","B1","ewma",10,"compression_ramp",400,0.0625,0.3275,-0.265,-0.3100625,-0.22,"loss",0.057,0.044,FALSE
+"F5","C4","offset","B1","ewma",10,"sensitivity_loss",400,0.7025,0.62,0.0825000000000002,0.05,0.1175,"gain",0.057,0.044,FALSE
+"F5","C4","offset","B1","ewma",10,"precision_loss",400,0.0625,0.065,-0.00250000000000004,-0.02,0.015,"no clear difference",0.057,0.044,FALSE
+"F5","C4","offset","B1","ewma",20,"compression_small",400,0.07,0.205,-0.135,-0.1725,-0.0975,"loss",0.063,0.051,FALSE
+"F5","C4","offset","B1","ewma",20,"compression",400,0.1025,0.695,-0.5925,-0.6425,-0.54,"loss",0.063,0.051,FALSE
+"F5","C4","offset","B1","ewma",20,"compression_ramp",400,0.0925,0.6,-0.5075,-0.56,-0.4575,"loss",0.063,0.051,FALSE
+"F5","C4","offset","B1","ewma",20,"sensitivity_loss",400,0.7425,0.6525,0.0900000000000001,0.0575,0.125,"gain",0.063,0.051,FALSE
+"F5","C4","offset","B1","ewma",20,"precision_loss",400,0.0725,0.08,-0.00750000000000003,-0.0325,0.0175,"no clear difference",0.063,0.051,FALSE
