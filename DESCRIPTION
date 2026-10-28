@@ -1,0 +1,28 @@
+Package: spikeWatch
+Type: Package
+Title: Run Accuracy and Drift from Spike-in Truth
+Version: 0.99.0
+Authors@R: person("Amirhossein", "Daneshpajouh", role = c("aut", "cre"),
+    email = "52765136+Daneshpajouh@users.noreply.github.com")
+Description: Turns the known amounts of spike-in controls into accuracy
+    figures for every run and tracks them across runs. One data model
+    covers feature-level designs such as the ERCC RNA mixes and
+    sample-level designs such as UPS1 dilution series in proteomics: the
+    known amounts sit in an assay beside the measurements. Per run it
+    reports the dose-response slope and fit, the detection limit and the
+    overall response; between groups it reports fold-change accuracy.
+    Across runs it charts any of these figures with Shewhart, EWMA or
+    CUSUM charts against a baseline, so a run that drifts is flagged.
+License: GPL-3
+Encoding: UTF-8
+Depends: R (>= 4.4.0), SummarizedExperiment
+Imports: ggplot2, methods, rlang, S4Vectors, stats, utils
+Suggests: BiocStyle, knitr, rmarkdown, testthat (>= 3.0.0)
+VignetteBuilder: knitr
+biocViews: QualityControl, RNASeq, Proteomics, MassSpectrometry,
+    Transcriptomics, Software
+URL: https://github.com/Daneshpajouh/spikeWatch
+BugReports: https://github.com/Daneshpajouh/spikeWatch/issues
+Config/testthat/edition: 3
+Roxygen: list(markdown = TRUE)
+Config/roxygen2/version: 8.1.1
