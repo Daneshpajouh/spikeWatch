@@ -4,6 +4,7 @@ Run from the repository root after the v2 scripts. Every figure in the
 README's v2 section comes from here; none is typed.
 """
 import csv
+import math
 import re
 
 OUT = "validation/out-v2/"
@@ -27,7 +28,16 @@ DET_NAMES = {"UT": "U-T (slope or residSD)", "UF": "U-F (B2 or B3)"}
 
 def rows(name, out=OUT):
     with open(out + name, newline="") as f:
-        return list(csv.DictReader(f))
+        got = list(csv.DictReader(f))
+    if name == "scores.csv":
+        # Every rate a table prints, not only the calibrated null rows: finite, and signalled over n (code review
+        # round 8, both reviewers: detection(), defaults() and correlated_null() read rates no check had seen).
+        for r in got:
+            rate, n = float(r["rate"]), float(r["n"])
+            if not (math.isfinite(rate) and n > 0 and abs(rate - float(r["signalled"]) / n) <= 1e-9):
+                raise SystemExit("rate is not signalled/n for %s" % (
+                    (out, r["family"], r["detector"], r["chart"], r["H"], r["limits"], r["scenario"]),))
+    return got
 
 
 def pct(x):
@@ -93,6 +103,10 @@ def gains(out=OUT):
         # Every row, not only the claimed gains: the per-side flags must give the scorer's fap_flag, and each
         # side's false-alarm rate must be its null row's rate. Both sides are looked up, so a bad id always stops.
         where = (r["family"], r["pair"], r["scenario"], r["chart"], r["H"])
+        # A NaN compares false with every bound below, so it would pass as "no clear difference" (round 8).
+        if not all(math.isfinite(float(r[k])) for k in ("ci_low", "ci_high", "diff", "detect_truth", "detect_without",
+                                                         "fap_truth", "fap_without")):
+            raise SystemExit("a value is not finite for %s" % (where,))
         if (r["truth"], r["without"]) != PAIR_DETS[r["pair"]]:
             raise SystemExit("detectors do not match the pair for %s" % (where,))
         # The scorer's verdict rule: the bootstrap interval of the difference lies above or below zero.
@@ -113,7 +127,12 @@ def gains(out=OUT):
         key = (r["pair"], r["scenario"], r["chart"])
         fam = {}
         for c in cells.get(key, []):
-            fam.setdefault(c["family"], []).append(c["verdict"])
+            fam.setdefault(c["family"], []).append((c["H"], c["verdict"]))
+        # Both horizons, once each: one horizon, or one twice, would count as the same verdict at both (round 8).
+        for f, hv in fam.items():
+            if sorted(h for h, _ in hv) != ["10", "20"]:
+                raise SystemExit("family %s needs one row at H 10 and one at H 20 for %s" % (f, key))
+        fam = {f: [v for _, v in hv] for f, hv in fam.items()}
         both = ["gain" if all(v == "gain" for v in vs) else "loss" if all(v == "loss" for v in vs) else "mixed"
                 for vs in fam.values()]
         g, lo = both.count("gain"), both.count("loss")

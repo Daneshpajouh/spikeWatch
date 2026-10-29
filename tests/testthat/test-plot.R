@@ -67,3 +67,27 @@ test_that("an auto range that no amount meets warns and draws no line", {
     expect_equal(nrow(p$layers[[2]]$data), 0L)
     expect_warning(runMetrics(s), "fit figures are NA")
 })
+
+test_that("a named baseline run sets the auto range, and two fitted spikes draw no line", {
+    # Code review round 8: every baseline spike from amount 2 up is detected, so the range starts at 2 (both runs
+    # together would give 4); the plotted run keeps two spikes there, too few for the fit runMetrics() makes.
+    se <- SummarizedExperiment::SummarizedExperiment(
+        assays = list(counts = cbind(a = c(0, 0, 8, 16), b = c(0, 4, 8, 16)),
+                      expected = cbind(a = c(1, 2, 4, 8), b = c(1, 2, 4, 8))),
+        rowData = S4Vectors::DataFrame(spikeGroup = rep("spike", 4)))
+    m <- runMetrics(se, baseline = "b")
+    expect_equal(attr(m, "minAmount"), 2)
+    expect_true(is.na(m$slope[1]))
+    p <- plotDoseResponse(se, "a", baseline = "b")
+    expect_equal(nrow(ggplot2::layer_data(p, 2)), 0L)
+    expect_equal(ggplot2::layer_data(p, 3)$xintercept, log10(2))
+})
+
+test_that("a logical baseline gives the plot the range runMetrics chooses", {
+    set.seed(3)
+    s <- simulateSpikeRuns(erccDesign(), nRuns = 4)
+    bl <- c(TRUE, TRUE, FALSE, FALSE)
+    m <- runMetrics(s, baseline = bl)
+    p <- plotDoseResponse(s, 3, baseline = bl)
+    expect_equal(ggplot2::layer_data(p, 3)$xintercept, log10(attr(m, "minAmount")))
+})

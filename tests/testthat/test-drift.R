@@ -162,3 +162,13 @@ test_that("a missing run after the CUSUM has moved neither resets nor adds to it
     expect_equal(ch$cusumLow[c(6, 7, 8)], c(0, 0, 0))
     expect_false(ch$signal[7])
 })
+
+test_that("a missing run after the CUSUM has signalled does not signal again", {
+    # Code review round 8: the sum must have crossed h before the missing run, or the test cannot see the guard.
+    x <- c(0, 1, 0, 1, 0, 3, 3, NA)
+    ch <- suppressWarnings(driftChart(x, baseline = 5, method = "cusum", sigma = "sd"))
+    z <- (3 - 0.4) / sqrt(0.3) - 0.5
+    expect_equal(ch$cusumUp[6:8], c(z, 2 * z, 2 * z))
+    expect_true(ch$signal[7])
+    expect_false(ch$signal[8])
+})

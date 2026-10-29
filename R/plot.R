@@ -57,6 +57,10 @@ plotDoseResponse <- function(se, run = 1L, assay = 1L,
     if (is.null(label) || is.na(label)) label <- as.character(run)
     fitted <- if (is.na(minAmount)) df[0, ] else
         df[df$detected & df$expected >= minAmount, ]
+    # The rule runMetrics() fits by: three or more spikes over two or more
+    # amounts, or no line (code review round 8).
+    if (nrow(fitted) < 3L || length(unique(fitted$expected)) < 2L)
+        fitted <- df[0, ]
     p <- ggplot2::ggplot(df, ggplot2::aes(.data$expected, .data$measured)) +
         ggplot2::geom_point(ggplot2::aes(shape = .data$detected,
                                          colour = .data$group)) +
